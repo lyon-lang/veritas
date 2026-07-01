@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { 
@@ -62,16 +63,41 @@ interface Stats {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('overview');
   const [verifyUrl, setVerifyUrl] = useState('');
   const [verifications, setVerifications] = useState<Verification[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    // Load data
     loadData();
+    loadUser();
   }, []);
+
+  const loadUser = async () => {
+    try {
+      const res = await fetch('/api/auth');
+      const data = await res.json();
+      if (data.user) {
+        setUser(data.user);
+      } else {
+        router.push('/sign-in');
+      }
+    } catch (error) {
+      console.error('Error loading user:', error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth', { method: 'DELETE' });
+      router.push('/sign-in');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
 
   const loadData = async () => {
     try {
@@ -195,8 +221,26 @@ export default function DashboardPage() {
               <button className="p-2 text-gray-500 hover:text-gray-700 rounded-md hover:bg-gray-100">
                 <Settings className="h-4 w-4" />
               </button>
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 text-xs font-medium">
-                U
+              <div className="relative group">
+                <button className="flex items-center gap-2 p-1.5 rounded-md hover:bg-gray-100">
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 text-xs font-medium">
+                    {user?.name?.[0]?.toUpperCase() || 'U'}
+                  </div>
+                  <span className="text-sm text-gray-700 hidden md:block">{user?.name || 'User'}</span>
+                </button>
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 hidden group-hover:block z-50">
+                  <div className="px-4 py-2 border-b border-gray-100">
+                    <div className="text-sm font-medium text-gray-900">{user?.name}</div>
+                    <div className="text-xs text-gray-500">{user?.email}</div>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign out
+                  </button>
+                </div>
               </div>
             </div>
           </div>

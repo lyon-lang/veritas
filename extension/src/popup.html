@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Veritas</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      width: 360px;
+      min-height: 400px;
+      background: #fff;
+      color: #111827;
+    }
+
+    .header {
+      padding: 16px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      width: 32px;
+      height: 32px;
+      background: #2563eb;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo svg {
+      width: 18px;
+      height: 18px;
+      color: white;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .content {
+      padding: 16px;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+    }
+
+    .verify-btn {
+      padding: 10px 16px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .verify-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .verify-btn:disabled {
+      background: #93c5fd;
+      cursor: not-allowed;
+    }
+
+    .trust-score {
+      text-align: center;
+      padding: 24px;
+      background: #f9fafb;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+
+    .score-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .score-high {
+      background: #dcfce7;
+      color: #16a34a;
+      border: 3px solid #16a34a;
+    }
+
+    .score-medium {
+      background: #fef3c7;
+      color: #d97706;
+      border: 3px solid #d97706;
+    }
+
+    .score-low {
+      background: #fee2e2;
+      color: #dc2626;
+      border: 3px solid #dc2626;
+    }
+
+    .verdict {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .verdict-authentic { color: #16a34a; }
+    .verdict-suspicious { color: #d97706; }
+    .verdict-fake { color: #dc2626; }
+
+    .confidence {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .checks {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: #f9fafb;
+      border-radius: 8px;
+    }
+
+    .check-name {
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .check-score {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .check-passed { color: #16a34a; }
+    .check-warning { color: #d97706; }
+    .check-failed { color: #dc2626; }
+
+    .footer {
+      padding: 12px 16px;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+    }
+
+    .footer a {
+      font-size: 12px;
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #e5e7eb;
+      border-top-color: #2563eb;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 32px 16px;
+      color: #6b7280;
+    }
+
+    .empty-state svg {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    .recent-item {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f3f4f6;
+      cursor: pointer;
+    }
+
+    .recent-item:hover {
+      background: #f9fafb;
+    }
+
+    .recent-item:last-child {
+      border-bottom: none;
+    }
+
+    .recent-url {
+      font-size: 13px;
+      color: #111827;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+
+    .recent-meta {
+      font-size: 11px;
+      color: #6b7280;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .badge-authentic { background: #dcfce7; color: #16a34a; }
+    .badge-suspicious { background: #fef3c7; color: #d97706; }
+    .badge-fake { background: #fee2e2; color: #dc2626; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+    </div>
+    <h1>Veritas</h1>
+  </div>
+
+  <div class="content">
+    <div class="search-box">
+      <input type="text" class="search-input" id="urlInput" placeholder="Paste URL or text to verify...">
+      <button class="verify-btn" id="verifyBtn">
+        Verify
+      </button>
+    </div>
+
+    <div id="result" style="display: none;">
+      <div class="trust-score">
+        <div class="score-circle" id="scoreCircle">--</div>
+        <div class="verdict" id="verdict">Analyzing...</div>
+        <div class="confidence" id="confidence"></div>
+      </div>
+
+      <div class="checks" id="checks"></div>
+    </div>
+
+    <div id="loading" style="display: none;">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Analyzing content...</p>
+      </div>
+    </div>
+
+    <div id="emptyState" class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      <p>Enter a URL or text to verify its authenticity</p>
+    </div>
+
+    <div id="recentSection" style="display: none;">
+      <h3 style="font-size: 13px; font-weight: 600; color: #6b7280; margin-bottom: 8px;">Recent Verifications</h3>
+      <div id="recentList"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <a href="https://veritas.vercel.app" target="_blank">Powered by Veritas</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
