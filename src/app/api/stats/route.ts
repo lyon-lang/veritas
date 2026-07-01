@@ -1,0 +1,73 @@
+import { NextResponse } from 'next/server';
+import { VerificationModel, StatsModel } from '@/lib/models';
+
+// GET - Get verification stats
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const period = searchParams.get('period') || 'all'; // day, week, month, all
+    const userId = searchParams.get('userId');
+
+    // Get overall stats
+    const overallStats = userId 
+      ? VerificationModel.getStats(userId)
+      : VerificationModel.getStats();
+
+    // Get daily stats
+    const today = new Date().toISOString().split('T')[0];
+    const dailyStats = StatsModel.getDaily(today);
+
+    // Get weekly stats
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const weeklyStats = StatsModel.getRange(weekAgo, today);
+
+    // Calculate weekly totals
+    const weeklyTotals = {
+      total: 0,
+      authentic: 0,
+      suspicious: 0,
+      fake: 0,
+      avgScore: 0,
+    };
+
+    if (Array.isArray(weeklyStats)) {
+      for (const day of weeklyStats) {
+        weeklyTotals.total += (day as any).total_verifications || 0;
+        weeklyTotals.authentic += (day as any).authentic_count || 0;
+        weeklyTotals.suspicious += (day as any).suspicious_count || 0;
+        weeklyTotals.fake += (day as any).fake_count || 0;
+      }
+    }
+
+    // Calculate percentages
+    const total = (overallStats as any)?.total || 0;
+    const stats = {
+      overall: {
+        total,
+        authentic: (overallStats as any)?.authentic || 0,
+        suspicious: (overallStats as any)?.suspicious || 0,
+        fake: (overallStats as any)?.fake || 0,
+        avgScore: Math.round((overallStats as any)?.avg_score || 0),
+        authenticPercent: total > 0 ? Math.round(((overallStats as any)?.authentic || 0) / total * 100) : 0,
+        suspiciousPercent: total > 0 ? Math.round(((overallStats as any)?.suspicious || 0) / total * 100) : 0,
+        fakePercent: total > 0 ? Math.round(((overallStats as any)?.fake || 0) / total * 100) : 0,
+      },
+      today: {
+        total: (dailyStats as any)?.total_verifications || 0,
+        authentic: (dailyStats as any)?.authentic_count || 0,
+        suspicious: (dailyStats as any)?.suspicious_count || 0,
+        fake: (dailyStats as any)?.fake_count || 0,
+        avgScore: Math.round((dailyStats as any)?.avg_trust_score || 0),
+      },
+      week: weeklyTotals,
+    };
+
+    return NextResponse.json(stats);
+  } catch (error) {
+    console.error('Error fetching stats:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch stats' },
+      { status: 500 }
+    );
+  }
+}

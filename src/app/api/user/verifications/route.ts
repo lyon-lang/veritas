@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { VerificationModel, StatsModel } from '@/lib/models';
 
 // GET - Get user's verification history
 export async function GET(request: Request) {
@@ -8,60 +9,32 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    // TODO: Replace with actual database query
-    const verifications = [
-      {
-        id: '1',
-        url: 'https://example.com/article/1',
-        type: 'url',
-        trustScore: 87,
-        verdict: 'authentic',
-        confidence: 85,
-        domain: 'reuters.com',
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: '2',
-        url: 'https://twitter.com/user/status/123',
-        type: 'url',
-        trustScore: 42,
-        verdict: 'suspicious',
-        confidence: 60,
-        domain: 'twitter.com',
-        createdAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: '3',
-        type: 'text',
-        content: 'Breaking news article text...',
-        trustScore: 91,
-        verdict: 'authentic',
-        confidence: 88,
-        domain: 'bbc.com',
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: '4',
-        type: 'image',
-        url: 'https://example.com/image.jpg',
-        trustScore: 35,
-        verdict: 'fake',
-        confidence: 72,
-        domain: 'unknown',
-        createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-      },
-    ];
+    let verifications;
+    let stats;
+
+    if (userId) {
+      verifications = VerificationModel.findByUser(userId, limit, offset);
+      stats = VerificationModel.getStats(userId);
+    } else {
+      verifications = VerificationModel.getRecent(limit);
+      stats = VerificationModel.getStats();
+    }
+
+    // Get daily stats
+    const dailyStats = StatsModel.getDaily();
 
     return NextResponse.json({
-      verifications: verifications.slice(offset, offset + limit),
-      total: verifications.length,
-      hasMore: offset + limit < verifications.length,
+      verifications,
       stats: {
-        total: verifications.length,
-        authentic: verifications.filter(v => v.verdict === 'authentic').length,
-        suspicious: verifications.filter(v => v.verdict === 'suspicious').length,
-        fake: verifications.filter(v => v.verdict === 'fake').length,
+        total: (stats as any)?.total || 0,
+        authentic: (stats as any)?.authentic || 0,
+        suspicious: (stats as any)?.suspicious || 0,
+        fake: (stats as any)?.fake || 0,
+        avgScore: Math.round((stats as any)?.avg_score || 0),
       },
+      dailyStats,
+      total: (stats as any)?.total || 0,
+      hasMore: verifications.length === limit,
     });
   } catch (error) {
     console.error('Error fetching verifications:', error);
@@ -75,24 +48,30 @@ export async function GET(request: Request) {
 // POST - Save verification
 export async function POST(request: Request) {
   try {
-    const verification = await request.json();
+    const data = await request.json();
 
-    if (!verification.trustScore || !verification.verdict) {
+    if (!data.trustScore || !data.verdict) {
       return NextResponse.json(
         { error: 'Trust score and verdict are required' },
         { status: 400 }
       );
     }
 
-    // TODO: Save to database
-    const saved = {
-      id: Date.now().toString(),
-      ...verification,
-      createdAt: new Date().toISOString(),
-    };
+    const verification = VerificationModel.create({
+      userId: data.userId || null,
+      url: data.url || null,
+      contentType: data.contentType || 'unknown',
+      trustScore: data.trustScore,
+      verdict: data.verdict,
+      confidence: data.confidence || 50,
+      checks: data.checks || [],
+      c2paData: data.c2paData || null,
+      aiDetection: data.aiDetection || null,
+      sourceData: data.sourceData || null,
+    });
 
     return NextResponse.json({
-      verification: saved,
+      verification,
       message: 'Verification saved',
     });
   } catch (error) {
@@ -117,7 +96,7 @@ export async function DELETE(request: Request) {
       );
     }
 
-    // TODO: Delete from database
+    // TODO: Implement delete in database
 
     return NextResponse.json({
       message: 'Verification deleted',

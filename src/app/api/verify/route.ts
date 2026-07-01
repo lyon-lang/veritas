@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { analyzeContent, analyzeTextAuthenticity } from '@/lib/openai';
+import { VerificationModel, SourceModel } from '@/lib/models';
 
 // POST - Verify content
 export async function POST(request: Request) {
   try {
-    const { content, type, options } = await request.json();
+    const { content, type, options, userId } = await request.json();
 
     if (!content || !type) {
       return NextResponse.json(
@@ -22,15 +23,19 @@ export async function POST(request: Request) {
     }
 
     const checks = [];
-    let trustScore = 50; // Start at neutral
+    let trustScore = 50;
     let verdict: 'authentic' | 'suspicious' | 'fake' | 'unknown' = 'unknown';
     let confidence = 50;
+    let c2paData = null;
+    let aiDetection = null;
+    let sourceData = null;
 
     // 1. C2PA Check
     if (options?.checkC2PA !== false) {
       const c2paCheck = await checkC2PA(content, type);
       checks.push(c2paCheck);
       trustScore += c2paCheck.score > 0 ? 20 : -10;
+      c2paData = c2paCheck.c2pa || null;
     }
 
     // 2. AI Detection
@@ -38,6 +43,7 @@ export async function POST(request: Request) {
       const aiCheck = await checkAI(content, type);
       checks.push(aiCheck);
       trustScore += aiCheck.score > 70 ? 15 : -20;
+      aiDetection = aiCheck.aiDetection || null;
     }
 
     // 3. Source Credibility
@@ -45,6 +51,7 @@ export async function POST(request: Request) {
       const sourceCheck = await checkSource(content);
       checks.push(sourceCheck);
       trustScore += sourceCheck.score > 70 ? 15 : -10;
+      sourceData = sourceCheck.source || null;
     }
 
     // Calculate final score
@@ -65,11 +72,29 @@ export async function POST(request: Request) {
       confidence = 75;
     }
 
-    return NextResponse.json({
+    // Save to database
+    const verification = VerificationModel.create({
+      userId: userId || null,
+      url: type === 'url' ? content : null,
+      contentType: type,
       trustScore,
       verdict,
       confidence,
       checks,
+      c2paData,
+      aiDetection,
+      sourceData,
+    });
+
+    return NextResponse.json({
+      id: verification.id,
+      trustScore,
+      verdict,
+      confidence,
+      checks,
+      c2paData,
+      aiDetection,
+      sourceData,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
@@ -81,9 +106,41 @@ export async function POST(request: Request) {
   }
 }
 
+// GET - Get verification history
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId');
+    const limit = parseInt(searchParams.get('limit') || '50');
+    const offset = parseInt(searchParams.get('offset') || '0');
+
+    let verifications;
+    let stats;
+
+    if (userId) {
+      verifications = VerificationModel.findByUser(userId, limit, offset);
+      stats = VerificationModel.getStats(userId);
+    } else {
+      verifications = VerificationModel.getRecent(limit);
+      stats = VerificationModel.getStats();
+    }
+
+    return NextResponse.json({
+      verifications,
+      stats,
+      total: (stats as any)?.total || 0,
+    });
+  } catch (error) {
+    console.error('Error fetching verifications:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch verifications' },
+      { status: 500 }
+    );
+  }
+}
+
 async function checkC2PA(content: string, type: string) {
   // TODO: Implement actual C2PA verification
-  // For now, return mock data
   return {
     name: 'C2PA Credentials',
     status: 'passed' as const,
@@ -144,28 +201,32 @@ async function checkAI(content: string, type: string) {
 
 async function checkSource(url: string) {
   try {
-    const domain = new URL(url).hostname;
+    const domain = new URL(url).hostname.replace('www.', '');
     
-    // Known trusted sources
-    const trustedDomains = [
-      'reuters.com', 'apnews.com', 'bbc.com', 'nytimes.com', 'washingtonpost.com',
-      'theguardian.com', 'wsj.com', 'bloomberg.com', 'nature.com', 'science.org',
-    ];
+    // Check database first
+    const dbSource = SourceModel.findByDomain(domain);
+    
+    if (dbSource) {
+      return {
+        name: 'Source Credibility',
+        status: (dbSource as any).score >= 70 ? 'passed' as const : 'warning' as const,
+        score: (dbSource as any).score,
+        details: `${domain} - ${(dbSource as any).description}`,
+        source: dbSource,
+      };
+    }
 
-    const isTrusted = trustedDomains.some(d => domain.includes(d));
-
+    // Default for unknown sources
     return {
       name: 'Source Credibility',
-      status: isTrusted ? 'passed' as const : 'warning' as const,
-      score: isTrusted ? 90 : 60,
-      details: isTrusted 
-        ? `${domain} is a known trusted source`
-        : `${domain} - credibility not verified`,
+      status: 'warning' as const,
+      score: 50,
+      details: `${domain} - credibility not verified`,
       source: {
         domain,
-        score: isTrusted ? 90 : 60,
-        category: isTrusted ? 'news' : 'unknown',
-        reputation: isTrusted ? 'high' : 'unknown',
+        score: 50,
+        category: 'unknown',
+        reputation: 'unknown',
       },
     };
   } catch {
