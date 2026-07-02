@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { analyzeContent, analyzeTextAuthenticity } from '@/lib/openai';
 import { VerificationModel, SourceModel } from '@/lib/models';
 import { readC2PA, calculateC2paScore } from '@/lib/c2pa';
+import { analyzeVideo, calculateVideoScore } from '@/lib/video';
 
 // POST - Verify content
 export async function POST(request: Request) {
@@ -30,29 +31,48 @@ export async function POST(request: Request) {
     let c2paData = null;
     let aiDetection = null;
     let sourceData = null;
+    let videoData = null;
 
-    // 1. C2PA Check
-    if (options?.checkC2PA !== false) {
-      const c2paCheck = await checkC2PA(content, type);
-      checks.push(c2paCheck);
-      trustScore += c2paCheck.score > 0 ? 20 : -10;
-      c2paData = c2paCheck.c2pa || null;
-    }
+    // Special handling for video content
+    if (type === 'video' || (type === 'url' && isVideoUrl(content))) {
+      const videoResult = await analyzeVideo(content);
+      const videoScore = calculateVideoScore(videoResult);
+      
+      // Add video-specific checks
+      for (const check of videoResult.checks) {
+        checks.push(check);
+      }
+      
+      trustScore = videoScore;
+      videoData = {
+        metadata: videoResult.metadata,
+        deepfake: videoResult.deepfake,
+        source: videoResult.source,
+      };
+    } else {
+      // 1. C2PA Check
+      if (options?.checkC2PA !== false) {
+        const c2paCheck = await checkC2PA(content, type);
+        checks.push(c2paCheck);
+        trustScore += c2paCheck.score > 0 ? 20 : -10;
+        c2paData = c2paCheck.c2pa || null;
+      }
 
-    // 2. AI Detection
-    if (options?.checkAI !== false) {
-      const aiCheck = await checkAI(content, type);
-      checks.push(aiCheck);
-      trustScore += aiCheck.score > 70 ? 15 : -20;
-      aiDetection = aiCheck.aiDetection || null;
-    }
+      // 2. AI Detection
+      if (options?.checkAI !== false) {
+        const aiCheck = await checkAI(content, type);
+        checks.push(aiCheck);
+        trustScore += aiCheck.score > 70 ? 15 : -20;
+        aiDetection = aiCheck.aiDetection || null;
+      }
 
-    // 3. Source Credibility
-    if (options?.checkSource !== false && type === 'url') {
-      const sourceCheck = await checkSource(content);
-      checks.push(sourceCheck);
-      trustScore += sourceCheck.score > 70 ? 15 : -10;
-      sourceData = sourceCheck.source || null;
+      // 3. Source Credibility
+      if (options?.checkSource !== false && type === 'url') {
+        const sourceCheck = await checkSource(content);
+        checks.push(sourceCheck);
+        trustScore += sourceCheck.score > 70 ? 15 : -10;
+        sourceData = sourceCheck.source || null;
+      }
     }
 
     // Calculate final score
@@ -96,6 +116,7 @@ export async function POST(request: Request) {
       c2paData,
       aiDetection,
       sourceData,
+      videoData,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
@@ -273,4 +294,23 @@ async function checkSource(url: string) {
       details: 'Unable to verify source',
     };
   }
+}
+
+function isVideoUrl(url: string): boolean {
+  const videoExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.flv', '.webm', '.mkv'];
+  const lowerUrl = url.toLowerCase();
+  
+  // Check file extension
+  if (videoExtensions.some(ext => lowerUrl.includes(ext))) {
+    return true;
+  }
+  
+  // Check video platforms
+  const videoPlatforms = [
+    'youtube.com', 'youtu.be', 'vimeo.com', 'tiktok.com',
+    'twitter.com', 'x.com', 'facebook.com', 'fb.watch',
+    'instagram.com', 'dailymotion.com', 'twitch.tv'
+  ];
+  
+  return videoPlatforms.some(platform => lowerUrl.includes(platform));
 }
