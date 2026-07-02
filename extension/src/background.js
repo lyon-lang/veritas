@@ -1,33 +1,26 @@
 // Veritas Background Script
 
 // Listen for extension install
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener((details) => {
   console.log('Veritas extension installed');
   
-  // Set default settings
-  chrome.storage.local.set({
-    enabled: true,
-    autoVerify: true,
-    showBadge: true
-  });
-});
-
-// Listen for tab updates
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete' && tab.url) {
-    // Check if auto-verify is enabled
-    chrome.storage.local.get('autoVerify', (data) => {
-      if (data.autoVerify !== false) {
-        // Send message to content script to verify
-        chrome.tabs.sendMessage(tabId, { action: 'verify' }).catch(() => {
-          // Content script not loaded yet, ignore
-        });
-      }
+  // Only set defaults on first install, not on updates
+  if (details.reason === 'install') {
+    chrome.storage.local.set({
+      enabled: true,
+      autoVerify: true,
+      showBadge: true
     });
   }
 });
 
-// Listen for messages from popup
+// Listen for tab updates - let content script handle verification
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  // Content script handles verification via MutationObserver
+  // No need to send verify message from background
+});
+
+// Listen for messages from popup and content script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'getSettings') {
     chrome.storage.local.get(['enabled', 'autoVerify', 'showBadge'], (data) => {
@@ -47,6 +40,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     chrome.storage.local.set({ verifications: [] }, () => {
       sendResponse({ success: true });
     });
+    return true;
+  }
+
+  if (request.action === 'openTab') {
+    chrome.tabs.create({ url: request.url });
+    sendResponse({ success: true });
     return true;
   }
 });

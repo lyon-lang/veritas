@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { analyzeTextAuthenticity, extractClaims } from '@/lib/gemini';
 import { VerificationModel, SourceModel } from '@/lib/models';
+import { getAuthUser } from '@/lib/auth';
 
 // Simplified verification - focuses on what Gemini does well
 export async function POST(request: Request) {
@@ -158,18 +159,20 @@ export async function POST(request: Request) {
 // GET - Get verification history
 export async function GET(request: Request) {
   try {
+    const user = await getAuthUser();
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
-    const limit = parseInt(searchParams.get('limit') || '50');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100);
 
     let verifications;
-    if (userId) {
-      verifications = VerificationModel.findByUser(userId, limit);
+    let stats;
+    
+    if (user) {
+      verifications = VerificationModel.findByUser(user.id, limit);
+      stats = VerificationModel.getStats(user.id);
     } else {
       verifications = VerificationModel.getRecent(limit);
+      stats = VerificationModel.getStats();
     }
-
-    const stats = VerificationModel.getStats(userId || undefined);
 
     return NextResponse.json({
       verifications,

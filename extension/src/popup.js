@@ -1,6 +1,6 @@
 // Veritas Browser Extension - Popup Script
 
-const API_URL = 'https://veritas.vercel.app'; // Change to your deployed URL
+const API_URL = 'https://veritas.vercel.app';
 
 // DOM Elements
 const urlInput = document.getElementById('urlInput');
@@ -15,6 +15,13 @@ const checks = document.getElementById('checks');
 const recentSection = document.getElementById('recentSection');
 const recentList = document.getElementById('recentList');
 
+function sanitize(str) {
+  if (typeof str !== 'string') return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
 // Load recent verifications
 async function loadRecent() {
   try {
@@ -23,19 +30,38 @@ async function loadRecent() {
     
     if (verifications.length > 0) {
       recentSection.style.display = 'block';
-      recentList.innerHTML = verifications.slice(0, 5).map(v => `
-        <div class="recent-item" data-url="${v.url || ''}" data-content="${v.content || ''}">
-          <div class="recent-url">${v.url || v.content?.substring(0, 50) + '...' || 'Unknown'}</div>
-          <div class="recent-meta">
-            <span class="badge badge-${v.verdict}">${v.verdict}</span>
-            <span>Score: ${v.trustScore}/100</span>
-            <span>${formatTime(v.timestamp)}</span>
-          </div>
-        </div>
-      `).join('');
+      recentList.textContent = '';
 
-      // Add click handlers
-      document.querySelectorAll('.recent-item').forEach(item => {
+      verifications.slice(0, 5).forEach(v => {
+        const item = document.createElement('div');
+        item.className = 'recent-item';
+        item.dataset.url = v.url || '';
+        item.dataset.content = v.content || '';
+
+        const urlDiv = document.createElement('div');
+        urlDiv.className = 'recent-url';
+        urlDiv.textContent = v.url || (v.content ? v.content.substring(0, 50) + '...' : 'Unknown');
+
+        const metaDiv = document.createElement('div');
+        metaDiv.className = 'recent-meta';
+
+        const badge = document.createElement('span');
+        badge.className = `badge badge-${sanitize(v.verdict)}`;
+        badge.textContent = v.verdict;
+
+        const scoreSpan = document.createElement('span');
+        scoreSpan.textContent = `Score: ${v.trustScore}/100`;
+
+        const timeSpan = document.createElement('span');
+        timeSpan.textContent = formatTime(v.timestamp);
+
+        metaDiv.appendChild(badge);
+        metaDiv.appendChild(scoreSpan);
+        metaDiv.appendChild(timeSpan);
+
+        item.appendChild(urlDiv);
+        item.appendChild(metaDiv);
+
         item.addEventListener('click', () => {
           const url = item.dataset.url;
           const content = item.dataset.content;
@@ -47,6 +73,8 @@ async function loadRecent() {
             verifyText(content);
           }
         });
+
+        recentList.appendChild(item);
       });
     }
   } catch (error) {
@@ -73,17 +101,36 @@ async function verifyUrl(url) {
   showLoading();
   
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
     const response = await fetch(`${API_URL}/api/verify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content: url, type: 'url' }),
+      signal: controller.signal
     });
 
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
     const data = await response.json();
+    
+    if (typeof data.trustScore !== 'number' || typeof data.verdict !== 'string') {
+      throw new Error('Invalid response format');
+    }
+
     showResult(data);
     saveVerification({ ...data, url });
   } catch (error) {
-    showError('Failed to verify URL');
+    if (error.name === 'AbortError') {
+      showError('Request timed out');
+    } else {
+      showError('Failed to verify URL');
+    }
   }
 }
 
@@ -92,17 +139,36 @@ async function verifyText(text) {
   showLoading();
   
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
     const response = await fetch(`${API_URL}/api/verify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content: text, type: 'text' }),
+      signal: controller.signal
     });
 
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
     const data = await response.json();
+    
+    if (typeof data.trustScore !== 'number' || typeof data.verdict !== 'string') {
+      throw new Error('Invalid response format');
+    }
+
     showResult(data);
     saveVerification({ ...data, content: text });
   } catch (error) {
-    showError('Failed to verify content');
+    if (error.name === 'AbortError') {
+      showError('Request timed out');
+    } else {
+      showError('Failed to verify content');
+    }
   }
 }
 
@@ -120,42 +186,74 @@ function showResult(data) {
   result.style.display = 'block';
   verifyBtn.disabled = false;
 
-  // Update score circle
   const score = data.trustScore;
   scoreCircle.textContent = score;
   scoreCircle.className = 'score-circle ' + getScoreClass(score);
 
-  // Update verdict
   verdict.textContent = getVerdictText(data.verdict);
-  verdict.className = 'verdict verdict-' + data.verdict;
+  verdict.className = 'verdict verdict-' + sanitize(data.verdict);
 
-  // Update confidence
   confidence.textContent = `Confidence: ${data.confidence}%`;
 
-  // Update checks
-  checks.innerHTML = data.checks.map(check => `
-    <div class="check-item">
-      <span class="check-name">
-        ${getCheckIcon(check.status)}
-        ${check.name}
-      </span>
-      <span class="check-score check-${check.status}">${check.score}</span>
-    </div>
-  `).join('');
+  checks.textContent = '';
+  if (Array.isArray(data.checks)) {
+    data.checks.forEach(check => {
+      const item = document.createElement('div');
+      item.className = 'check-item';
+
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'check-name';
+      nameSpan.textContent = getCheckIcon(check.status) + ' ' + (check.name || '');
+
+      const scoreSpan = document.createElement('span');
+      scoreSpan.className = `check-score check-${sanitize(check.status)}`;
+      scoreSpan.textContent = String(check.score);
+
+      item.appendChild(nameSpan);
+      item.appendChild(scoreSpan);
+      checks.appendChild(item);
+    });
+  }
 }
 
 // Show error
 function showError(message) {
   loading.style.display = 'none';
   emptyState.style.display = 'block';
-  emptyState.innerHTML = `
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="12" cy="12" r="10"/>
-      <line x1="15" y1="9" x2="9" y2="15"/>
-      <line x1="9" y1="9" x2="15" y2="15"/>
-    </svg>
-    <p>${message}</p>
-  `;
+  emptyState.textContent = '';
+
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '2');
+
+  const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  circle.setAttribute('cx', '12');
+  circle.setAttribute('cy', '12');
+  circle.setAttribute('r', '10');
+
+  const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line1.setAttribute('x1', '15');
+  line1.setAttribute('y1', '9');
+  line1.setAttribute('x2', '9');
+  line1.setAttribute('y2', '15');
+
+  const line2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line2.setAttribute('x1', '9');
+  line2.setAttribute('y1', '9');
+  line2.setAttribute('x2', '15');
+  line2.setAttribute('y2', '15');
+
+  svg.appendChild(circle);
+  svg.appendChild(line1);
+  svg.appendChild(line2);
+
+  const p = document.createElement('p');
+  p.textContent = message;
+
+  emptyState.appendChild(svg);
+  emptyState.appendChild(p);
   verifyBtn.disabled = false;
 }
 
@@ -170,8 +268,10 @@ function getScoreClass(score) {
 function getVerdictText(verdict) {
   switch (verdict) {
     case 'authentic': return '✓ Authentic Content';
+    case 'likely authentic': return '✓ Likely Authentic';
     case 'suspicious': return '⚠ Suspicious Content';
     case 'fake': return '✗ Likely Fake';
+    case 'untrusted': return '✗ Untrusted';
     default: return 'Unknown';
   }
 }
@@ -193,11 +293,15 @@ async function saveVerification(data) {
     const verifications = stored.verifications || [];
     
     verifications.unshift({
-      ...data,
+      trustScore: data.trustScore,
+      verdict: data.verdict,
+      checks: data.checks,
+      confidence: data.confidence,
+      url: data.url,
+      content: data.content,
       timestamp: new Date().toISOString()
     });
 
-    // Keep only last 50
     await chrome.storage.local.set({ verifications: verifications.slice(0, 50) });
     loadRecent();
   } catch (error) {
@@ -227,7 +331,7 @@ verifyBtn.addEventListener('click', () => {
   }
 });
 
-urlInput.addEventListener('keypress', (e) => {
+urlInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     verifyBtn.click();
   }
@@ -237,7 +341,6 @@ urlInput.addEventListener('keypress', (e) => {
 document.addEventListener('DOMContentLoaded', async () => {
   loadRecent();
   
-  // Pre-fill with current tab URL
   const currentUrl = await getCurrentTabUrl();
   if (currentUrl && !currentUrl.startsWith('chrome://')) {
     urlInput.value = currentUrl;

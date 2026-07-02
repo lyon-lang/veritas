@@ -1,26 +1,17 @@
 import { NextResponse } from 'next/server';
 import { VerificationModel, StatsModel } from '@/lib/models';
+import { requireAuth } from '@/lib/auth';
 
 // GET - Get user's verification history
 export async function GET(request: Request) {
   try {
+    const user = await requireAuth();
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100);
+    const offset = Math.max(parseInt(searchParams.get('offset') || '0'), 0);
 
-    let verifications;
-    let stats;
-
-    if (userId) {
-      verifications = VerificationModel.findByUser(userId, limit, offset);
-      stats = VerificationModel.getStats(userId);
-    } else {
-      verifications = VerificationModel.getRecent(limit);
-      stats = VerificationModel.getStats();
-    }
-
-    // Get daily stats
+    const verifications = VerificationModel.findByUser(user.id, limit, offset);
+    const stats = VerificationModel.getStats(user.id);
     const dailyStats = StatsModel.getDaily();
 
     return NextResponse.json({
@@ -36,29 +27,27 @@ export async function GET(request: Request) {
       total: (stats as any)?.total || 0,
       hasMore: verifications.length === limit,
     });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
     console.error('Error fetching verifications:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch verifications' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch verifications' }, { status: 500 });
   }
 }
 
 // POST - Save verification
 export async function POST(request: Request) {
   try {
+    const user = await requireAuth();
     const data = await request.json();
 
-    if (!data.trustScore || !data.verdict) {
-      return NextResponse.json(
-        { error: 'Trust score and verdict are required' },
-        { status: 400 }
-      );
+    if (data.trustScore === undefined || data.trustScore === null || !data.verdict) {
+      return NextResponse.json({ error: 'Trust score and verdict are required' }, { status: 400 });
     }
 
     const verification = VerificationModel.create({
-      userId: data.userId || null,
+      userId: user.id,
       url: data.url || null,
       contentType: data.contentType || 'unknown',
       trustScore: data.trustScore,
@@ -70,43 +59,12 @@ export async function POST(request: Request) {
       sourceData: data.sourceData || null,
     });
 
-    return NextResponse.json({
-      verification,
-      message: 'Verification saved',
-    });
-  } catch (error) {
-    console.error('Error saving verification:', error);
-    return NextResponse.json(
-      { error: 'Failed to save verification' },
-      { status: 500 }
-    );
-  }
-}
-
-// DELETE - Delete verification
-export async function DELETE(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-
-    if (!id) {
-      return NextResponse.json(
-        { error: 'Verification ID is required' },
-        { status: 400 }
-      );
+    return NextResponse.json({ verification, message: 'Verification saved' });
+  } catch (error: any) {
+    if (error.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
-
-    // TODO: Implement delete in database
-
-    return NextResponse.json({
-      message: 'Verification deleted',
-      id,
-    });
-  } catch (error) {
-    console.error('Error deleting verification:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete verification' },
-      { status: 500 }
-    );
+    console.error('Error saving verification:', error);
+    return NextResponse.json({ error: 'Failed to save verification' }, { status: 500 });
   }
 }

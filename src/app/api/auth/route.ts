@@ -3,13 +3,25 @@ import { UserModel } from '@/lib/models';
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
 
-// Simple password hashing (for demo - use bcrypt in production)
-function hashPassword(password: string): string {
-  return crypto.createHash('sha256').update(password).digest('hex');
+const SALT_LENGTH = 32;
+const HASH_LENGTH = 64;
+const ITERATIONS = 100000;
+
+function generateSalt(): string {
+  return crypto.randomBytes(SALT_LENGTH).toString('hex');
 }
 
-function verifyPassword(password: string, hash: string): boolean {
-  return hashPassword(password) === hash;
+function hashPassword(password: string, salt?: string): { hash: string; salt: string } {
+  const actualSalt = salt || generateSalt();
+  const hash = crypto.pbkdf2Sync(password, actualSalt, ITERATIONS, HASH_LENGTH, 'sha512').toString('hex');
+  return { hash, salt: actualSalt };
+}
+
+function verifyPassword(password: string, storedHash: string, salt: string): boolean {
+  const { hash } = hashPassword(password, salt);
+  const a = Buffer.from(hash, 'hex');
+  const b = Buffer.from(storedHash, 'hex');
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
 // POST - Sign up
@@ -35,8 +47,8 @@ export async function POST(request: Request) {
       }
 
       // Create user
-      const passwordHash = hashPassword(password);
-      const user = UserModel.create(email, name, passwordHash);
+      const { hash: passwordHash, salt } = hashPassword(password);
+      const user = UserModel.create(email, name, `${salt}:${passwordHash}`);
 
       // Set cookie
       const cookieStore = await cookies();
@@ -71,7 +83,8 @@ export async function POST(request: Request) {
       }
 
       // Verify password
-      if (!verifyPassword(password, user.password_hash)) {
+      const [salt, storedHash] = user.password_hash.split(':');
+      if (!salt || !storedHash || !verifyPassword(password, storedHash, salt)) {
         return NextResponse.json(
           { error: 'Invalid email or password' },
           { status: 401 }

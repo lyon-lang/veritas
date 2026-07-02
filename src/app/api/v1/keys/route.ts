@@ -35,12 +35,12 @@ export async function GET(request: Request) {
       name: k.name,
       tier: k.tier,
       keyPreview: k.key.substring(0, 12) + '...' + k.key.substring(k.key.length - 4),
-      requestsPerDay: k.requestsPerDay,
-      requestsPerMinute: k.requestsPerMinute,
-      totalRequests: k.totalRequests,
-      createdAt: k.createdAt,
-      lastUsedAt: k.lastUsedAt,
-      active: k.active,
+      requestsPerDay: k.requests_per_day,
+      requestsPerMinute: k.requests_per_minute,
+      totalRequests: k.total_requests,
+      createdAt: k.created_at,
+      lastUsedAt: k.last_used_at,
+      active: k.active === 1,
     }));
 
     return NextResponse.json({ keys: maskedKeys });
@@ -81,8 +81,8 @@ export async function POST(request: Request) {
       name: apiKey.name,
       tier: apiKey.tier,
       limits: {
-        perDay: apiKey.requestsPerDay,
-        perMinute: apiKey.requestsPerMinute,
+        perDay: apiKey.requests_per_day,
+        perMinute: apiKey.requests_per_minute,
       },
       message: 'API key created. Save it securely - it won\'t be shown again.',
     });

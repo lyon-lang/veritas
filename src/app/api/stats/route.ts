@@ -1,34 +1,23 @@
 import { NextResponse } from 'next/server';
 import { VerificationModel, StatsModel } from '@/lib/models';
+import { getAuthUser } from '@/lib/auth';
 
 // GET - Get verification stats
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const period = searchParams.get('period') || 'all'; // day, week, month, all
-    const userId = searchParams.get('userId');
+    const user = await getAuthUser();
 
-    // Get overall stats
-    const overallStats = userId 
-      ? VerificationModel.getStats(userId)
+    const overallStats = user 
+      ? VerificationModel.getStats(user.id)
       : VerificationModel.getStats();
 
-    // Get daily stats
     const today = new Date().toISOString().split('T')[0];
     const dailyStats = StatsModel.getDaily(today);
 
-    // Get weekly stats
     const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     const weeklyStats = StatsModel.getRange(weekAgo, today);
 
-    // Calculate weekly totals
-    const weeklyTotals = {
-      total: 0,
-      authentic: 0,
-      suspicious: 0,
-      fake: 0,
-      avgScore: 0,
-    };
+    const weeklyTotals = { total: 0, authentic: 0, suspicious: 0, fake: 0, avgScore: 0 };
 
     if (Array.isArray(weeklyStats)) {
       for (const day of weeklyStats) {
@@ -39,7 +28,6 @@ export async function GET(request: Request) {
       }
     }
 
-    // Calculate percentages
     const total = (overallStats as any)?.total || 0;
     const stats = {
       overall: {
@@ -65,9 +53,6 @@ export async function GET(request: Request) {
     return NextResponse.json(stats);
   } catch (error) {
     console.error('Error fetching stats:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch stats' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch stats' }, { status: 500 });
   }
 }

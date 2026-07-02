@@ -82,6 +82,66 @@ function initializeDatabase(db: Database.Database) {
     )
   `);
 
+  // Watchlist table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS watchlist (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      url TEXT NOT NULL,
+      label TEXT,
+      current_score INTEGER DEFAULT 50,
+      previous_score INTEGER DEFAULT 50,
+      verdict TEXT DEFAULT 'unknown',
+      last_checked DATETIME DEFAULT CURRENT_TIMESTAMP,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
+
+  // Alerts table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS alerts (
+      id TEXT PRIMARY KEY,
+      watchlist_id TEXT NOT NULL,
+      type TEXT NOT NULL,
+      message TEXT NOT NULL,
+      previous_score INTEGER,
+      current_score INTEGER,
+      read INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (watchlist_id) REFERENCES watchlist(id)
+    )
+  `);
+
+  // API keys table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS api_keys (
+      id TEXT PRIMARY KEY,
+      key TEXT UNIQUE NOT NULL,
+      user_id TEXT NOT NULL,
+      name TEXT,
+      tier TEXT DEFAULT 'free',
+      requests_per_day INTEGER DEFAULT 100,
+      requests_per_minute INTEGER DEFAULT 10,
+      total_requests INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      last_used_at DATETIME,
+      active INTEGER DEFAULT 1,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
+
+  // API key rate limits table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS api_key_rate_limits (
+      key TEXT PRIMARY KEY,
+      minute_count INTEGER DEFAULT 0,
+      day_count INTEGER DEFAULT 0,
+      last_minute INTEGER DEFAULT 0,
+      last_day TEXT
+    )
+  `);
+
   // Insert default source credibility data
   const defaultSources = [
     { domain: 'reuters.com', score: 95, category: 'news', reputation: 'high', bias: 'center', fact_check_rating: 'highly factual', description: 'International news organization' },

@@ -1,18 +1,21 @@
+import crypto from 'crypto';
+import { getDatabase } from './database';
+
 // API Key Management Service
 // Handles API key generation, validation, and rate limiting
 
 interface ApiKey {
   id: string;
   key: string;
-  userId: string;
+  user_id: string;
   name: string;
   tier: 'free' | 'pro' | 'enterprise';
-  requestsPerDay: number;
-  requestsPerMinute: number;
-  totalRequests: number;
-  createdAt: string;
-  lastUsedAt: string | null;
-  active: boolean;
+  requests_per_day: number;
+  requests_per_minute: number;
+  total_requests: number;
+  created_at: string;
+  last_used_at: string | null;
+  active: number;
 }
 
 interface RateLimitResult {
@@ -20,10 +23,6 @@ interface RateLimitResult {
   remaining: number;
   resetAt: string;
 }
-
-// In-memory storage
-const apiKeys: Map<string, ApiKey> = new Map();
-const requestCounts: Map<string, { minute: number; day: number; lastMinute: number; lastDay: string }> = new Map();
 
 // Tier limits
 const TIER_LIMITS = {
@@ -41,48 +40,49 @@ const TIER_LIMITS = {
   },
 };
 
+function getDb() {
+  return getDatabase();
+}
+
 // Generate API key
 export function generateApiKey(): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   const prefix = 'vrt_';
-  let result = prefix;
-  for (let i = 0; i < 48; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
+  const randomBytes = crypto.randomBytes(36);
+  return prefix + randomBytes.toString('base64url').substring(0, 48);
 }
 
 // Create API key
 export function createApiKey(userId: string, name: string, tier: 'free' | 'pro' | 'enterprise' = 'free'): ApiKey {
+  const db = getDb();
   const key = generateApiKey();
-  const apiKey: ApiKey = {
-    id: crypto.randomUUID(),
-    key,
-    userId,
-    name,
-    tier,
-    requestsPerDay: TIER_LIMITS[tier].requestsPerDay,
-    requestsPerMinute: TIER_LIMITS[tier].requestsPerMinute,
-    totalRequests: 0,
-    createdAt: new Date().toISOString(),
-    lastUsedAt: null,
-    active: true,
-  };
-  
-  apiKeys.set(key, apiKey);
-  return apiKey;
+  const id = crypto.randomUUID();
+
+  const stmt = db.prepare(`
+    INSERT INTO api_keys (id, key, user_id, name, tier, requests_per_day, requests_per_minute, total_requests, created_at, last_used_at, active)
+    VALUES (?, ?, ?, ?, ?, ?, ?, 0, datetime('now'), NULL, 1)
+  `);
+  stmt.run(id, key, userId, name, tier, TIER_LIMITS[tier].requestsPerDay, TIER_LIMITS[tier].requestsPerMinute);
+
+  const rateLimitStmt = db.prepare(`
+    INSERT INTO api_key_rate_limits (key, minute_count, day_count, last_minute, last_day)
+    VALUES (?, 0, 0, 0, NULL)
+  `);
+  rateLimitStmt.run(key);
+
+  return getApiKeyInfo(key)!;
 }
 
 // Validate API key
 export function validateApiKey(key: string): ApiKey | null {
-  const apiKey = apiKeys.get(key);
-  if (!apiKey || !apiKey.active) return null;
-  return apiKey;
+  const db = getDb();
+  const stmt = db.prepare('SELECT * FROM api_keys WHERE key = ? AND active = 1');
+  return stmt.get(key) as ApiKey | null;
 }
 
 // Check rate limit
 export function checkRateLimit(key: string): RateLimitResult {
-  const apiKey = apiKeys.get(key);
+  const db = getDb();
+  const apiKey = validateApiKey(key);
   if (!apiKey) {
     return { allowed: false, remaining: 0, resetAt: new Date().toISOString() };
   }
@@ -91,31 +91,41 @@ export function checkRateLimit(key: string): RateLimitResult {
   const currentMinute = Math.floor(now / 60000);
   const currentDay = new Date().toISOString().split('T')[0];
 
-  let counts = requestCounts.get(key);
-  if (!counts) {
-    counts = { minute: 0, day: 0, lastMinute: currentMinute, lastDay: currentDay };
-    requestCounts.set(key, counts);
+  const limitsStmt = db.prepare('SELECT * FROM api_key_rate_limits WHERE key = ?');
+  let limits = limitsStmt.get(key) as { minute_count: number; day_count: number; last_minute: number; last_day: string } | undefined;
+
+  if (!limits) {
+    const insertStmt = db.prepare(`
+      INSERT INTO api_key_rate_limits (key, minute_count, day_count, last_minute, last_day)
+      VALUES (?, 0, 0, ?, ?)
+    `);
+    insertStmt.run(key, currentMinute, currentDay);
+    limits = { minute_count: 0, day_count: 0, last_minute: currentMinute, last_day: currentDay };
   }
 
   // Reset minute count if new minute
-  if (currentMinute !== counts.lastMinute) {
-    counts.minute = 0;
-    counts.lastMinute = currentMinute;
+  if (currentMinute !== limits.last_minute) {
+    const updateStmt = db.prepare('UPDATE api_key_rate_limits SET minute_count = 0, last_minute = ? WHERE key = ?');
+    updateStmt.run(currentMinute, key);
+    limits.minute_count = 0;
+    limits.last_minute = currentMinute;
   }
 
   // Reset day count if new day
-  if (currentDay !== counts.lastDay) {
-    counts.day = 0;
-    counts.lastDay = currentDay;
+  if (currentDay !== limits.last_day) {
+    const updateStmt = db.prepare('UPDATE api_key_rate_limits SET day_count = 0, last_day = ? WHERE key = ?');
+    updateStmt.run(currentDay, key);
+    limits.day_count = 0;
+    limits.last_day = currentDay;
   }
 
   // Check limits
-  if (counts.minute >= apiKey.requestsPerMinute) {
+  if (limits.minute_count >= apiKey.requests_per_minute) {
     const resetAt = new Date((currentMinute + 1) * 60000).toISOString();
     return { allowed: false, remaining: 0, resetAt };
   }
 
-  if (counts.day >= apiKey.requestsPerDay) {
+  if (limits.day_count >= apiKey.requests_per_day) {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
@@ -123,14 +133,19 @@ export function checkRateLimit(key: string): RateLimitResult {
   }
 
   // Increment counts
-  counts.minute++;
-  counts.day++;
-  apiKey.totalRequests++;
-  apiKey.lastUsedAt = new Date().toISOString();
+  const incrementStmt = db.prepare(`
+    UPDATE api_key_rate_limits SET minute_count = minute_count + 1, day_count = day_count + 1 WHERE key = ?
+  `);
+  incrementStmt.run(key);
+
+  const updateTotalStmt = db.prepare(`
+    UPDATE api_keys SET total_requests = total_requests + 1, last_used_at = datetime('now') WHERE key = ?
+  `);
+  updateTotalStmt.run(key);
 
   const remaining = Math.min(
-    apiKey.requestsPerMinute - counts.minute,
-    apiKey.requestsPerDay - counts.day
+    apiKey.requests_per_minute - limits.minute_count - 1,
+    apiKey.requests_per_day - limits.day_count - 1
   );
 
   const resetAt = new Date((currentMinute + 1) * 60000).toISOString();
@@ -140,22 +155,24 @@ export function checkRateLimit(key: string): RateLimitResult {
 
 // Get API key info
 export function getApiKeyInfo(key: string): ApiKey | null {
-  return apiKeys.get(key) || null;
+  const db = getDb();
+  const stmt = db.prepare('SELECT * FROM api_keys WHERE key = ?');
+  return stmt.get(key) as ApiKey | null;
 }
 
 // Get user's API keys
 export function getUserApiKeys(userId: string): ApiKey[] {
-  return Array.from(apiKeys.values()).filter(k => k.userId === userId);
+  const db = getDb();
+  const stmt = db.prepare('SELECT * FROM api_keys WHERE user_id = ? ORDER BY created_at DESC');
+  return stmt.all(userId) as ApiKey[];
 }
 
 // Revoke API key
 export function revokeApiKey(key: string): boolean {
-  const apiKey = apiKeys.get(key);
-  if (apiKey) {
-    apiKey.active = false;
-    return true;
-  }
-  return false;
+  const db = getDb();
+  const stmt = db.prepare('UPDATE api_keys SET active = 0 WHERE key = ?');
+  const result = stmt.run(key);
+  return result.changes > 0;
 }
 
 // Get usage stats
@@ -165,10 +182,13 @@ export function getUsageStats(key: string): {
   total: number;
   limits: { perDay: number; perMinute: number };
 } | null {
-  const apiKey = apiKeys.get(key);
+  const db = getDb();
+  const apiKey = validateApiKey(key);
   if (!apiKey) return null;
 
-  const counts = requestCounts.get(key);
+  const limitsStmt = db.prepare('SELECT * FROM api_key_rate_limits WHERE key = ?');
+  const limits = limitsStmt.get(key) as { minute_count: number; day_count: number; last_minute: number; last_day: string } | undefined;
+
   const now = Date.now();
   const currentMinute = Math.floor(now / 60000);
   const currentDay = new Date().toISOString().split('T')[0];
@@ -176,22 +196,22 @@ export function getUsageStats(key: string): {
   let todayRequests = 0;
   let minuteRequests = 0;
 
-  if (counts) {
-    if (counts.lastDay === currentDay) {
-      todayRequests = counts.day;
+  if (limits) {
+    if (limits.last_day === currentDay) {
+      todayRequests = limits.day_count;
     }
-    if (counts.lastMinute === currentMinute) {
-      minuteRequests = counts.minute;
+    if (limits.last_minute === currentMinute) {
+      minuteRequests = limits.minute_count;
     }
   }
 
   return {
     today: todayRequests,
     thisMinute: minuteRequests,
-    total: apiKey.totalRequests,
+    total: apiKey.total_requests,
     limits: {
-      perDay: apiKey.requestsPerDay,
-      perMinute: apiKey.requestsPerMinute,
+      perDay: apiKey.requests_per_day,
+      perMinute: apiKey.requests_per_minute,
     },
   };
 }

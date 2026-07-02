@@ -1,5 +1,4 @@
-// In-memory database for Vercel (serverless compatible)
-// For production, switch to Vercel Postgres, Turso, or your Hostinger VPS
+import { getDatabase } from './database';
 
 interface User {
   id: string;
@@ -40,93 +39,51 @@ interface SourceCredibility {
   updated_at: string;
 }
 
-// In-memory storage
-const users: Map<string, User> = new Map();
-const verifications: Verification[] = [];
-const sourceCredibility: Map<string, SourceCredibility> = new Map();
-
-// Initialize default sources
-const defaultSources: SourceCredibility[] = [
-  { domain: 'reuters.com', score: 95, category: 'news', reputation: 'high', bias: 'center', fact_check_rating: 'highly factual', description: 'International news organization', updated_at: new Date().toISOString() },
-  { domain: 'apnews.com', score: 95, category: 'news', reputation: 'high', bias: 'center', fact_check_rating: 'highly factual', description: 'Associated Press', updated_at: new Date().toISOString() },
-  { domain: 'bbc.com', score: 92, category: 'news', reputation: 'high', bias: 'center', fact_check_rating: 'highly factual', description: 'British broadcaster', updated_at: new Date().toISOString() },
-  { domain: 'nytimes.com', score: 88, category: 'news', reputation: 'high', bias: 'left-center', fact_check_rating: 'highly factual', description: 'American newspaper', updated_at: new Date().toISOString() },
-  { domain: 'washingtonpost.com', score: 87, category: 'news', reputation: 'high', bias: 'left-center', fact_check_rating: 'highly factual', description: 'American newspaper', updated_at: new Date().toISOString() },
-  { domain: 'theguardian.com', score: 85, category: 'news', reputation: 'high', bias: 'left-center', fact_check_rating: 'mostly factual', description: 'British newspaper', updated_at: new Date().toISOString() },
-  { domain: 'wsj.com', score: 86, category: 'news', reputation: 'high', bias: 'right-center', fact_check_rating: 'highly factual', description: 'Wall Street Journal', updated_at: new Date().toISOString() },
-  { domain: 'bloomberg.com', score: 88, category: 'news', reputation: 'high', bias: 'center', fact_check_rating: 'highly factual', description: 'Financial news', updated_at: new Date().toISOString() },
-  { domain: 'nature.com', score: 98, category: 'science', reputation: 'high', bias: 'center', fact_check_rating: 'peer-reviewed', description: 'Scientific journal', updated_at: new Date().toISOString() },
-  { domain: 'science.org', score: 98, category: 'science', reputation: 'high', bias: 'center', fact_check_rating: 'peer-reviewed', description: 'Science journal', updated_at: new Date().toISOString() },
-  { domain: 'youtube.com', score: 50, category: 'video', reputation: 'medium', bias: 'center', fact_check_rating: 'user-generated', description: 'Video platform', updated_at: new Date().toISOString() },
-  { domain: 'twitter.com', score: 55, category: 'social', reputation: 'medium', bias: 'center', fact_check_rating: 'user-generated', description: 'Social media', updated_at: new Date().toISOString() },
-  { domain: 'x.com', score: 55, category: 'social', reputation: 'medium', bias: 'center', fact_check_rating: 'user-generated', description: 'Social media', updated_at: new Date().toISOString() },
-  { domain: 'facebook.com', score: 55, category: 'social', reputation: 'medium', bias: 'center', fact_check_rating: 'user-generated', description: 'Social media', updated_at: new Date().toISOString() },
-  { domain: 'instagram.com', score: 50, category: 'social', reputation: 'medium', bias: 'center', fact_check_rating: 'user-generated', description: 'Social media', updated_at: new Date().toISOString() },
-  { domain: 'tiktok.com', score: 45, category: 'social', reputation: 'medium', bias: 'center', fact_check_rating: 'user-generated', description: 'Video platform', updated_at: new Date().toISOString() },
-];
-
-// Initialize sources
-defaultSources.forEach(source => {
-  sourceCredibility.set(source.domain, source);
-});
+function getDb() {
+  return getDatabase();
+}
 
 // User operations
 export const UserModel = {
   create(email: string, name: string, passwordHash: string) {
+    const db = getDb();
     const id = crypto.randomUUID();
-    const user: User = {
-      id,
-      email,
-      name,
-      password_hash: passwordHash,
-      plan: 'free',
-      verifications_today: 0,
-      verifications_limit: 5,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    users.set(email, user);
+    const stmt = db.prepare(`
+      INSERT INTO users (id, email, name, password_hash, plan, verifications_today, verifications_limit, created_at, updated_at)
+      VALUES (?, ?, ?, ?, 'free', 0, 5, datetime('now'), datetime('now'))
+    `);
+    stmt.run(id, email, name, passwordHash);
     return { id, email, name };
   },
 
-  findByEmail(email: string) {
-    return users.get(email) || null;
+  findByEmail(email: string): User | null {
+    const db = getDb();
+    const stmt = db.prepare('SELECT * FROM users WHERE email = ?');
+    return stmt.get(email) as User | null;
   },
 
-  findById(id: string) {
-    for (const user of users.values()) {
-      if (user.id === id) return user;
-    }
-    return null;
+  findById(id: string): User | null {
+    const db = getDb();
+    const stmt = db.prepare('SELECT * FROM users WHERE id = ?');
+    return stmt.get(id) as User | null;
   },
 
   updatePlan(id: string, plan: string) {
-    for (const [email, user] of users.entries()) {
-      if (user.id === id) {
-        user.plan = plan;
-        user.updated_at = new Date().toISOString();
-        users.set(email, user);
-        break;
-      }
-    }
+    const db = getDb();
+    const stmt = db.prepare('UPDATE users SET plan = ?, updated_at = datetime(\'now\') WHERE id = ?');
+    stmt.run(plan, id);
   },
 
   incrementVerifications(id: string) {
-    for (const [email, user] of users.entries()) {
-      if (user.id === id) {
-        user.verifications_today++;
-        user.updated_at = new Date().toISOString();
-        users.set(email, user);
-        break;
-      }
-    }
+    const db = getDb();
+    const stmt = db.prepare('UPDATE users SET verifications_today = verifications_today + 1, updated_at = datetime(\'now\') WHERE id = ?');
+    stmt.run(id);
   },
 
   resetDailyVerifications() {
-    for (const [email, user] of users.entries()) {
-      user.verifications_today = 0;
-      users.set(email, user);
-    }
+    const db = getDb();
+    const stmt = db.prepare('UPDATE users SET verifications_today = 0, updated_at = datetime(\'now\')');
+    stmt.run();
   }
 };
 
@@ -145,65 +102,82 @@ export const VerificationModel = {
     aiDetection?: any;
     sourceData?: any;
   }) {
+    const db = getDb();
     const id = crypto.randomUUID();
-    const verification: Verification = {
+    const stmt = db.prepare(`
+      INSERT INTO verifications (id, user_id, url, content_type, content_hash, trust_score, verdict, confidence, checks, c2pa_data, ai_detection, source_data, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+    `);
+    stmt.run(
       id,
-      user_id: data.userId || null,
-      url: data.url || null,
-      content_type: data.contentType,
-      content_hash: data.contentHash || null,
-      trust_score: data.trustScore,
-      verdict: data.verdict,
-      confidence: data.confidence,
-      checks: JSON.stringify(data.checks),
-      c2pa_data: data.c2paData ? JSON.stringify(data.c2paData) : null,
-      ai_detection: data.aiDetection ? JSON.stringify(data.aiDetection) : null,
-      source_data: data.sourceData ? JSON.stringify(data.sourceData) : null,
-      created_at: new Date().toISOString(),
-    };
-    
-    verifications.push(verification);
+      data.userId || null,
+      data.url || null,
+      data.contentType,
+      data.contentHash || null,
+      data.trustScore,
+      data.verdict,
+      data.confidence,
+      JSON.stringify(data.checks),
+      data.c2paData ? JSON.stringify(data.c2paData) : null,
+      data.aiDetection ? JSON.stringify(data.aiDetection) : null,
+      data.sourceData ? JSON.stringify(data.sourceData) : null
+    );
     return { id, ...data };
   },
 
-  findByUser(userId: string, limit = 50, offset = 0) {
-    return verifications
-      .filter(v => v.user_id === userId)
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-      .slice(offset, offset + limit);
+  findByUser(userId: string, limit = 50, offset = 0): Verification[] {
+    const db = getDb();
+    const stmt = db.prepare('SELECT * FROM verifications WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?');
+    return stmt.all(userId, limit, offset) as Verification[];
   },
 
-  findById(id: string) {
-    return verifications.find(v => v.id === id) || null;
+  findById(id: string): Verification | null {
+    const db = getDb();
+    const stmt = db.prepare('SELECT * FROM verifications WHERE id = ?');
+    return stmt.get(id) as Verification | null;
   },
 
   getStats(userId?: string) {
-    const filtered = userId 
-      ? verifications.filter(v => v.user_id === userId)
-      : verifications;
-    
-    return {
-      total: filtered.length,
-      authentic: filtered.filter(v => v.verdict === 'authentic').length,
-      suspicious: filtered.filter(v => v.verdict === 'suspicious').length,
-      fake: filtered.filter(v => v.verdict === 'fake').length,
-      avg_score: filtered.length > 0 
-        ? filtered.reduce((sum, v) => sum + v.trust_score, 0) / filtered.length 
-        : 0,
-    };
+    const db = getDb();
+    let stmt;
+    if (userId) {
+      stmt = db.prepare(`
+        SELECT 
+          COUNT(*) as total,
+          SUM(CASE WHEN verdict = 'authentic' THEN 1 ELSE 0 END) as authentic,
+          SUM(CASE WHEN verdict = 'suspicious' THEN 1 ELSE 0 END) as suspicious,
+          SUM(CASE WHEN verdict = 'fake' THEN 1 ELSE 0 END) as fake,
+          AVG(trust_score) as avg_score
+        FROM verifications WHERE user_id = ?
+      `);
+      return stmt.get(userId) as { total: number; authentic: number; suspicious: number; fake: number; avg_score: number };
+    } else {
+      stmt = db.prepare(`
+        SELECT 
+          COUNT(*) as total,
+          SUM(CASE WHEN verdict = 'authentic' THEN 1 ELSE 0 END) as authentic,
+          SUM(CASE WHEN verdict = 'suspicious' THEN 1 ELSE 0 END) as suspicious,
+          SUM(CASE WHEN verdict = 'fake' THEN 1 ELSE 0 END) as fake,
+          AVG(trust_score) as avg_score
+        FROM verifications
+      `);
+      return stmt.get() as { total: number; authentic: number; suspicious: number; fake: number; avg_score: number };
+    }
   },
 
-  getRecent(limit = 10) {
-    return verifications
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-      .slice(0, limit);
+  getRecent(limit = 10): Verification[] {
+    const db = getDb();
+    const stmt = db.prepare('SELECT * FROM verifications ORDER BY created_at DESC LIMIT ?');
+    return stmt.all(limit) as Verification[];
   }
 };
 
 // Source credibility operations
 export const SourceModel = {
-  findByDomain(domain: string) {
-    return sourceCredibility.get(domain) || null;
+  findByDomain(domain: string): SourceCredibility | null {
+    const db = getDb();
+    const stmt = db.prepare('SELECT * FROM source_credibility WHERE domain = ?');
+    return stmt.get(domain) as SourceCredibility | null;
   },
 
   upsert(data: {
@@ -214,65 +188,107 @@ export const SourceModel = {
     factCheckRating?: string;
     bias?: string;
     description?: string;
-  }) {
-    const source: SourceCredibility = {
-      domain: data.domain,
-      score: data.score,
-      category: data.category,
-      reputation: data.reputation,
-      fact_check_rating: data.factCheckRating || 'unknown',
-      bias: data.bias || 'unknown',
-      description: data.description || '',
-      updated_at: new Date().toISOString(),
-    };
-    sourceCredibility.set(data.domain, source);
-    return source;
+  }): SourceCredibility {
+    const db = getDb();
+    const stmt = db.prepare(`
+      INSERT INTO source_credibility (domain, score, category, reputation, fact_check_rating, bias, description, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
+      ON CONFLICT(domain) DO UPDATE SET
+        score = excluded.score,
+        category = excluded.category,
+        reputation = excluded.reputation,
+        fact_check_rating = excluded.fact_check_rating,
+        bias = excluded.bias,
+        description = excluded.description,
+        updated_at = datetime('now')
+    `);
+    stmt.run(
+      data.domain,
+      data.score,
+      data.category,
+      data.reputation,
+      data.factCheckRating || 'unknown',
+      data.bias || 'unknown',
+      data.description || ''
+    );
+    return this.findByDomain(data.domain)!;
   },
 
-  getAll() {
-    return Array.from(sourceCredibility.values()).sort((a, b) => b.score - a.score);
+  getAll(): SourceCredibility[] {
+    const db = getDb();
+    const stmt = db.prepare('SELECT * FROM source_credibility ORDER BY score DESC');
+    return stmt.all() as SourceCredibility[];
   }
 };
 
 // Stats operations
 export const StatsModel = {
   getDaily(date?: string) {
+    const db = getDb();
     const today = date || new Date().toISOString().split('T')[0];
-    const dayVerifications = verifications.filter(v => v.created_at.startsWith(today));
-    
-    return {
-      date: today,
-      total_verifications: dayVerifications.length,
-      authentic_count: dayVerifications.filter(v => v.verdict === 'authentic').length,
-      suspicious_count: dayVerifications.filter(v => v.verdict === 'suspicious').length,
-      fake_count: dayVerifications.filter(v => v.verdict === 'fake').length,
-      avg_trust_score: dayVerifications.length > 0
-        ? dayVerifications.reduce((sum, v) => sum + v.trust_score, 0) / dayVerifications.length
-        : 0,
+    const stmt = db.prepare(`
+      SELECT 
+        ? as date,
+        COUNT(*) as total_verifications,
+        SUM(CASE WHEN verdict = 'authentic' THEN 1 ELSE 0 END) as authentic_count,
+        SUM(CASE WHEN verdict = 'suspicious' THEN 1 ELSE 0 END) as suspicious_count,
+        SUM(CASE WHEN verdict = 'fake' THEN 1 ELSE 0 END) as fake_count,
+        AVG(trust_score) as avg_trust_score
+      FROM verifications
+      WHERE DATE(created_at) = ?
+    `);
+    return stmt.get(today, today) as {
+      date: string;
+      total_verifications: number;
+      authentic_count: number;
+      suspicious_count: number;
+      fake_count: number;
+      avg_trust_score: number;
     };
   },
 
   getRange(startDate: string, endDate: string) {
-    const days: any[] = [];
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    
-    for (let d = start; d <= end; d.setDate(d.getDate() + 1)) {
-      days.push(this.getDaily(d.toISOString().split('T')[0]));
-    }
-    
-    return days;
+    const db = getDb();
+    const stmt = db.prepare(`
+      SELECT 
+        DATE(created_at) as date,
+        COUNT(*) as total_verifications,
+        SUM(CASE WHEN verdict = 'authentic' THEN 1 ELSE 0 END) as authentic_count,
+        SUM(CASE WHEN verdict = 'suspicious' THEN 1 ELSE 0 END) as suspicious_count,
+        SUM(CASE WHEN verdict = 'fake' THEN 1 ELSE 0 END) as fake_count,
+        AVG(trust_score) as avg_trust_score
+      FROM verifications
+      WHERE DATE(created_at) BETWEEN ? AND ?
+      GROUP BY DATE(created_at)
+      ORDER BY date
+    `);
+    return stmt.all(startDate, endDate) as Array<{
+      date: string;
+      total_verifications: number;
+      authentic_count: number;
+      suspicious_count: number;
+      fake_count: number;
+      avg_trust_score: number;
+    }>;
   },
 
   getTotals() {
-    return {
-      total: verifications.length,
-      authentic: verifications.filter(v => v.verdict === 'authentic').length,
-      suspicious: verifications.filter(v => v.verdict === 'suspicious').length,
-      fake: verifications.filter(v => v.verdict === 'fake').length,
-      avg_score: verifications.length > 0
-        ? verifications.reduce((sum, v) => sum + v.trust_score, 0) / verifications.length
-        : 0,
+    const db = getDb();
+    const stmt = db.prepare(`
+      SELECT 
+        COUNT(*) as total,
+        SUM(CASE WHEN verdict = 'authentic' THEN 1 ELSE 0 END) as authentic,
+        SUM(CASE WHEN verdict = 'suspicious' THEN 1 ELSE 0 END) as suspicious,
+        SUM(CASE WHEN verdict = 'fake' THEN 1 ELSE 0 END) as fake,
+        AVG(trust_score) as avg_score
+      FROM verifications
+    `);
+    return stmt.get() as {
+      total: number;
+      authentic: number;
+      suspicious: number;
+      fake: number;
+      avg_score: number;
     };
   }
 };

@@ -43,8 +43,8 @@ export async function POST(request: Request) {
           error: 'Rate limit exceeded',
           resetAt: rateLimit.resetAt,
           limits: {
-            perMinute: keyInfo.requestsPerMinute,
-            perDay: keyInfo.requestsPerDay,
+            perMinute: keyInfo.requests_per_minute,
+            perDay: keyInfo.requests_per_day,
           }
         },
         { status: 429 }
