@@ -126,7 +126,7 @@ export default function Home() {
 
   const testimonials = [
     {
-      quote: "Veritas has become essential for our newsroom. We verify every source before publishing.",
+      quote: "CoreValidate has become essential for our newsroom. We verify every source before publishing.",
       author: "Sarah Chen",
       role: "Editor-in-Chief",
       company: "Tech Daily"
@@ -138,7 +138,7 @@ export default function Home() {
       company: "CyberGuard"
     },
     {
-      quote: "Our team uses Veritas to protect our brand from misinformation. Worth every penny.",
+      quote: "Our team uses CoreValidate to protect our brand from misinformation. Worth every penny.",
       author: "Emily Thompson",
       role: "VP Communications",
       company: "GlobalCorp"
@@ -162,7 +162,7 @@ export default function Home() {
                 <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
                   <Shield className="h-4.5 w-4.5 text-white" />
                 </div>
-                <span className="text-lg font-semibold text-gray-900 tracking-tight">Veritas</span>
+                <span className="text-lg font-semibold text-gray-900 tracking-tight">CoreValidate</span>
               </Link>
               <nav className="hidden lg:flex items-center gap-8">
                 <a href="#features" className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">Features</a>
@@ -416,7 +416,7 @@ export default function Home() {
         <div className="container mx-auto max-w-4xl">
           <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-3xl p-12 lg:p-16 text-center">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Start verifying today</h2>
-            <p className="text-lg text-emerald-100 mb-10 max-w-xl mx-auto">Join 500,000+ users who trust Veritas</p>
+            <p className="text-lg text-emerald-100 mb-10 max-w-xl mx-auto">Join 500,000+ users who trust CoreValidate</p>
             <Link href="/sign-up">
               <Button size="lg" className="bg-white text-emerald-600 hover:bg-gray-50 px-8 rounded-xl shadow-lg">Get started free<ArrowRight className="ml-2 h-4 w-4" /></Button>
             </Link>
@@ -431,7 +431,7 @@ export default function Home() {
             <div className="col-span-2">
               <div className="flex items-center gap-2.5 mb-4">
                 <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center"><Shield className="h-4.5 w-4.5 text-white" /></div>
-                <span className="text-lg font-semibold text-gray-900">Veritas</span>
+                <span className="text-lg font-semibold text-gray-900">CoreValidate</span>
               </div>
               <p className="text-sm text-gray-500 max-w-xs">The trust layer for the internet.</p>
             </div>
@@ -467,7 +467,7 @@ export default function Home() {
             ))}
           </div>
           <div className="pt-8 border-t border-gray-100 text-center">
-            <p className="text-sm text-gray-500">© 2025 Veritas. All rights reserved.</p>
+            <p className="text-sm text-gray-500">© 2025 CoreValidate. All rights reserved.</p>
           </div>
         </div>
       </footer>

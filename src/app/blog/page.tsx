@@ -7,18 +7,18 @@ import { Shield, ArrowRight, Clock, User } from 'lucide-react';
 export default function BlogPage() {
   const posts = [
     {
-      title: 'Introducing Veritas: The Trust Layer for the Internet',
-      excerpt: 'Today we launch Veritas, a platform that verifies any content in seconds. Here\'s why we built it and what\'s next.',
+      title: 'Introducing CoreValidate: The Trust Layer for the Internet',
+      excerpt: 'Today we launch CoreValidate, a platform that verifies any content in seconds. Here\'s why we built it and what\'s next.',
       date: 'July 2, 2025',
-      author: 'The Veritas Team',
+      author: 'The CoreValidate Team',
       category: 'Launch',
-      slug: 'introducing-veritas',
+      slug: 'introducing-corevalidate',
     },
     {
       title: 'How C2PA is Changing Content Authentication',
       excerpt: 'Content Credentials are becoming the industry standard for proving content authenticity. Here\'s what you need to know.',
       date: 'June 28, 2025',
-      author: 'The Veritas Team',
+      author: 'The CoreValidate Team',
       category: 'Technology',
       slug: 'c2pa-content-authentication',
     },
@@ -26,7 +26,7 @@ export default function BlogPage() {
       title: 'The Deepfake Problem: Why Verification Matters Now',
       excerpt: 'Deepfakes are getting better every day. Here\'s why verification is more important than ever.',
       date: 'June 20, 2025',
-      author: 'The Veritas Team',
+      author: 'The CoreValidate Team',
       category: 'Industry',
       slug: 'deepfake-problem',
     },
@@ -34,7 +34,7 @@ export default function BlogPage() {
       title: 'Building Trust in the Age of AI',
       excerpt: 'As AI generates more content, trust becomes the most valuable currency. Here\'s how we\'re building it.',
       date: 'June 15, 2025',
-      author: 'The Veritas Team',
+      author: 'The CoreValidate Team',
       category: 'Vision',
       slug: 'building-trust-ai',
     },
@@ -47,7 +47,7 @@ export default function BlogPage() {
           <div className="flex items-center justify-between h-14">
             <Link href="/" className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-emerald-600" />
-              <span className="font-semibold text-gray-900">Veritas</span>
+              <span className="font-semibold text-gray-900">CoreValidate</span>
             </Link>
             <Link href="/sign-up">
               <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get started</Button>

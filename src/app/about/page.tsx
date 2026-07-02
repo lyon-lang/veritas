@@ -12,7 +12,7 @@ export default function AboutPage() {
           <div className="flex items-center justify-between h-14">
             <Link href="/" className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-emerald-600" />
-              <span className="font-semibold text-gray-900">Veritas</span>
+              <span className="font-semibold text-gray-900">CoreValidate</span>
             </Link>
             <Link href="/sign-up">
               <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get started</Button>
@@ -30,7 +30,7 @@ export default function AboutPage() {
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               We're on a mission to make the internet trustworthy. In a world of deepfakes and misinformation, 
-              Veritas gives everyone the power to verify what's real.
+              CoreValidate gives everyone the power to verify what's real.
             </p>
           </div>
         </section>
@@ -63,7 +63,7 @@ export default function AboutPage() {
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Our story</h2>
             <div className="prose prose-gray max-w-none">
               <p className="text-gray-600 mb-4">
-                Veritas was born from a simple observation: in an age where anyone can create convincing fake content, 
+                CoreValidate was born from a simple observation: in an age where anyone can create convincing fake content, 
                 how do we know what to trust?
               </p>
               <p className="text-gray-600 mb-4">
@@ -71,11 +71,11 @@ export default function AboutPage() {
                 We saw people losing trust in everything they see online.
               </p>
               <p className="text-gray-600 mb-4">
-                So we built Veritas - a platform that uses AI, content credentials, and source analysis 
+                So we built CoreValidate - a platform that uses AI, content credentials, and source analysis 
                 to give every piece of content a trust score. Simple, instant, accessible.
               </p>
               <p className="text-gray-600">
-                Today, Veritas helps hundreds of thousands of people verify what they see online. 
+                Today, CoreValidate helps hundreds of thousands of people verify what they see online. 
                 We're just getting started.
               </p>
             </div>

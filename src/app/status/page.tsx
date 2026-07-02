@@ -36,7 +36,7 @@ export default function StatusPage() {
           <div className="flex items-center justify-between h-14">
             <Link href="/" className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-emerald-600" />
-              <span className="font-semibold text-gray-900">Veritas</span>
+              <span className="font-semibold text-gray-900">CoreValidate</span>
             </Link>
             <Link href="/sign-up">
               <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get started</Button>
@@ -47,7 +47,7 @@ export default function StatusPage() {
 
       <main className="container mx-auto px-4 sm:px-6 py-12 max-w-4xl">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">System Status</h1>
-        <p className="text-lg text-gray-600 mb-8">Current status of all Veritas services.</p>
+        <p className="text-lg text-gray-600 mb-8">Current status of all CoreValidate services.</p>
 
         {/* Overall Status */}
         <div className="bg-green-50 border border-green-200 rounded-xl p-6 mb-8">

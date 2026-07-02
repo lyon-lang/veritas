@@ -57,7 +57,7 @@ export default function CareersPage() {
           <div className="flex items-center justify-between h-14">
             <Link href="/" className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-emerald-600" />
-              <span className="font-semibold text-gray-900">Veritas</span>
+              <span className="font-semibold text-gray-900">CoreValidate</span>
             </Link>
             <Link href="/sign-up">
               <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get started</Button>

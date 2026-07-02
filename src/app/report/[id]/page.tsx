@@ -164,7 +164,7 @@ export default function ReportPage() {
           <p className="text-gray-500 mb-6">{error || 'This verification report does not exist.'}</p>
           <Link href="/">
             <Button className="bg-emerald-600 hover:bg-emerald-700">
-              Go to Veritas
+              Go to CoreValidate
             </Button>
           </Link>
         </div>
@@ -180,7 +180,7 @@ export default function ReportPage() {
           <div className="flex items-center justify-between h-14">
             <Link href="/" className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-emerald-600" />
-              <span className="font-semibold text-gray-900">Veritas</span>
+              <span className="font-semibold text-gray-900">CoreValidate</span>
             </Link>
             <Link href="/dashboard">
               <Button variant="outline" size="sm">
@@ -320,7 +320,7 @@ export default function ReportPage() {
           </p>
           <Link href="/sign-up">
             <Button className="bg-emerald-600 hover:bg-emerald-700">
-              Try Veritas Free
+              Try CoreValidate Free
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>

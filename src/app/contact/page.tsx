@@ -27,7 +27,7 @@ export default function ContactPage() {
           <div className="flex items-center justify-between h-14">
             <Link href="/" className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-emerald-600" />
-              <span className="font-semibold text-gray-900">Veritas</span>
+              <span className="font-semibold text-gray-900">CoreValidate</span>
             </Link>
             <Link href="/sign-up">
               <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get started</Button>
@@ -50,7 +50,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">Email</h3>
-                  <p className="text-sm text-gray-600">support@veritas.app</p>
+                  <p className="text-sm text-gray-600">support@corevalidate.app</p>
                 </div>
               </div>
 
@@ -80,7 +80,7 @@ export default function ContactPage() {
               <p className="text-sm text-gray-600 mb-3">
                 Need custom integrations or volume pricing?
               </p>
-              <a href="mailto:enterprise@veritas.app" className="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
+              <a href="mailto:enterprise@corevalidate.app" className="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
                 Contact enterprise sales →
               </a>
             </div>

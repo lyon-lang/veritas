@@ -11,21 +11,21 @@ export default function HelpCenterPage() {
 
   const categories = [
     { icon: HelpCircle, title: 'Getting Started', count: 12 },
-    { icon: Book, title: 'Using Veritas', count: 24 },
+    { icon: Book, title: 'Using CoreValidate', count: 24 },
     { icon: MessageSquare, title: 'API & Integration', count: 18 },
   ];
 
   const faqs = [
     {
-      question: 'How does Veritas verify content?',
-      answer: 'Veritas uses multiple methods to verify content: C2PA content credentials (when available), AI detection for deepfakes and generated content, source credibility scoring, and metadata analysis. These signals are combined to produce a trust score from 0-100.',
+      question: 'How does CoreValidate verify content?',
+      answer: 'CoreValidate uses multiple methods to verify content: C2PA content credentials (when available), AI detection for deepfakes and generated content, source credibility scoring, and metadata analysis. These signals are combined to produce a trust score from 0-100.',
     },
     {
       question: 'What types of content can I verify?',
       answer: 'You can verify URLs, text, images, and videos. Each content type uses different verification methods appropriate for that format.',
     },
     {
-      question: 'How accurate is Veritas?',
+      question: 'How accurate is CoreValidate?',
       answer: 'Our detection accuracy is approximately 95% for known manipulation techniques. Accuracy varies by content type and manipulation method. C2PA-verified content has near-100% accuracy.',
     },
     {
@@ -45,7 +45,7 @@ export default function HelpCenterPage() {
       answer: 'C2PA (Coalition for Content Provenance and Authenticity) is an industry standard for content credentials. When content has C2PA credentials, we can verify its creator, edit history, and authenticity with high confidence.',
     },
     {
-      question: 'Can I use Veritas for my business?',
+      question: 'Can I use CoreValidate for my business?',
       answer: 'Yes! We offer enterprise plans with API access, team features, and custom integrations. Contact our sales team for details.',
     },
   ];
@@ -57,7 +57,7 @@ export default function HelpCenterPage() {
           <div className="flex items-center justify-between h-14">
             <Link href="/" className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-emerald-600" />
-              <span className="font-semibold text-gray-900">Veritas</span>
+              <span className="font-semibold text-gray-900">CoreValidate</span>
             </Link>
             <Link href="/sign-up">
               <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get started</Button>

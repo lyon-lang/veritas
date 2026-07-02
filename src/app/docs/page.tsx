@@ -49,7 +49,7 @@ export default function ApiDocsPage() {
             <div className="flex items-center gap-6">
               <Link href="/" className="flex items-center gap-2">
                 <Shield className="h-5 w-5 text-emerald-600" />
-                <span className="font-semibold text-gray-900">Veritas</span>
+                <span className="font-semibold text-gray-900">CoreValidate</span>
               </Link>
               <span className="text-sm text-gray-500">API Documentation</span>
             </div>
@@ -105,7 +105,7 @@ export default function ApiDocsPage() {
             {/* Overview */}
             {activeSection === 'overview' && (
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-4">Veritas API</h1>
+                <h1 className="text-3xl font-bold text-gray-900 mb-4">CoreValidate API</h1>
                 <p className="text-lg text-gray-600 mb-8">
                   Verify any content programmatically. Get trust scores for URLs, text, images, and videos.
                 </p>
@@ -133,7 +133,7 @@ export default function ApiDocsPage() {
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-gray-400 text-sm">cURL</span>
                     <button 
-                      onClick={() => copyToClipboard(`curl -X POST https://veritas.app/api/v1/verify \\
+                      onClick={() => copyToClipboard(`curl -X POST https://corevalidate.app/api/v1/verify \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{"content": "https://example.com", "type": "url"}'`, 'curl')}
@@ -143,7 +143,7 @@ export default function ApiDocsPage() {
                     </button>
                   </div>
                   <pre className="text-green-400 text-sm overflow-x-auto">
-{`curl -X POST https://veritas.app/api/v1/verify \\
+{`curl -X POST https://corevalidate.app/api/v1/verify \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{"content": "https://example.com", "type": "url"}'`}
@@ -199,7 +199,7 @@ export default function ApiDocsPage() {
 
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Getting Your API Key</h2>
                 <ol className="list-decimal list-inside space-y-3 mb-6 text-gray-600">
-                  <li>Sign up for a Veritas account</li>
+                  <li>Sign up for a CoreValidate account</li>
                   <li>Go to Dashboard → Settings → API Keys</li>
                   <li>Click "Create API Key"</li>
                   <li>Copy and save your key securely</li>
@@ -224,7 +224,7 @@ export default function ApiDocsPage() {
                 <h3 className="font-semibold text-gray-900 mb-2">Method 2: Query Parameter</h3>
                 <div className="bg-gray-900 rounded-xl p-4 mb-6">
                   <pre className="text-green-400 text-sm">
-{`https://veritas.app/api/v1/verify?api_key=vrt_your_api_key_here`}
+{`https://corevalidate.app/api/v1/verify?api_key=vrt_your_api_key_here`}
                   </pre>
                 </div>
               </div>

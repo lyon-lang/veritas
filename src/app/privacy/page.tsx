@@ -12,7 +12,7 @@ export default function PrivacyPage() {
           <div className="flex items-center h-14">
             <Link href="/" className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-emerald-600" />
-              <span className="font-semibold text-gray-900">Veritas</span>
+              <span className="font-semibold text-gray-900">CoreValidate</span>
             </Link>
           </div>
         </div>
@@ -25,7 +25,7 @@ export default function PrivacyPage() {
         <div className="prose prose-gray max-w-none">
           <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-4">1. Introduction</h2>
           <p className="text-gray-600 mb-4">
-            Veritas ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our service.
+            CoreValidate ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our service.
           </p>
 
           <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-4">2. Information We Collect</h2>
@@ -143,7 +143,7 @@ export default function PrivacyPage() {
             If you have any questions about this Privacy Policy, please contact us at:
           </p>
           <p className="text-gray-600 mb-4">
-            Email: privacy@veritas.app<br />
+            Email: privacy@corevalidate.app<br />
             Address: [Your Address]
           </p>
         </div>

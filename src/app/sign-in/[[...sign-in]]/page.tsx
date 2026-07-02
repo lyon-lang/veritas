@@ -79,7 +79,7 @@ export default function SignInPage() {
             <div className="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center">
               <Shield className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-semibold text-gray-900">Veritas</span>
+            <span className="text-xl font-semibold text-gray-900">CoreValidate</span>
           </Link>
 
           <div className="mb-8">

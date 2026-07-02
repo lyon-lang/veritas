@@ -12,7 +12,7 @@ export default function TermsPage() {
           <div className="flex items-center h-14">
             <Link href="/" className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-emerald-600" />
-              <span className="font-semibold text-gray-900">Veritas</span>
+              <span className="font-semibold text-gray-900">CoreValidate</span>
             </Link>
           </div>
         </div>
@@ -25,12 +25,12 @@ export default function TermsPage() {
         <div className="prose prose-gray max-w-none">
           <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-4">1. Acceptance of Terms</h2>
           <p className="text-gray-600 mb-4">
-            By accessing or using Veritas ("the Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, do not use the Service.
+            By accessing or using CoreValidate ("the Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, do not use the Service.
           </p>
 
           <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-4">2. Description of Service</h2>
           <p className="text-gray-600 mb-4">
-            Veritas is a content verification platform that provides trust scores for digital content including URLs, text, images, and videos. The Service uses artificial intelligence, content credentials (C2PA), and source credibility analysis to assess content authenticity.
+            CoreValidate is a content verification platform that provides trust scores for digital content including URLs, text, images, and videos. The Service uses artificial intelligence, content credentials (C2PA), and source credibility analysis to assess content authenticity.
           </p>
 
           <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-4">3. User Accounts</h2>
@@ -64,13 +64,13 @@ export default function TermsPage() {
             <li>You must use a valid API key</li>
             <li>You must comply with rate limits</li>
             <li>You must not share your API key</li>
-            <li>You must attribute Veritas when displaying results</li>
+            <li>You must attribute CoreValidate when displaying results</li>
             <li>You must not use the API to build a competing service</li>
           </ul>
 
           <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-4">6. Intellectual Property</h2>
           <p className="text-gray-600 mb-4">
-            The Service and its original content, features, and functionality are owned by Veritas and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.
+            The Service and its original content, features, and functionality are owned by CoreValidate and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.
           </p>
 
           <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-4">7. User Content</h2>
@@ -85,7 +85,7 @@ export default function TermsPage() {
 
           <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-4">9. Limitation of Liability</h2>
           <p className="text-gray-600 mb-4">
-            To the maximum extent permitted by law, Veritas shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from:
+            To the maximum extent permitted by law, CoreValidate shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from:
           </p>
           <ul className="list-disc list-inside text-gray-600 mb-4 space-y-2">
             <li>Your use or inability to use the Service</li>
@@ -102,7 +102,7 @@ export default function TermsPage() {
 
           <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-4">11. Indemnification</h2>
           <p className="text-gray-600 mb-4">
-            You agree to defend, indemnify, and hold harmless Veritas and its officers, directors, employees, and agents from and against any claims, liabilities, damages, losses, and expenses arising out of or in any way connected with your use of the Service.
+            You agree to defend, indemnify, and hold harmless CoreValidate and its officers, directors, employees, and agents from and against any claims, liabilities, damages, losses, and expenses arising out of or in any way connected with your use of the Service.
           </p>
 
           <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-4">12. Termination</h2>
@@ -125,7 +125,7 @@ export default function TermsPage() {
             If you have any questions about these Terms, please contact us at:
           </p>
           <p className="text-gray-600 mb-4">
-            Email: legal@veritas.app<br />
+            Email: legal@corevalidate.app<br />
             Address: [Your Address]
           </p>
         </div>
