@@ -155,6 +155,15 @@ export default function SignInPage() {
             Don&apos;t have an account?{' '}
             <Link href="/sign-up" className="text-blue-600 hover:text-blue-700 font-medium">Sign up</Link>
           </p>
+
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <p className="text-center text-xs text-gray-500">
+              By signing in, you agree to our{' '}
+              <Link href="/terms" target="_blank" className="text-blue-600 hover:text-blue-700">Terms of Service</Link>
+              {' '}and{' '}
+              <Link href="/privacy" target="_blank" className="text-blue-600 hover:text-blue-700">Privacy Policy</Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

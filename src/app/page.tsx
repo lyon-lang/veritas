@@ -434,11 +434,33 @@ export default function Home() {
               </div>
               <p className="text-sm text-gray-500 max-w-xs">The trust layer for the internet.</p>
             </div>
-            {[{ title: 'Product', links: ['Features', 'Pricing', 'API', 'Extension'] }, { title: 'Company', links: ['About', 'Blog', 'Careers'] }, { title: 'Support', links: ['Help Center', 'Contact', 'Status'] }, { title: 'Legal', links: ['Privacy', 'Terms'] }].map((section, i) => (
+            {[
+              { title: 'Product', links: [
+                { name: 'Features', href: '#features' },
+                { name: 'Pricing', href: '#pricing' },
+                { name: 'API', href: '/docs' },
+                { name: 'Extension', href: '#' },
+              ]},
+              { title: 'Company', links: [
+                { name: 'About', href: '#' },
+                { name: 'Blog', href: '#' },
+                { name: 'Careers', href: '#' },
+              ]},
+              { title: 'Support', links: [
+                { name: 'Help Center', href: '#' },
+                { name: 'Contact', href: '#' },
+                { name: 'Status', href: '#' },
+              ]},
+              { title: 'Legal', links: [
+                { name: 'Privacy Policy', href: '/privacy' },
+                { name: 'Terms of Service', href: '/terms' },
+                { name: 'Cookie Policy', href: '#' },
+              ]},
+            ].map((section, i) => (
               <div key={i}>
                 <h4 className="font-semibold text-gray-900 text-sm mb-4">{section.title}</h4>
                 <ul className="space-y-3">
-                  {section.links.map((link, j) => <li key={j}><a href="#" className="text-sm text-gray-500 hover:text-gray-900">{link}</a></li>)}
+                  {section.links.map((link, j) => <li key={j}><a href={link.href} className="text-sm text-gray-500 hover:text-gray-900">{link.name}</a></li>)}
                 </ul>
               </div>
             ))}
