@@ -19,8 +19,13 @@ export async function GET(request: Request) {
 
     if (source) {
       return NextResponse.json({
-        ...source,
         domain,
+        score: source.score,
+        category: source.category,
+        reputation: source.reputation,
+        fact_check_rating: source.fact_check_rating,
+        bias: source.bias,
+        description: source.description,
         verified: true,
       });
     }
