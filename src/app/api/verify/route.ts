@@ -3,6 +3,7 @@ import { analyzeTextAuthenticity, extractClaims } from '@/lib/gemini';
 import { VerificationModel, SourceModel } from '@/lib/models';
 import { getAuthUser } from '@/lib/auth';
 import { checkUserRateLimit } from '@/lib/rate-limit';
+import { calculateVerdict } from '@/lib/utils';
 
 const MAX_CONTENT_LENGTH = 10000;
 
@@ -129,23 +130,7 @@ export async function POST(request: Request) {
     // Calculate final score
     trustScore = Math.max(0, Math.min(100, Math.round(trustScore)));
 
-    // Determine verdict
-    let verdict: string;
-    let confidence: number;
-
-    if (trustScore >= 80) {
-      verdict = 'authentic';
-      confidence = 85;
-    } else if (trustScore >= 60) {
-      verdict = 'likely authentic';
-      confidence = 70;
-    } else if (trustScore >= 40) {
-      verdict = 'suspicious';
-      confidence = 60;
-    } else {
-      verdict = 'untrusted';
-      confidence = 75;
-    }
+    const { verdict, confidence } = calculateVerdict(trustScore);
 
     // Save to database
     const verification = VerificationModel.create({

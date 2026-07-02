@@ -101,6 +101,10 @@ export default function DashboardPage() {
   const [batchResults, setBatchResults] = useState<any>(null);
   const [batchVerifying, setBatchVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const PAGE_SIZE = 20;
 
   useEffect(() => {
     loadData();
@@ -128,25 +132,41 @@ export default function DashboardPage() {
     }
   };
 
-  const loadData = async () => {
+  const loadData = async (pageNum: number = 0, append = false) => {
     try {
-      const verRes = await fetch('/api/user/verifications');
+      const verRes = await fetch(`/api/user/verifications?limit=${PAGE_SIZE}&offset=${pageNum * PAGE_SIZE}`);
       if (verRes.ok) {
         const verData = await verRes.json();
-        setVerifications(verData.verifications || []);
+        if (append) {
+          setVerifications(prev => [...prev, ...(verData.verifications || [])]);
+        } else {
+          setVerifications(verData.verifications || []);
+        }
+        setHasMore(verData.hasMore || false);
       }
 
-      const statsRes = await fetch('/api/stats');
-      if (statsRes.ok) {
-        const statsData = await statsRes.json();
-        setStats(statsData);
+      if (!append) {
+        const statsRes = await fetch('/api/stats');
+        if (statsRes.ok) {
+          const statsData = await statsRes.json();
+          setStats(statsData);
+        }
       }
     } catch (error) {
       console.error('Error loading data:', error);
       setError('Failed to load data');
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
+  };
+
+  const loadMore = async () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    const nextPage = page + 1;
+    setPage(nextPage);
+    await loadData(nextPage, true);
   };
 
   const loadWatchlist = async () => {
@@ -481,7 +501,7 @@ export default function DashboardPage() {
                 <Shield className="h-5 w-5 text-emerald-600" />
                 <span className="font-semibold text-gray-900">CoreValidate</span>
               </Link>
-              <nav className="hidden md:flex items-center gap-1">
+              <nav className="hidden md:flex items-center gap-1" role="tablist" aria-label="Dashboard sections">
                 {[
                   { id: 'overview', label: 'Overview', icon: Activity },
                   { id: 'history', label: 'History', icon: History },
@@ -492,6 +512,9 @@ export default function DashboardPage() {
                   <button 
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
+                    role="tab"
+                    aria-selected={activeTab === tab.id}
+                    aria-controls={`panel-${tab.id}`}
                     className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded-md transition-colors ${
                       activeTab === tab.id 
                         ? 'bg-emerald-50 text-emerald-700 font-medium' 
@@ -506,14 +529,68 @@ export default function DashboardPage() {
                   </button>
                 ))}
               </nav>
+              <div className="md:hidden relative">
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-md border border-gray-200 text-gray-700"
+                >
+                  {(() => {
+                    const tabs = [
+                      { id: 'overview', label: 'Overview', icon: Activity },
+                      { id: 'history', label: 'History', icon: History },
+                      { id: 'watchlist', label: 'Watchlist', icon: Clock },
+                      { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+                      { id: 'sources', label: 'Sources', icon: Database },
+                    ];
+                    const current = tabs.find(t => t.id === activeTab);
+                    return current ? (
+                      <>
+                        <current.icon className="h-4 w-4" />
+                        {current.label}
+                      </>
+                    ) : null;
+                  })()}
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                {showFilters && (
+                  <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[160px]">
+                    {[
+                      { id: 'overview', label: 'Overview', icon: Activity },
+                      { id: 'history', label: 'History', icon: History },
+                      { id: 'watchlist', label: 'Watchlist', icon: Clock },
+                      { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+                      { id: 'sources', label: 'Sources', icon: Database },
+                    ].map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => { setActiveTab(tab.id); setShowFilters(false); }}
+                        className={`w-full flex items-center gap-2 px-3 py-2 text-sm ${
+                          activeTab === tab.id
+                            ? 'bg-emerald-50 text-emerald-700'
+                            : 'text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        <tab.icon className="h-4 w-4" />
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
             
             <div className="flex items-center gap-2">
               <div className="relative">
-                <button onClick={() => setShowNotifications(!showNotifications)} className="relative p-2 text-gray-500 hover:text-gray-700 rounded-md hover:bg-gray-100">
+                <button 
+                  onClick={() => setShowNotifications(!showNotifications)} 
+                  className="relative p-2 text-gray-500 hover:text-gray-700 rounded-md hover:bg-gray-100"
+                  aria-label={`Notifications${unreadAlerts > 0 ? ` (${unreadAlerts} unread)` : ''}`}
+                  aria-expanded={showNotifications}
+                  aria-haspopup="true"
+                >
                   <Bell className="h-4 w-4" />
                   {unreadAlerts > 0 && (
-                    <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">{unreadAlerts}</span>
+                    <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center" aria-hidden="true">{unreadAlerts}</span>
                   )}
                 </button>
                 {showNotifications && (
@@ -541,20 +618,41 @@ export default function DashboardPage() {
                               </div>
                             </div>
                           </div>
-                        ))}
-                      </div>
+                ))}
+                {hasMore && !loadingMore && (
+                  <div className="p-4 text-center">
+                    <button
+                      onClick={loadMore}
+                      className="px-4 py-2 text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+                    >
+                      Load more
+                    </button>
+                  </div>
+                )}
+                {loadingMore && (
+                  <div className="p-4 text-center">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-emerald-600 mx-auto"></div>
+                  </div>
+                )}
+              </div>
                     ) : (
                       <div className="p-4 text-sm text-gray-500 text-center">No alerts yet</div>
                     )}
                   </div>
                 )}
               </div>
-              <button className="p-2 text-gray-500 hover:text-gray-700 rounded-md hover:bg-gray-100">
+              <button className="p-2 text-gray-500 hover:text-gray-700 rounded-md hover:bg-gray-100" aria-label="Settings">
                 <Settings className="h-4 w-4" />
               </button>
               <div className="relative">
-                <button onClick={() => setShowUserMenu(!showUserMenu)} className="flex items-center gap-2 p-1.5 rounded-md hover:bg-gray-100">
-                  <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 text-xs font-medium">
+                <button 
+                  onClick={() => setShowUserMenu(!showUserMenu)} 
+                  className="flex items-center gap-2 p-1.5 rounded-md hover:bg-gray-100"
+                  aria-label="User menu"
+                  aria-expanded={showUserMenu}
+                  aria-haspopup="true"
+                >
+                  <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 text-xs font-medium" aria-hidden="true">
                     {user?.name?.[0]?.toUpperCase() || 'U'}
                   </div>
                   <span className="text-sm text-gray-700 hidden md:block">{user?.name || 'User'}</span>
@@ -596,7 +694,7 @@ export default function DashboardPage() {
               <Download className="h-4 w-4 mr-2" />
               Export
             </Button>
-            <Button variant="outline" size="sm" onClick={loadData}>
+            <Button variant="outline" size="sm" onClick={() => { setPage(0); loadData(0); }}>
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
@@ -1270,11 +1368,21 @@ export default function DashboardPage() {
 
       {/* Verification Detail Modal */}
       {selectedVerification && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+          onClick={(e) => { if (e.target === e.currentTarget) setSelectedVerification(null); }}
+        >
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-              <h2 className="font-semibold text-gray-900">Verification Details</h2>
-              <button onClick={() => setSelectedVerification(null)} className="p-2 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100">
+              <h2 id="modal-title" className="font-semibold text-gray-900">Verification Details</h2>
+              <button 
+                onClick={() => setSelectedVerification(null)} 
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100"
+                aria-label="Close modal"
+              >
                 <X className="h-5 w-5" />
               </button>
             </div>

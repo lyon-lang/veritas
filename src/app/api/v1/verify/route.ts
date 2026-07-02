@@ -5,6 +5,7 @@ import { VerificationModel, SourceModel } from '@/lib/models';
 import { readC2PA, calculateC2paScore } from '@/lib/c2pa';
 import { analyzeVideo, calculateVideoScore } from '@/lib/video';
 import { checkUserRateLimit } from '@/lib/rate-limit';
+import { calculateVerdict } from '@/lib/utils';
 
 function getApiKey(request: Request): string | null {
   const authHeader = request.headers.get('Authorization');
@@ -255,26 +256,14 @@ async function verifyContent(content: string, type: string, options: any) {
 
   trustScore = Math.max(0, Math.min(100, trustScore));
 
-  if (trustScore >= 80) {
-    verdict = 'authentic';
-    confidence = 85;
-  } else if (trustScore >= 60) {
-    verdict = 'authentic';
-    confidence = 65;
-  } else if (trustScore >= 40) {
-    verdict = 'suspicious';
-    confidence = 55;
-  } else {
-    verdict = 'fake';
-    confidence = 75;
-  }
+  const verdictResult = calculateVerdict(trustScore);
 
   return {
     content,
     type,
     trustScore,
-    verdict,
-    confidence,
+    verdict: verdictResult.verdict,
+    confidence: verdictResult.confidence,
     checks,
     timestamp: new Date().toISOString(),
   };

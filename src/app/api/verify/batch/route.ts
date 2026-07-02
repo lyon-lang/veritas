@@ -3,6 +3,7 @@ import { analyzeContent, analyzeTextAuthenticity } from '@/lib/gemini';
 import { VerificationModel, SourceModel } from '@/lib/models';
 import { readC2PA, calculateC2paScore } from '@/lib/c2pa';
 import { analyzeVideo, calculateVideoScore } from '@/lib/video';
+import { calculateVerdict } from '@/lib/utils';
 
 interface VerificationRequest {
   content: string;
@@ -96,8 +97,6 @@ async function verifySingleItem(item: VerificationRequest, userId?: string): Pro
   const { content, type } = item;
   const checks = [];
   let trustScore = 50;
-  let verdict: 'authentic' | 'suspicious' | 'fake' | 'unknown' = 'unknown';
-  let confidence = 50;
 
   // Video verification
   if (type === 'video' || (type === 'url' && isVideoUrl(content))) {
@@ -193,20 +192,7 @@ async function verifySingleItem(item: VerificationRequest, userId?: string): Pro
   // Calculate final score
   trustScore = Math.max(0, Math.min(100, trustScore));
 
-  // Determine verdict
-  if (trustScore >= 80) {
-    verdict = 'authentic';
-    confidence = 85;
-  } else if (trustScore >= 60) {
-    verdict = 'authentic';
-    confidence = 65;
-  } else if (trustScore >= 40) {
-    verdict = 'suspicious';
-    confidence = 55;
-  } else {
-    verdict = 'fake';
-    confidence = 75;
-  }
+  const { verdict, confidence } = calculateVerdict(trustScore);
 
   // Save to database
   const verification = VerificationModel.create({
