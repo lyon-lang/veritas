@@ -37,7 +37,8 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   RefreshCw,
-  Share2
+  Share2,
+  Layers
 } from 'lucide-react';
 
 interface Verification {
@@ -95,6 +96,10 @@ export default function DashboardPage() {
   const [showAddToWatchlist, setShowAddToWatchlist] = useState(false);
   const [watchlistUrl, setWatchlistUrl] = useState('');
   const [watchlistLabel, setWatchlistLabel] = useState('');
+  const [showBatchVerify, setShowBatchVerify] = useState(false);
+  const [batchUrls, setBatchUrls] = useState('');
+  const [batchResults, setBatchResults] = useState<any>(null);
+  const [batchVerifying, setBatchVerifying] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -212,6 +217,67 @@ export default function DashboardPage() {
     } catch (error) {
       console.error('Error marking all alerts as read:', error);
     }
+  };
+
+  const handleBatchVerify = async () => {
+    if (!batchUrls.trim() || batchVerifying) return;
+
+    setBatchVerifying(true);
+    setBatchResults(null);
+
+    try {
+      // Parse URLs (one per line)
+      const urls = batchUrls
+        .split('\n')
+        .map(u => u.trim())
+        .filter(u => u.length > 0);
+
+      if (urls.length === 0) {
+        setBatchVerifying(false);
+        return;
+      }
+
+      const items = urls.map(url => ({
+        content: url,
+        type: url.startsWith('http') ? 'url' : 'text',
+      }));
+
+      const res = await fetch('/api/verify/batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items, userId: 'current' }),
+      });
+
+      const data = await res.json();
+      setBatchResults(data);
+      loadData(); // Refresh main data
+    } catch (error) {
+      console.error('Error in batch verification:', error);
+    } finally {
+      setBatchVerifying(false);
+    }
+  };
+
+  const exportBatchResults = () => {
+    if (!batchResults) return;
+
+    const csv = [
+      ['URL', 'Type', 'Score', 'Verdict', 'Confidence'].join(','),
+      ...batchResults.results.map((r: any) => [
+        r.content,
+        r.type,
+        r.trustScore,
+        r.verdict,
+        r.confidence,
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'batch-verification.csv';
+    a.click();
   };
 
   const handleLogout = async () => {
@@ -495,10 +561,98 @@ export default function DashboardPage() {
                 onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
               />
             </div>
-            <Button onClick={handleVerify} disabled={verifying || !verifyUrl} className="bg-blue-600 hover:bg-blue-700 px-6">
-              {verifying ? 'Verifying...' : 'Verify'}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button onClick={handleVerify} disabled={verifying || !verifyUrl} className="bg-blue-600 hover:bg-blue-700 px-6">
+                {verifying ? 'Verifying...' : 'Verify'}
+              </Button>
+              <Button variant="outline" onClick={() => setShowBatchVerify(!showBatchVerify)} className="px-4">
+                <Layers className="h-4 w-4 mr-2" />
+                Batch
+              </Button>
+            </div>
           </div>
+
+          {/* Batch Verification */}
+          {showBatchVerify && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <h3 className="font-medium text-gray-900 mb-2">Batch Verification</h3>
+              <p className="text-sm text-gray-500 mb-3">Paste multiple URLs (one per line) to verify at once</p>
+              <textarea
+                value={batchUrls}
+                onChange={(e) => setBatchUrls(e.target.value)}
+                placeholder="https://example.com/article1&#10;https://example.com/article2&#10;https://example.com/article3"
+                className="w-full h-32 px-4 py-3 bg-white border border-gray-200 rounded-lg text-sm resize-none mb-3"
+              />
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-500">
+                  {batchUrls.split('\n').filter(u => u.trim()).length} URLs
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="sm" onClick={() => { setShowBatchVerify(false); setBatchUrls(''); setBatchResults(null); }}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleBatchVerify} 
+                    disabled={batchVerifying || !batchUrls.trim()} 
+                    className="bg-blue-600 hover:bg-blue-700"
+                    size="sm"
+                  >
+                    {batchVerifying ? 'Verifying...' : 'Verify All'}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Batch Results */}
+              {batchResults && (
+                <div className="mt-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-medium text-gray-900">Results</h4>
+                    <Button variant="outline" size="sm" onClick={exportBatchResults}>
+                      <Download className="h-4 w-4 mr-2" />
+                      Export CSV
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-4 gap-3 mb-4">
+                    <div className="p-3 bg-white rounded-lg text-center">
+                      <div className="text-2xl font-bold text-gray-900">{batchResults.summary.total}</div>
+                      <div className="text-xs text-gray-500">Total</div>
+                    </div>
+                    <div className="p-3 bg-green-50 rounded-lg text-center">
+                      <div className="text-2xl font-bold text-green-600">{batchResults.summary.authentic}</div>
+                      <div className="text-xs text-gray-500">Authentic</div>
+                    </div>
+                    <div className="p-3 bg-yellow-50 rounded-lg text-center">
+                      <div className="text-2xl font-bold text-yellow-600">{batchResults.summary.suspicious}</div>
+                      <div className="text-xs text-gray-500">Suspicious</div>
+                    </div>
+                    <div className="p-3 bg-red-50 rounded-lg text-center">
+                      <div className="text-2xl font-bold text-red-600">{batchResults.summary.fake}</div>
+                      <div className="text-xs text-gray-500">Fake</div>
+                    </div>
+                  </div>
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {batchResults.results.map((r: any, i: number) => (
+                      <div key={i} className="flex items-center justify-between p-2 bg-white rounded-lg">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className={`w-8 h-8 rounded flex items-center justify-center text-xs font-bold ${
+                            r.trustScore >= 80 ? 'bg-green-100 text-green-600' :
+                            r.trustScore >= 60 ? 'bg-yellow-100 text-yellow-600' :
+                            'bg-red-100 text-red-600'
+                          }`}>{r.trustScore}</div>
+                          <span className="text-sm text-gray-900 truncate">{r.content}</span>
+                        </div>
+                        <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                          r.verdict === 'authentic' ? 'bg-green-100 text-green-700' :
+                          r.verdict === 'suspicious' ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-red-100 text-red-700'
+                        }`}>{r.verdict}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Verify Result */}
           {verifyResult && (
