@@ -141,11 +141,11 @@ How it works:
 
 ---
 
-### 7. Deepfake Detection for Video (Enhanced)
+### 7. Deepfake Detection for Video (Phase 2)
 **Why:** Video is the hardest and most valuable.
 
 ```
-How it works:
+Status: Coming Q3 2025
 - Upload video or paste URL
 - Frame-by-frame analysis
 - Face swap detection
@@ -155,6 +155,7 @@ How it works:
 
 **Impact:** High value, media coverage
 **Time:** 4-6 weeks (with API integration)
+**Note:** Deferred due to API costs. Image verification available now.
 
 ---
 

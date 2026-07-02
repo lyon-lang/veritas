@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const validTypes = ['image', 'video', 'text', 'audio'];
+    const validTypes = ['image', 'text'];
     if (!validTypes.includes(type)) {
       return NextResponse.json(
         { error: `Invalid type. Must be one of: ${validTypes.join(', ')}` },

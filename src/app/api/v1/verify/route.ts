@@ -3,7 +3,6 @@ import { validateApiKey, checkRateLimit } from '@/lib/api-keys';
 import { analyzeContent, analyzeTextAuthenticity } from '@/lib/gemini';
 import { VerificationModel, SourceModel } from '@/lib/models';
 import { readC2PA, calculateC2paScore } from '@/lib/c2pa';
-import { analyzeVideo, calculateVideoScore } from '@/lib/video';
 import { checkUserRateLimit } from '@/lib/rate-limit';
 import { calculateVerdict } from '@/lib/utils';
 
@@ -66,7 +65,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const validTypes = ['url', 'text', 'image', 'video'];
+    const validTypes = ['url', 'text', 'image'];
     if (!validTypes.includes(type)) {
       return NextResponse.json(
         { error: `Invalid type. Must be one of: ${validTypes.join(', ')}` },
@@ -164,23 +163,6 @@ export async function GET(request: Request) {
 async function verifyContent(content: string, type: string, options: any) {
   const checks = [];
   let trustScore = 50;
-  let verdict: 'authentic' | 'suspicious' | 'fake' | 'unknown' = 'unknown';
-  let confidence = 50;
-
-  if (type === 'video' || isVideoUrl(content)) {
-    const videoResult = await analyzeVideo(content);
-    const videoScore = calculateVideoScore(videoResult);
-    
-    return {
-      content,
-      type: 'video',
-      trustScore: videoScore,
-      verdict: videoResult.isAuthentic ? 'authentic' : 'suspicious',
-      confidence: videoResult.confidence,
-      checks: videoResult.checks,
-      timestamp: new Date().toISOString(),
-    };
-  }
 
   if (type === 'image' || isImageUrl(content)) {
     try {
@@ -267,11 +249,6 @@ async function verifyContent(content: string, type: string, options: any) {
     checks,
     timestamp: new Date().toISOString(),
   };
-}
-
-function isVideoUrl(url: string): boolean {
-  const videoPlatforms = ['youtube.com', 'youtu.be', 'vimeo.com', 'tiktok.com'];
-  return videoPlatforms.some(p => url.includes(p));
 }
 
 function isImageUrl(url: string): boolean {

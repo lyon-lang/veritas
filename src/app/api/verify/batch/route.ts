@@ -2,12 +2,11 @@ import { NextResponse } from 'next/server';
 import { analyzeContent, analyzeTextAuthenticity } from '@/lib/gemini';
 import { VerificationModel, SourceModel } from '@/lib/models';
 import { readC2PA, calculateC2paScore } from '@/lib/c2pa';
-import { analyzeVideo, calculateVideoScore } from '@/lib/video';
 import { calculateVerdict } from '@/lib/utils';
 
 interface VerificationRequest {
   content: string;
-  type: 'url' | 'text' | 'image' | 'video';
+  type: 'url' | 'text' | 'image';
 }
 
 interface VerificationResult {
@@ -97,22 +96,6 @@ async function verifySingleItem(item: VerificationRequest, userId?: string): Pro
   const { content, type } = item;
   const checks = [];
   let trustScore = 50;
-
-  // Video verification
-  if (type === 'video' || (type === 'url' && isVideoUrl(content))) {
-    const videoResult = await analyzeVideo(content);
-    const videoScore = calculateVideoScore(videoResult);
-    
-    return {
-      id: crypto.randomUUID(),
-      content,
-      type: 'video',
-      trustScore: videoScore,
-      verdict: videoResult.isAuthentic ? 'authentic' : 'suspicious',
-      confidence: videoResult.confidence,
-      checks: videoResult.checks,
-    };
-  }
 
   // C2PA Check for images
   if (type === 'image' || (type === 'url' && isImageUrl(content))) {
@@ -214,11 +197,6 @@ async function verifySingleItem(item: VerificationRequest, userId?: string): Pro
     confidence,
     checks,
   };
-}
-
-function isVideoUrl(url: string): boolean {
-  const videoPlatforms = ['youtube.com', 'youtu.be', 'vimeo.com', 'tiktok.com', 'twitter.com', 'x.com'];
-  return videoPlatforms.some(p => url.includes(p));
 }
 
 function isImageUrl(url: string): boolean {

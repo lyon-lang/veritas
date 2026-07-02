@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { WatchlistModel, AlertsModel } from '@/lib/watchlist';
-import { analyzeVideo } from '@/lib/video';
 import { requireAuth, requireCsrf } from '@/lib/auth';
 
 // GET - Get user's watchlist
@@ -51,21 +50,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'URL is required' }, { status: 400 });
     }
 
-    let initialScore = 50;
-    let initialVerdict = 'unknown';
-
-    try {
-      const isVideo = url.includes('youtube.com') || url.includes('vimeo.com') || url.includes('tiktok.com');
-      
-      if (isVideo) {
-        const result = await analyzeVideo(url);
-        initialScore = result.confidence;
-        initialVerdict = result.isAuthentic ? 'authentic' : 'suspicious';
-      }
-    } catch (error) {
-      console.error('Error getting initial score:', error);
-    }
-
     let hostname = url;
     try {
       hostname = new URL(url).hostname;
@@ -75,8 +59,8 @@ export async function POST(request: Request) {
       userId: user.id,
       url,
       label: label || hostname,
-      initialScore,
-      initialVerdict,
+      initialScore: 50,
+      initialVerdict: 'unknown',
     });
 
     return NextResponse.json({ item, message: 'Added to watchlist' });
