@@ -46,11 +46,11 @@ export default function BlogPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14">
             <Link href="/" className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-blue-600" />
+              <Shield className="h-5 w-5 text-emerald-600" />
               <span className="font-semibold text-gray-900">Veritas</span>
             </Link>
             <Link href="/sign-up">
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">Get started</Button>
+              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get started</Button>
             </Link>
           </div>
         </div>
@@ -64,7 +64,7 @@ export default function BlogPage() {
           {posts.map((post, i) => (
             <article key={i} className="border border-gray-200 rounded-xl p-6 hover:border-gray-300 transition-colors">
               <div className="flex items-center gap-3 mb-3">
-                <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs font-medium">{post.category}</span>
+                <span className="px-2 py-1 bg-emerald-50 text-emerald-700 rounded text-xs font-medium">{post.category}</span>
                 <span className="text-sm text-gray-500 flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   {post.date}
@@ -79,7 +79,7 @@ export default function BlogPage() {
                   </div>
                   <span className="text-sm text-gray-500">{post.author}</span>
                 </div>
-                <span className="text-sm text-blue-600 flex items-center gap-1">
+                <span className="text-sm text-emerald-600 flex items-center gap-1">
                   Read more <ArrowRight className="h-3 w-3" />
                 </span>
               </div>

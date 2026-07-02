@@ -26,11 +26,11 @@ export default function ContactPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14">
             <Link href="/" className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-blue-600" />
+              <Shield className="h-5 w-5 text-emerald-600" />
               <span className="font-semibold text-gray-900">Veritas</span>
             </Link>
             <Link href="/sign-up">
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">Get started</Button>
+              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get started</Button>
             </Link>
           </div>
         </div>
@@ -45,8 +45,8 @@ export default function ContactPage() {
           <div>
             <div className="space-y-6">
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Mail className="h-5 w-5 text-blue-600" />
+                <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Mail className="h-5 w-5 text-emerald-600" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">Email</h3>
@@ -55,8 +55,8 @@ export default function ContactPage() {
               </div>
 
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <MessageSquare className="h-5 w-5 text-blue-600" />
+                <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <MessageSquare className="h-5 w-5 text-emerald-600" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">Live chat</h3>
@@ -65,8 +65,8 @@ export default function ContactPage() {
               </div>
 
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <MapPin className="h-5 w-5 text-blue-600" />
+                <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <MapPin className="h-5 w-5 text-emerald-600" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">Office</h3>
@@ -80,7 +80,7 @@ export default function ContactPage() {
               <p className="text-sm text-gray-600 mb-3">
                 Need custom integrations or volume pricing?
               </p>
-              <a href="mailto:enterprise@veritas.app" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+              <a href="mailto:enterprise@veritas.app" className="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
                 Contact enterprise sales →
               </a>
             </div>
@@ -107,7 +107,7 @@ export default function ContactPage() {
                       type="text"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       required
                     />
                   </div>
@@ -118,7 +118,7 @@ export default function ContactPage() {
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       required
                     />
                   </div>
@@ -130,7 +130,7 @@ export default function ContactPage() {
                     id="subject"
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     required
                   >
                     <option value="">Select a topic</option>
@@ -150,12 +150,12 @@ export default function ContactPage() {
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     rows={6}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
                     required
                   />
                 </div>
 
-                <Button type="submit" className="bg-blue-600 hover:bg-blue-700 px-6">
+                <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 px-6">
                   <Send className="h-4 w-4 mr-2" />
                   Send message
                 </Button>

@@ -10,7 +10,7 @@ export default function CookiePolicyPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center h-14">
             <Link href="/" className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-blue-600" />
+              <Shield className="h-5 w-5 text-emerald-600" />
               <span className="font-semibold text-gray-900">Veritas</span>
             </Link>
           </div>
@@ -111,7 +111,7 @@ export default function CookiePolicyPage() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-gray-200">
-          <Link href="/" className="text-blue-600 hover:text-blue-700 text-sm">
+          <Link href="/" className="text-emerald-600 hover:text-emerald-700 text-sm">
             ← Back to home
           </Link>
         </div>

@@ -56,11 +56,11 @@ export default function CareersPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14">
             <Link href="/" className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-blue-600" />
+              <Shield className="h-5 w-5 text-emerald-600" />
               <span className="font-semibold text-gray-900">Veritas</span>
             </Link>
             <Link href="/sign-up">
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">Get started</Button>
+              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get started</Button>
             </Link>
           </div>
         </div>
@@ -86,8 +86,8 @@ export default function CareersPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {perks.map((perk, i) => (
                 <div key={i} className="text-center">
-                  <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <perk.icon className="h-6 w-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <perk.icon className="h-6 w-6 text-emerald-600" />
                   </div>
                   <h3 className="font-semibold text-gray-900 text-sm">{perk.title}</h3>
                   <p className="text-xs text-gray-600 mt-1">{perk.description}</p>
@@ -140,7 +140,7 @@ export default function CareersPage() {
             <p className="text-gray-600 mb-6">
               We're always looking for talented people. Send us your resume and tell us how you can help.
             </p>
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="bg-emerald-600 hover:bg-emerald-700">
               Send us your resume
             </Button>
           </div>

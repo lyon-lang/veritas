@@ -396,7 +396,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
       </div>
     );
   }
@@ -409,7 +409,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between h-14">
             <div className="flex items-center gap-6">
               <Link href="/" className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-blue-600" />
+                <Shield className="h-5 w-5 text-emerald-600" />
                 <span className="font-semibold text-gray-900">Veritas</span>
               </Link>
               <nav className="hidden md:flex items-center gap-1">
@@ -425,14 +425,14 @@ export default function DashboardPage() {
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded-md transition-colors ${
                       activeTab === tab.id 
-                        ? 'bg-blue-50 text-blue-700 font-medium' 
+                        ? 'bg-emerald-50 text-emerald-700 font-medium' 
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                     }`}
                   >
                     <tab.icon className="h-4 w-4" />
                     {tab.label}
                     {tab.id === 'watchlist' && watchlist.length > 0 && (
-                      <span className="ml-1 px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs">{watchlist.length}</span>
+                      <span className="ml-1 px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-xs">{watchlist.length}</span>
                     )}
                   </button>
                 ))}
@@ -453,7 +453,7 @@ export default function DashboardPage() {
                       <span className="font-semibold text-sm">Alerts</span>
                       <div className="flex items-center gap-2">
                         {unreadAlerts > 0 && (
-                          <button onClick={markAllAlertsAsRead} className="text-xs text-blue-600 hover:text-blue-700">Mark all read</button>
+                          <button onClick={markAllAlertsAsRead} className="text-xs text-emerald-600 hover:text-emerald-700">Mark all read</button>
                         )}
                         <button onClick={() => setShowNotifications(false)}>
                           <X className="h-4 w-4 text-gray-400" />
@@ -463,9 +463,9 @@ export default function DashboardPage() {
                     {alerts.length > 0 ? (
                       <div className="max-h-64 overflow-y-auto divide-y divide-gray-100">
                         {alerts.slice(0, 5).map((alert) => (
-                          <div key={alert.id} className={`p-3 hover:bg-gray-50 cursor-pointer ${!alert.read ? 'bg-blue-50' : ''}`} onClick={() => markAlertAsRead(alert.id)}>
+                          <div key={alert.id} className={`p-3 hover:bg-gray-50 cursor-pointer ${!alert.read ? 'bg-emerald-50' : ''}`} onClick={() => markAlertAsRead(alert.id)}>
                             <div className="flex items-start gap-2">
-                              <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${!alert.read ? 'bg-blue-500' : 'bg-transparent'}`} />
+                              <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${!alert.read ? 'bg-emerald-500' : 'bg-transparent'}`} />
                               <div>
                                 <div className="text-sm text-gray-900">{alert.message}</div>
                                 <div className="text-xs text-gray-500 mt-1">{new Date(alert.createdAt).toLocaleString()}</div>
@@ -485,7 +485,7 @@ export default function DashboardPage() {
               </button>
               <div className="relative">
                 <button onClick={() => setShowUserMenu(!showUserMenu)} className="flex items-center gap-2 p-1.5 rounded-md hover:bg-gray-100">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 text-xs font-medium">
+                  <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 text-xs font-medium">
                     {user?.name?.[0]?.toUpperCase() || 'U'}
                   </div>
                   <span className="text-sm text-gray-700 hidden md:block">{user?.name || 'User'}</span>
@@ -542,7 +542,7 @@ export default function DashboardPage() {
                 key={type}
                 onClick={() => setVerifyType(type as any)}
                 className={`px-3 py-1.5 text-sm rounded-md capitalize ${
-                  verifyType === type ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-600 hover:bg-gray-100'
+                  verifyType === type ? 'bg-emerald-50 text-emerald-700 font-medium' : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
                 {type}
@@ -562,7 +562,7 @@ export default function DashboardPage() {
               />
             </div>
             <div className="flex items-center gap-2">
-              <Button onClick={handleVerify} disabled={verifying || !verifyUrl} className="bg-blue-600 hover:bg-blue-700 px-6">
+              <Button onClick={handleVerify} disabled={verifying || !verifyUrl} className="bg-emerald-600 hover:bg-emerald-700 px-6">
                 {verifying ? 'Verifying...' : 'Verify'}
               </Button>
               <Button variant="outline" onClick={() => setShowBatchVerify(!showBatchVerify)} className="px-4">
@@ -594,7 +594,7 @@ export default function DashboardPage() {
                   <Button 
                     onClick={handleBatchVerify} 
                     disabled={batchVerifying || !batchUrls.trim()} 
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-emerald-600 hover:bg-emerald-700"
                     size="sm"
                   >
                     {batchVerifying ? 'Verifying...' : 'Verify All'}
@@ -701,8 +701,8 @@ export default function DashboardPage() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <div className="bg-white rounded-xl p-5 border border-gray-200 hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-3">
-                  <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-                    <Activity className="h-5 w-5 text-blue-600" />
+                  <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center">
+                    <Activity className="h-5 w-5 text-emerald-600" />
                   </div>
                   <span className="flex items-center gap-1 text-xs text-green-600 font-medium">
                     <ArrowUpRight className="h-3 w-3" /> +12%
@@ -765,8 +765,8 @@ export default function DashboardPage() {
 
               <div className="bg-white rounded-xl p-5 border border-gray-200">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-                    <Zap className="h-5 w-5 text-blue-600" />
+                  <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center">
+                    <Zap className="h-5 w-5 text-emerald-600" />
                   </div>
                   <div>
                     <div className="text-sm text-gray-500">Today</div>
@@ -838,7 +838,7 @@ export default function DashboardPage() {
                               e.stopPropagation(); 
                               window.open(`/report/${v.id}`, '_blank');
                             }} 
-                            className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded"
+                            className="p-1 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded"
                             title="Share verification"
                           >
                             <Share2 className="h-4 w-4" />
@@ -853,7 +853,7 @@ export default function DashboardPage() {
                   <Shield className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">No verifications yet</h3>
                   <p className="text-sm text-gray-500 mb-6">Start verifying content to see your history here</p>
-                  <Button onClick={() => document.querySelector('input')?.focus()} className="bg-blue-600 hover:bg-blue-700">
+                  <Button onClick={() => document.querySelector('input')?.focus()} className="bg-emerald-600 hover:bg-emerald-700">
                     <Plus className="h-4 w-4 mr-2" />
                     Verify content
                   </Button>
@@ -971,7 +971,7 @@ export default function DashboardPage() {
                   <h2 className="font-semibold text-gray-900">Watchlist</h2>
                   <p className="text-sm text-gray-500">Monitor content and get alerts when trust scores change</p>
                 </div>
-                <Button onClick={() => setShowAddToWatchlist(true)} className="bg-blue-600 hover:bg-blue-700">
+                <Button onClick={() => setShowAddToWatchlist(true)} className="bg-emerald-600 hover:bg-emerald-700">
                   <Plus className="h-4 w-4 mr-2" />
                   Add to Watchlist
                 </Button>
@@ -996,7 +996,7 @@ export default function DashboardPage() {
                       className="px-4 py-2 border border-gray-200 rounded-lg text-sm"
                     />
                     <div className="flex items-center gap-2">
-                      <Button onClick={addToWatchlist} className="bg-blue-600 hover:bg-blue-700">Add</Button>
+                      <Button onClick={addToWatchlist} className="bg-emerald-600 hover:bg-emerald-700">Add</Button>
                       <Button variant="ghost" onClick={() => setShowAddToWatchlist(false)}>Cancel</Button>
                     </div>
                   </div>
@@ -1052,12 +1052,12 @@ export default function DashboardPage() {
               {alerts.length > 0 ? (
                 <div className="divide-y divide-gray-100">
                   {alerts.slice(0, 10).map((alert) => (
-                    <div key={alert.id} className={`py-3 ${!alert.read ? 'bg-blue-50 -mx-6 px-6' : ''}`}>
+                    <div key={alert.id} className={`py-3 ${!alert.read ? 'bg-emerald-50 -mx-6 px-6' : ''}`}>
                       <div className="flex items-start gap-3">
                         <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
                           alert.type === 'verdict_change' ? 'bg-red-500' :
                           alert.type === 'score_change' ? 'bg-yellow-500' :
-                          'bg-blue-500'
+                          'bg-emerald-500'
                         }`} />
                         <div>
                           <div className="text-sm text-gray-900">{alert.message}</div>
@@ -1117,7 +1117,7 @@ export default function DashboardPage() {
                           <span className="text-sm font-medium text-gray-900">{count} ({percent}%)</span>
                         </div>
                         <div className="w-full bg-gray-100 rounded-full h-2">
-                          <div className="bg-blue-500 h-2 rounded-full transition-all" style={{ width: `${percent}%` }}></div>
+                          <div className="bg-emerald-500 h-2 rounded-full transition-all" style={{ width: `${percent}%` }}></div>
                         </div>
                       </div>
                     );

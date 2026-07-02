@@ -48,7 +48,7 @@ export default function ApiDocsPage() {
           <div className="flex items-center justify-between h-14">
             <div className="flex items-center gap-6">
               <Link href="/" className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-blue-600" />
+                <Shield className="h-5 w-5 text-emerald-600" />
                 <span className="font-semibold text-gray-900">Veritas</span>
               </Link>
               <span className="text-sm text-gray-500">API Documentation</span>
@@ -58,7 +58,7 @@ export default function ApiDocsPage() {
                 <Button variant="outline" size="sm">Dashboard</Button>
               </Link>
               <Link href="/sign-up">
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700">Get API Key</Button>
+                <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get API Key</Button>
               </Link>
             </div>
           </div>
@@ -76,7 +76,7 @@ export default function ApiDocsPage() {
                   onClick={() => setActiveSection(section.id)}
                   className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors ${
                     activeSection === section.id
-                      ? 'bg-blue-50 text-blue-700 font-medium'
+                      ? 'bg-emerald-50 text-emerald-700 font-medium'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
@@ -111,8 +111,8 @@ export default function ApiDocsPage() {
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                  <div className="p-4 bg-blue-50 rounded-xl">
-                    <Zap className="h-6 w-6 text-blue-600 mb-2" />
+                  <div className="p-4 bg-emerald-50 rounded-xl">
+                    <Zap className="h-6 w-6 text-emerald-600 mb-2" />
                     <h3 className="font-semibold text-gray-900">Fast</h3>
                     <p className="text-sm text-gray-600">Results in under 1 second</p>
                   </div>
@@ -258,19 +258,19 @@ export default function ApiDocsPage() {
                     </thead>
                     <tbody>
                       <tr className="border-b border-gray-100">
-                        <td className="py-3 px-4 font-mono text-blue-600">content</td>
+                        <td className="py-3 px-4 font-mono text-emerald-600">content</td>
                         <td className="py-3 px-4">string</td>
                         <td className="py-3 px-4">Yes</td>
                         <td className="py-3 px-4">URL, text, or image URL to verify</td>
                       </tr>
                       <tr className="border-b border-gray-100">
-                        <td className="py-3 px-4 font-mono text-blue-600">type</td>
+                        <td className="py-3 px-4 font-mono text-emerald-600">type</td>
                         <td className="py-3 px-4">string</td>
                         <td className="py-3 px-4">Yes</td>
                         <td className="py-3 px-4">Content type: url, text, image, video</td>
                       </tr>
                       <tr>
-                        <td className="py-3 px-4 font-mono text-blue-600">options</td>
+                        <td className="py-3 px-4 font-mono text-emerald-600">options</td>
                         <td className="py-3 px-4">object</td>
                         <td className="py-3 px-4">No</td>
                         <td className="py-3 px-4">Additional options (checkC2PA, checkAI, etc.)</td>

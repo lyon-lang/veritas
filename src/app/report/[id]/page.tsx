@@ -150,7 +150,7 @@ export default function ReportPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
       </div>
     );
   }
@@ -163,7 +163,7 @@ export default function ReportPage() {
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Report Not Found</h1>
           <p className="text-gray-500 mb-6">{error || 'This verification report does not exist.'}</p>
           <Link href="/">
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="bg-emerald-600 hover:bg-emerald-700">
               Go to Veritas
             </Button>
           </Link>
@@ -179,7 +179,7 @@ export default function ReportPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14">
             <Link href="/" className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-blue-600" />
+              <Shield className="h-5 w-5 text-emerald-600" />
               <span className="font-semibold text-gray-900">Veritas</span>
             </Link>
             <Link href="/dashboard">
@@ -223,7 +223,7 @@ export default function ReportPage() {
                 </div>
               </div>
               {report.url && (
-                <a href={report.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
+                <a href={report.url} target="_blank" rel="noopener noreferrer" className="text-emerald-600 hover:text-emerald-700">
                   <ExternalLink className="h-4 w-4" />
                 </a>
               )}
@@ -319,7 +319,7 @@ export default function ReportPage() {
             Want to verify more content?
           </p>
           <Link href="/sign-up">
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="bg-emerald-600 hover:bg-emerald-700">
               Try Veritas Free
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

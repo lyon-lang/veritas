@@ -11,11 +11,11 @@ export default function AboutPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14">
             <Link href="/" className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-blue-600" />
+              <Shield className="h-5 w-5 text-emerald-600" />
               <span className="font-semibold text-gray-900">Veritas</span>
             </Link>
             <Link href="/sign-up">
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">Get started</Button>
+              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get started</Button>
             </Link>
           </div>
         </div>
@@ -46,8 +46,8 @@ export default function AboutPage() {
                 { icon: Shield, title: 'Privacy Protected', description: 'We verify content, not people. Your privacy is our priority.' },
               ].map((value, i) => (
                 <div key={i} className="text-center">
-                  <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <value.icon className="h-7 w-7 text-blue-600" />
+                  <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <value.icon className="h-7 w-7 text-emerald-600" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">{value.title}</h3>
                   <p className="text-sm text-gray-600">{value.description}</p>
@@ -93,11 +93,11 @@ export default function AboutPage() {
                 { name: 'The Designer', role: 'Head of Product', bio: 'Making verification simple and beautiful.' },
               ].map((member, i) => (
                 <div key={i} className="bg-white rounded-xl p-6 border border-gray-200 text-center">
-                  <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Users className="h-8 w-8 text-blue-600" />
+                  <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Users className="h-8 w-8 text-emerald-600" />
                   </div>
                   <h3 className="font-semibold text-gray-900">{member.name}</h3>
-                  <p className="text-sm text-blue-600 mb-2">{member.role}</p>
+                  <p className="text-sm text-emerald-600 mb-2">{member.role}</p>
                   <p className="text-sm text-gray-600">{member.bio}</p>
                 </div>
               ))}
@@ -114,7 +114,7 @@ export default function AboutPage() {
             </p>
             <div className="flex items-center justify-center gap-4">
               <Link href="/sign-up">
-                <Button className="bg-blue-600 hover:bg-blue-700">Get started free</Button>
+                <Button className="bg-emerald-600 hover:bg-emerald-700">Get started free</Button>
               </Link>
               <Link href="/careers">
                 <Button variant="outline">View careers</Button>

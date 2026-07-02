@@ -35,11 +35,11 @@ export default function StatusPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14">
             <Link href="/" className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-blue-600" />
+              <Shield className="h-5 w-5 text-emerald-600" />
               <span className="font-semibold text-gray-900">Veritas</span>
             </Link>
             <Link href="/sign-up">
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">Get started</Button>
+              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get started</Button>
             </Link>
           </div>
         </div>
@@ -135,7 +135,7 @@ export default function StatusPage() {
               placeholder="Enter your email"
               className="flex-1 px-4 py-2 border border-gray-200 rounded-lg text-sm"
             />
-            <Button className="bg-blue-600 hover:bg-blue-700">Subscribe</Button>
+            <Button className="bg-emerald-600 hover:bg-emerald-700">Subscribe</Button>
           </div>
         </div>
       </main>

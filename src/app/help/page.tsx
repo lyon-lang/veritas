@@ -56,11 +56,11 @@ export default function HelpCenterPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14">
             <Link href="/" className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-blue-600" />
+              <Shield className="h-5 w-5 text-emerald-600" />
               <span className="font-semibold text-gray-900">Veritas</span>
             </Link>
             <Link href="/sign-up">
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">Get started</Button>
+              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get started</Button>
             </Link>
           </div>
         </div>
@@ -78,7 +78,7 @@ export default function HelpCenterPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search for help..."
-                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
           </div>
@@ -90,7 +90,7 @@ export default function HelpCenterPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {categories.map((category, i) => (
                 <div key={i} className="p-6 border border-gray-200 rounded-xl hover:border-gray-300 transition-colors cursor-pointer">
-                  <category.icon className="h-8 w-8 text-blue-600 mb-3" />
+                  <category.icon className="h-8 w-8 text-emerald-600 mb-3" />
                   <h3 className="font-semibold text-gray-900 mb-1">{category.title}</h3>
                   <p className="text-sm text-gray-500">{category.count} articles</p>
                 </div>
@@ -133,7 +133,7 @@ export default function HelpCenterPage() {
             </p>
             <div className="flex items-center justify-center gap-4">
               <Link href="/contact">
-                <Button className="bg-blue-600 hover:bg-blue-700">
+                <Button className="bg-emerald-600 hover:bg-emerald-700">
                   Contact support
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>

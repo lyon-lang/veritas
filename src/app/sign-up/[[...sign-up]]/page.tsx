@@ -57,7 +57,7 @@ export default function SignUpPage() {
       <div className="flex-1 flex items-center justify-center p-8 lg:p-12">
         <div className="w-full max-w-md">
           <Link href="/" className="flex items-center gap-2.5 mb-10">
-            <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center">
+            <div className="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center">
               <Shield className="h-5 w-5 text-white" />
             </div>
             <span className="text-xl font-semibold text-gray-900">Veritas</span>
@@ -85,7 +85,7 @@ export default function SignUpPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your name"
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   required
                 />
               </div>
@@ -101,7 +101,7 @@ export default function SignUpPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@company.com"
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   required
                 />
               </div>
@@ -117,7 +117,7 @@ export default function SignUpPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Create a password"
-                  className="w-full pl-11 pr-12 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-11 pr-12 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   required
                   minLength={6}
                 />
@@ -137,20 +137,20 @@ export default function SignUpPage() {
                 id="terms"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
-                className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="mt-1 h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
                 required
               />
               <label htmlFor="terms" className="text-sm text-gray-600">
                 I agree to the{' '}
-                <Link href="/terms" target="_blank" className="text-blue-600 hover:text-blue-700 font-medium">Terms of Service</Link>
+                <Link href="/terms" target="_blank" className="text-emerald-600 hover:text-emerald-700 font-medium">Terms of Service</Link>
                 {' '}and{' '}
-                <Link href="/privacy" target="_blank" className="text-blue-600 hover:text-blue-700 font-medium">Privacy Policy</Link>
+                <Link href="/privacy" target="_blank" className="text-emerald-600 hover:text-emerald-700 font-medium">Privacy Policy</Link>
               </label>
             </div>
 
             <Button 
               type="submit" 
-              className="w-full h-11 bg-blue-600 hover:bg-blue-700 rounded-xl"
+              className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
               disabled={loading || !agreed}
             >
               {loading ? 'Creating account...' : 'Create account'}
@@ -160,19 +160,19 @@ export default function SignUpPage() {
 
           <p className="mt-8 text-center text-sm text-gray-600">
             Already have an account?{' '}
-            <Link href="/sign-in" className="text-blue-600 hover:text-blue-700 font-medium">Sign in</Link>
+            <Link href="/sign-in" className="text-emerald-600 hover:text-emerald-700 font-medium">Sign in</Link>
           </p>
         </div>
       </div>
 
       {/* Right Side */}
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-blue-600 to-blue-700 items-center justify-center p-12">
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-emerald-600 to-emerald-700 items-center justify-center p-12">
         <div className="max-w-md text-white">
           <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mb-8">
             <Shield className="h-8 w-8 text-white" />
           </div>
           <h2 className="text-3xl font-bold mb-4">Verify anything. Trust everything.</h2>
-          <p className="text-blue-100 mb-8">Join 500,000+ users who verify content authenticity.</p>
+          <p className="text-emerald-100 mb-8">Join 500,000+ users who verify content authenticity.</p>
           <div className="grid grid-cols-2 gap-4">
             {[
               { value: '10M+', label: 'Content verified' },
@@ -180,7 +180,7 @@ export default function SignUpPage() {
             ].map((stat, i) => (
               <div key={i} className="bg-white/10 rounded-xl p-4">
                 <div className="text-2xl font-bold">{stat.value}</div>
-                <div className="text-sm text-blue-100">{stat.label}</div>
+                <div className="text-sm text-emerald-100">{stat.label}</div>
               </div>
             ))}
           </div>

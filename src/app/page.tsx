@@ -159,7 +159,7 @@ export default function Home() {
           <div className="flex items-center justify-between h-16 lg:h-18">
             <div className="flex items-center gap-10">
               <Link href="/" className="flex items-center gap-2.5">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
                   <Shield className="h-4.5 w-4.5 text-white" />
                 </div>
                 <span className="text-lg font-semibold text-gray-900 tracking-tight">Veritas</span>
@@ -172,7 +172,7 @@ export default function Home() {
             </div>
             <div className="hidden lg:flex items-center gap-3">
               <Link href="/sign-in"><Button variant="ghost" size="sm">Log in</Button></Link>
-              <Link href="/sign-up"><Button size="sm" className="bg-blue-600 hover:bg-blue-700">Get started free</Button></Link>
+              <Link href="/sign-up"><Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get started free</Button></Link>
             </div>
             <button className="lg:hidden p-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -186,7 +186,7 @@ export default function Home() {
             <a href="#pricing" className="block text-sm text-gray-600">Pricing</a>
             <div className="pt-3 border-t space-y-2">
               <Link href="/sign-in"><Button variant="ghost" className="w-full justify-center">Log in</Button></Link>
-              <Link href="/sign-up"><Button className="w-full justify-center bg-blue-600">Get started free</Button></Link>
+              <Link href="/sign-up"><Button className="w-full justify-center bg-emerald-600">Get started free</Button></Link>
             </div>
           </div>
         )}
@@ -199,12 +199,12 @@ export default function Home() {
         </div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-100 rounded-full mb-8">
-              <Sparkles className="h-4 w-4 text-blue-600" />
-              <span className="text-sm font-medium text-blue-700">Now with video verification</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-100 rounded-full mb-8">
+              <Sparkles className="h-4 w-4 text-emerald-600" />
+              <span className="text-sm font-medium text-emerald-700">Now with video verification</span>
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-gray-900 mb-6">
-              The trust layer<br /><span className="text-blue-600">for the internet</span>
+              The trust layer<br /><span className="text-emerald-600">for the internet</span>
             </h1>
             <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto mb-10">
               Verify any content in seconds. Get instant trust scores for images, videos, text, and URLs.
@@ -217,7 +217,7 @@ export default function Home() {
                   <Search className="h-5 w-5 text-gray-400" />
                   <input type="text" value={verifyUrl} onChange={(e) => setVerifyUrl(e.target.value)} placeholder="Paste URL, image, or text to verify..." className="flex-1 bg-transparent outline-none text-sm" onKeyDown={(e) => e.key === 'Enter' && handleDemoVerify()} />
                 </div>
-                <Button onClick={handleDemoVerify} disabled={demoLoading} className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-xl">
+                <Button onClick={handleDemoVerify} disabled={demoLoading} className="bg-emerald-600 hover:bg-emerald-700 px-8 py-3 rounded-xl">
                   {demoLoading ? 'Analyzing...' : 'Verify now'}
                   {!demoLoading && <ArrowRight className="ml-2 h-4 w-4" />}
                 </Button>
@@ -292,8 +292,8 @@ export default function Home() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map((stat, i) => (
               <div key={i} className="text-center">
-                <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <stat.icon className="h-6 w-6 text-blue-600" />
+                <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <stat.icon className="h-6 w-6 text-emerald-600" />
                 </div>
                 <div className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</div>
                 <div className="text-sm text-gray-500">{stat.label}</div>
@@ -307,9 +307,9 @@ export default function Home() {
       <section id="features" className="py-24 px-4 bg-gray-50/50">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-100 rounded-full mb-6">
-              <Zap className="h-4 w-4 text-blue-600" />
-              <span className="text-sm font-medium text-blue-700">Powerful Features</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-100 rounded-full mb-6">
+              <Zap className="h-4 w-4 text-emerald-600" />
+              <span className="text-sm font-medium text-emerald-700">Powerful Features</span>
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 tracking-tight">Verify any content,<br /><span className="text-gray-600">anywhere on the internet</span></h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">Multiple verification methods for the most accurate trust scores</p>
@@ -339,7 +339,7 @@ export default function Home() {
             {steps.map((step, i) => (
               <div key={i} className="text-center">
                 <div className="text-6xl font-bold text-gray-100 mb-4">{step.step}</div>
-                <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <div className="w-14 h-14 bg-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                   <Search className="h-7 w-7 text-white" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">{step.title}</h3>
@@ -387,8 +387,8 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {pricing.map((plan, i) => (
-              <div key={i} className={`bg-white rounded-2xl p-8 ${plan.popular ? 'border-2 border-blue-600 shadow-xl relative' : 'border border-gray-200'}`}>
-                {plan.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-xs font-medium">Most popular</div>}
+              <div key={i} className={`bg-white rounded-2xl p-8 ${plan.popular ? 'border-2 border-emerald-600 shadow-xl relative' : 'border border-gray-200'}`}>
+                {plan.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-600 text-white px-4 py-1 rounded-full text-xs font-medium">Most popular</div>}
                 <div className="mb-8">
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">{plan.name}</h3>
                   {plan.price !== null ? (
@@ -403,7 +403,7 @@ export default function Home() {
                   ))}
                 </ul>
                 <Link href="/sign-up">
-                  <Button className={`w-full rounded-xl ${plan.popular ? 'bg-blue-600 hover:bg-blue-700' : ''}`} variant={plan.popular ? 'default' : 'outline'}>{plan.price === 0 ? 'Get started' : plan.price ? 'Start trial' : 'Contact sales'}</Button>
+                  <Button className={`w-full rounded-xl ${plan.popular ? 'bg-emerald-600 hover:bg-emerald-700' : ''}`} variant={plan.popular ? 'default' : 'outline'}>{plan.price === 0 ? 'Get started' : plan.price ? 'Start trial' : 'Contact sales'}</Button>
                 </Link>
               </div>
             ))}
@@ -414,11 +414,11 @@ export default function Home() {
       {/* CTA */}
       <section className="py-24 px-4">
         <div className="container mx-auto max-w-4xl">
-          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-3xl p-12 lg:p-16 text-center">
+          <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-3xl p-12 lg:p-16 text-center">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Start verifying today</h2>
-            <p className="text-lg text-blue-100 mb-10 max-w-xl mx-auto">Join 500,000+ users who trust Veritas</p>
+            <p className="text-lg text-emerald-100 mb-10 max-w-xl mx-auto">Join 500,000+ users who trust Veritas</p>
             <Link href="/sign-up">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-50 px-8 rounded-xl shadow-lg">Get started free<ArrowRight className="ml-2 h-4 w-4" /></Button>
+              <Button size="lg" className="bg-white text-emerald-600 hover:bg-gray-50 px-8 rounded-xl shadow-lg">Get started free<ArrowRight className="ml-2 h-4 w-4" /></Button>
             </Link>
           </div>
         </div>
@@ -430,7 +430,7 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
             <div className="col-span-2">
               <div className="flex items-center gap-2.5 mb-4">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center"><Shield className="h-4.5 w-4.5 text-white" /></div>
+                <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center"><Shield className="h-4.5 w-4.5 text-white" /></div>
                 <span className="text-lg font-semibold text-gray-900">Veritas</span>
               </div>
               <p className="text-sm text-gray-500 max-w-xs">The trust layer for the internet.</p>
