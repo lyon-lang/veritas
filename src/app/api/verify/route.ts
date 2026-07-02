@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { analyzeContent, analyzeTextAuthenticity } from '@/lib/openai';
 import { VerificationModel, SourceModel } from '@/lib/models';
+import { readC2PA, calculateC2paScore } from '@/lib/c2pa';
 
 // POST - Verify content
 export async function POST(request: Request) {
@@ -140,20 +141,55 @@ export async function GET(request: Request) {
 }
 
 async function checkC2PA(content: string, type: string) {
-  // TODO: Implement actual C2PA verification
-  return {
-    name: 'C2PA Credentials',
-    status: 'passed' as const,
-    score: 95,
-    details: 'Content Credentials present and valid',
-    c2pa: {
-      present: true,
-      valid: true,
-      creator: 'Adobe Photoshop',
-      timestamp: '2025-01-15T10:30:00Z',
-      tools: ['Adobe Photoshop', 'Adobe Camera Raw'],
-    },
-  };
+  try {
+    // Only check C2PA for images and URLs that might be images
+    if (type === 'image' || (type === 'url' && isImageUrl(content))) {
+      const result = await readC2PA(content);
+      const score = calculateC2paScore(result);
+
+      return {
+        name: 'C2PA Credentials',
+        status: result.hasCredentials && result.valid ? 'passed' as const : 
+                result.hasCredentials ? 'warning' as const : 'failed' as const,
+        score,
+        details: result.hasCredentials 
+          ? `C2PA verified. Creator: ${result.creator || 'Unknown'}`
+          : 'No C2PA credentials found',
+        c2pa: result.hasCredentials ? {
+          present: true,
+          valid: result.valid,
+          creator: result.creator,
+          timestamp: result.timestamp,
+          tools: result.tools,
+        } : null,
+      };
+    }
+
+    // For other content types, skip C2PA check
+    return {
+      name: 'C2PA Credentials',
+      status: 'skipped' as const,
+      score: 0,
+      details: 'C2PA check not applicable for this content type',
+      c2pa: null,
+    };
+  } catch (error) {
+    return {
+      name: 'C2PA Credentials',
+      status: 'warning' as const,
+      score: 0,
+      details: 'Unable to check C2PA credentials',
+      c2pa: null,
+    };
+  }
+}
+
+function isImageUrl(url: string): boolean {
+  const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.tiff'];
+  const lowerUrl = url.toLowerCase();
+  return imageExtensions.some(ext => lowerUrl.includes(ext)) || 
+         lowerUrl.includes('image') || 
+         lowerUrl.includes('photo');
 }
 
 async function checkAI(content: string, type: string) {

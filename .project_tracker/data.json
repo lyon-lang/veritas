@@ -276,7 +276,7 @@
       "id": "5.2",
       "title": "Browser Extension",
       "description": "Chrome/Firefox extension for trust scores",
-      "status": "not_started",
+      "status": "completed",
       "priority": "high",
       "category": "Extensions",
       "estimated_hours": 40,
@@ -285,7 +285,7 @@
         "3.1"
       ],
       "created_at": "2026-07-01T19:25:25.538609",
-      "completed_at": null,
+      "completed_at": "2026-07-02T07:26:21.409150",
       "notes": "Extension for real-time trust scores"
     },
     "5.3": {
@@ -340,7 +340,7 @@
       "id": "5.6",
       "title": "C2PA Library Integration",
       "description": "Real C2PA credential reading",
-      "status": "not_started",
+      "status": "completed",
       "priority": "high",
       "category": "Core",
       "estimated_hours": 20,
@@ -349,7 +349,7 @@
         "3.3"
       ],
       "created_at": "2026-07-01T19:25:25.538614",
-      "completed_at": null,
+      "completed_at": "2026-07-02T07:35:12.322629",
       "notes": "Actual C2PA verification implementation"
     },
     "5.7": {
@@ -455,5 +455,5 @@
       "completion_percentage": 0
     }
   },
-  "last_updated": "2026-07-01T21:36:24.613299"
+  "last_updated": "2026-07-02T07:35:12.322690"
 }
