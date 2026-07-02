@@ -12,8 +12,19 @@ export async function POST(request: Request) {
   try {
     const rateLimit = await checkUserRateLimit();
     if (!rateLimit.allowed) {
+      const isMonthlyLimit = rateLimit.monthlyRemaining === 0;
+      const errorMessage = isMonthlyLimit 
+        ? `Free tier limit reached (${rateLimit.monthlyLimit} verifications/month). Upgrade to Consumer for unlimited verifications.`
+        : 'Rate limit exceeded. Try again later.';
+      
       return NextResponse.json(
-        { error: 'Rate limit exceeded. Try again later.', resetAt: rateLimit.resetAt },
+        { 
+          error: errorMessage, 
+          resetAt: rateLimit.resetAt,
+          monthlyRemaining: rateLimit.monthlyRemaining,
+          monthlyLimit: rateLimit.monthlyLimit,
+          upgradeRequired: isMonthlyLimit,
+        },
         { status: 429 }
       );
     }
@@ -133,6 +144,11 @@ export async function POST(request: Request) {
       confidence,
       checks,
       timestamp: new Date().toISOString(),
+      usage: {
+        monthlyRemaining: rateLimit.monthlyRemaining,
+        monthlyLimit: rateLimit.monthlyLimit,
+        isUnlimited: rateLimit.monthlyLimit <= 0,
+      },
     });
   } catch (error) {
     console.error('Error verifying content:', error);

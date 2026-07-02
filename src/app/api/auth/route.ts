@@ -101,6 +101,13 @@ export async function POST(request: Request) {
       }
 
       // Verify password
+      if (!user.password_hash || !user.password_hash.includes(':')) {
+        return NextResponse.json(
+          { error: 'Invalid email or password' },
+          { status: 401 }
+        );
+      }
+      
       const [salt, storedHash] = user.password_hash.split(':');
       if (!salt || !storedHash || !verifyPassword(password, storedHash, salt)) {
         return NextResponse.json(

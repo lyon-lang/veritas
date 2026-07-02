@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { UserModel } from '@/lib/models';
+import crypto from 'crypto';
 
 export interface AuthUser {
   id: string;
@@ -51,7 +52,14 @@ export async function validateCsrfToken(request: Request): Promise<boolean> {
     return false;
   }
 
-  return cookieToken === headerToken;
+  const a = Buffer.from(cookieToken, 'hex');
+  const b = Buffer.from(headerToken, 'hex');
+  
+  if (a.length !== b.length) {
+    return false;
+  }
+  
+  return crypto.timingSafeEqual(a, b);
 }
 
 export async function requireCsrf(request: Request): Promise<void> {

@@ -48,19 +48,26 @@ export default function Home() {
 
   // Animate demo score on load
   useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    
     const timer = setTimeout(() => {
       let score = 0;
       const target = 87;
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         score += 2;
         if (score >= target) {
           score = target;
-          clearInterval(interval);
+          clearInterval(interval!);
+          interval = null;
         }
         setDemoScore(score);
       }, 20);
     }, 1000);
-    return () => clearTimeout(timer);
+    
+    return () => {
+      clearTimeout(timer);
+      if (interval) clearInterval(interval);
+    };
   }, []);
 
   const handleDemoVerify = () => {
@@ -146,7 +153,7 @@ export default function Home() {
   ];
 
   const pricing = [
-    { name: 'Free', price: 0, features: ['Basic trust scores', 'Limited verifications', 'Browser extension'], popular: false },
+    { name: 'Free', price: 0, features: ['Basic trust scores', '15 verifications/month', 'Shareable reports', 'Browser extension'], popular: false },
     { name: 'Consumer', price: 10, features: ['Unlimited verifications', 'Detailed breakdowns', 'Shareable reports', 'Priority support'], popular: true },
     { name: 'Professional', price: 50, features: ['API access', 'Batch verification', 'Team features', 'Custom reports'], popular: false },
     { name: 'Enterprise', price: null, features: ['Volume pricing', 'Compliance features', 'Dedicated support', 'Custom integrations'], popular: false }

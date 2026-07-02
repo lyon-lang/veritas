@@ -3,6 +3,7 @@ import { analyzeContent, analyzeTextAuthenticity } from '@/lib/gemini';
 import { VerificationModel, SourceModel } from '@/lib/models';
 import { readC2PA, calculateC2paScore } from '@/lib/c2pa';
 import { calculateVerdict } from '@/lib/utils';
+import { requireAuth } from '@/lib/auth';
 
 interface VerificationRequest {
   content: string;
@@ -23,7 +24,8 @@ interface VerificationResult {
 // POST - Batch verify multiple items
 export async function POST(request: Request) {
   try {
-    const { items, userId } = await request.json();
+    const user = await requireAuth();
+    const { items } = await request.json();
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json(
@@ -48,7 +50,7 @@ export async function POST(request: Request) {
       const batchResults = await Promise.all(
         batch.map(async (item: VerificationRequest) => {
           try {
-            return await verifySingleItem(item, userId);
+            return await verifySingleItem(item, user?.id);
           } catch (error) {
             return {
               id: crypto.randomUUID(),

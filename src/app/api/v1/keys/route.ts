@@ -1,19 +1,13 @@
 import { NextResponse } from 'next/server';
 import { createApiKey, getUserApiKeys, revokeApiKey, getUsageStats } from '@/lib/api-keys';
+import { requireAuth } from '@/lib/auth';
 
 // GET - Get user's API keys
 export async function GET(request: Request) {
   try {
+    const user = await requireAuth();
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
     const action = searchParams.get('action');
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
-      );
-    }
 
     if (action === 'usage') {
       const key = searchParams.get('key');
@@ -27,7 +21,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ stats });
     }
 
-    const keys = getUserApiKeys(userId);
+    const keys = getUserApiKeys(user.id);
     
     // Mask keys for security
     const maskedKeys = keys.map(k => ({
@@ -56,11 +50,12 @@ export async function GET(request: Request) {
 // POST - Create new API key
 export async function POST(request: Request) {
   try {
-    const { userId, name, tier } = await request.json();
+    const user = await requireAuth();
+    const { name, tier } = await request.json();
 
-    if (!userId || !name) {
+    if (!name) {
       return NextResponse.json(
-        { error: 'User ID and name are required' },
+        { error: 'Name is required' },
         { status: 400 }
       );
     }
@@ -73,7 +68,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const apiKey = createApiKey(userId, name, tier || 'free');
+    const apiKey = createApiKey(user.id, name, tier || 'free');
 
     return NextResponse.json({
       key: apiKey.key,

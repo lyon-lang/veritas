@@ -142,6 +142,13 @@ function initializeDatabase(db: Database.Database) {
     )
   `);
 
+  // Create indexes for performance
+  db.exec(`CREATE INDEX IF NOT EXISTS idx_verifications_user_id ON verifications(user_id)`);
+  db.exec(`CREATE INDEX IF NOT EXISTS idx_verifications_created_at ON verifications(created_at)`);
+  db.exec(`CREATE INDEX IF NOT EXISTS idx_watchlist_user_id ON watchlist(user_id)`);
+  db.exec(`CREATE INDEX IF NOT EXISTS idx_alerts_watchlist_id ON alerts(watchlist_id)`);
+  db.exec(`CREATE INDEX IF NOT EXISTS idx_api_keys_user_id ON api_keys(user_id)`);
+
   // Insert default source credibility data
   const defaultSources = [
     { domain: 'reuters.com', score: 95, category: 'news', reputation: 'high', bias: 'center', fact_check_rating: 'highly factual', description: 'International news organization' },

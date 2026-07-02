@@ -24,6 +24,15 @@ export async function GET(request: Request) {
     }
 
     // Return public-safe data (no user info)
+    let checks = [];
+    try {
+      checks = typeof verification.checks === 'string' 
+        ? JSON.parse(verification.checks) 
+        : verification.checks || [];
+    } catch {
+      checks = [];
+    }
+
     return NextResponse.json({
       id: verification.id,
       url: verification.url,
@@ -31,7 +40,7 @@ export async function GET(request: Request) {
       trustScore: verification.trust_score,
       verdict: verification.verdict,
       confidence: verification.confidence,
-      checks: JSON.parse(verification.checks as string || '[]'),
+      checks,
       createdAt: verification.created_at,
       shareUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://veritas.app'}/report/${verification.id}`,
     });
