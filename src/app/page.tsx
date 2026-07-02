@@ -442,19 +442,19 @@ export default function Home() {
                 { name: 'Extension', href: '#' },
               ]},
               { title: 'Company', links: [
-                { name: 'About', href: '#' },
-                { name: 'Blog', href: '#' },
-                { name: 'Careers', href: '#' },
+                { name: 'About', href: '/about' },
+                { name: 'Blog', href: '/blog' },
+                { name: 'Careers', href: '/careers' },
               ]},
               { title: 'Support', links: [
-                { name: 'Help Center', href: '#' },
-                { name: 'Contact', href: '#' },
-                { name: 'Status', href: '#' },
+                { name: 'Help Center', href: '/help' },
+                { name: 'Contact', href: '/contact' },
+                { name: 'Status', href: '/status' },
               ]},
               { title: 'Legal', links: [
                 { name: 'Privacy Policy', href: '/privacy' },
                 { name: 'Terms of Service', href: '/terms' },
-                { name: 'Cookie Policy', href: '#' },
+                { name: 'Cookie Policy', href: '/cookies' },
               ]},
             ].map((section, i) => (
               <div key={i}>
