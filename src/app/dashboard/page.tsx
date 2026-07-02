@@ -89,10 +89,18 @@ export default function DashboardPage() {
   const [filterVerdict, setFilterVerdict] = useState<string>('all');
   const [showFilters, setShowFilters] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [watchlist, setWatchlist] = useState<any[]>([]);
+  const [alerts, setAlerts] = useState<any[]>([]);
+  const [unreadAlerts, setUnreadAlerts] = useState(0);
+  const [showAddToWatchlist, setShowAddToWatchlist] = useState(false);
+  const [watchlistUrl, setWatchlistUrl] = useState('');
+  const [watchlistLabel, setWatchlistLabel] = useState('');
 
   useEffect(() => {
     loadData();
     loadUser();
+    loadWatchlist();
+    loadAlerts();
   }, []);
 
   const loadUser = async () => {
@@ -122,6 +130,87 @@ export default function DashboardPage() {
       console.error('Error loading data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadWatchlist = async () => {
+    try {
+      const res = await fetch('/api/watchlist?userId=current');
+      const data = await res.json();
+      setWatchlist(data.items || []);
+    } catch (error) {
+      console.error('Error loading watchlist:', error);
+    }
+  };
+
+  const loadAlerts = async () => {
+    try {
+      const res = await fetch('/api/alerts?userId=current');
+      const data = await res.json();
+      setAlerts(data.alerts || []);
+      setUnreadAlerts(data.unreadCount || 0);
+    } catch (error) {
+      console.error('Error loading alerts:', error);
+    }
+  };
+
+  const addToWatchlist = async () => {
+    if (!watchlistUrl) return;
+    
+    try {
+      const res = await fetch('/api/watchlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          userId: 'current', 
+          url: watchlistUrl,
+          label: watchlistLabel || undefined
+        }),
+      });
+      
+      if (res.ok) {
+        setShowAddToWatchlist(false);
+        setWatchlistUrl('');
+        setWatchlistLabel('');
+        loadWatchlist();
+      }
+    } catch (error) {
+      console.error('Error adding to watchlist:', error);
+    }
+  };
+
+  const removeFromWatchlist = async (id: string) => {
+    try {
+      await fetch(`/api/watchlist?id=${id}`, { method: 'DELETE' });
+      loadWatchlist();
+    } catch (error) {
+      console.error('Error removing from watchlist:', error);
+    }
+  };
+
+  const markAlertAsRead = async (alertId: string) => {
+    try {
+      await fetch('/api/alerts', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ alertId }),
+      });
+      loadAlerts();
+    } catch (error) {
+      console.error('Error marking alert as read:', error);
+    }
+  };
+
+  const markAllAlertsAsRead = async () => {
+    try {
+      await fetch('/api/alerts', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ markAll: true, userId: 'current' }),
+      });
+      loadAlerts();
+    } catch (error) {
+      console.error('Error marking all alerts as read:', error);
     }
   };
 
@@ -261,6 +350,7 @@ export default function DashboardPage() {
                 {[
                   { id: 'overview', label: 'Overview', icon: Activity },
                   { id: 'history', label: 'History', icon: History },
+                  { id: 'watchlist', label: 'Watchlist', icon: Clock },
                   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
                   { id: 'sources', label: 'Sources', icon: Database },
                 ].map((tab) => (
@@ -275,16 +365,55 @@ export default function DashboardPage() {
                   >
                     <tab.icon className="h-4 w-4" />
                     {tab.label}
+                    {tab.id === 'watchlist' && watchlist.length > 0 && (
+                      <span className="ml-1 px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs">{watchlist.length}</span>
+                    )}
                   </button>
                 ))}
               </nav>
             </div>
             
             <div className="flex items-center gap-2">
-              <button onClick={() => setShowNotifications(!showNotifications)} className="relative p-2 text-gray-500 hover:text-gray-700 rounded-md hover:bg-gray-100">
-                <Bell className="h-4 w-4" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-              </button>
+              <div className="relative">
+                <button onClick={() => setShowNotifications(!showNotifications)} className="relative p-2 text-gray-500 hover:text-gray-700 rounded-md hover:bg-gray-100">
+                  <Bell className="h-4 w-4" />
+                  {unreadAlerts > 0 && (
+                    <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">{unreadAlerts}</span>
+                  )}
+                </button>
+                {showNotifications && (
+                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                    <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+                      <span className="font-semibold text-sm">Alerts</span>
+                      <div className="flex items-center gap-2">
+                        {unreadAlerts > 0 && (
+                          <button onClick={markAllAlertsAsRead} className="text-xs text-blue-600 hover:text-blue-700">Mark all read</button>
+                        )}
+                        <button onClick={() => setShowNotifications(false)}>
+                          <X className="h-4 w-4 text-gray-400" />
+                        </button>
+                      </div>
+                    </div>
+                    {alerts.length > 0 ? (
+                      <div className="max-h-64 overflow-y-auto divide-y divide-gray-100">
+                        {alerts.slice(0, 5).map((alert) => (
+                          <div key={alert.id} className={`p-3 hover:bg-gray-50 cursor-pointer ${!alert.read ? 'bg-blue-50' : ''}`} onClick={() => markAlertAsRead(alert.id)}>
+                            <div className="flex items-start gap-2">
+                              <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${!alert.read ? 'bg-blue-500' : 'bg-transparent'}`} />
+                              <div>
+                                <div className="text-sm text-gray-900">{alert.message}</div>
+                                <div className="text-xs text-gray-500 mt-1">{new Date(alert.createdAt).toLocaleString()}</div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="p-4 text-sm text-gray-500 text-center">No alerts yet</div>
+                    )}
+                  </div>
+                )}
+              </div>
               <button className="p-2 text-gray-500 hover:text-gray-700 rounded-md hover:bg-gray-100">
                 <Settings className="h-4 w-4" />
               </button>
@@ -676,6 +805,122 @@ export default function DashboardPage() {
                 </p>
               </div>
             )}
+          </div>
+        )}
+
+        {activeTab === 'watchlist' && (
+          <div className="space-y-6">
+            {/* Add to Watchlist */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="font-semibold text-gray-900">Watchlist</h2>
+                  <p className="text-sm text-gray-500">Monitor content and get alerts when trust scores change</p>
+                </div>
+                <Button onClick={() => setShowAddToWatchlist(true)} className="bg-blue-600 hover:bg-blue-700">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add to Watchlist
+                </Button>
+              </div>
+
+              {/* Add Form */}
+              {showAddToWatchlist && (
+                <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                  <div className="flex flex-col gap-3">
+                    <input
+                      type="text"
+                      value={watchlistUrl}
+                      onChange={(e) => setWatchlistUrl(e.target.value)}
+                      placeholder="Enter URL to monitor..."
+                      className="px-4 py-2 border border-gray-200 rounded-lg text-sm"
+                    />
+                    <input
+                      type="text"
+                      value={watchlistLabel}
+                      onChange={(e) => setWatchlistLabel(e.target.value)}
+                      placeholder="Label (optional)"
+                      className="px-4 py-2 border border-gray-200 rounded-lg text-sm"
+                    />
+                    <div className="flex items-center gap-2">
+                      <Button onClick={addToWatchlist} className="bg-blue-600 hover:bg-blue-700">Add</Button>
+                      <Button variant="ghost" onClick={() => setShowAddToWatchlist(false)}>Cancel</Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Watchlist Items */}
+              {watchlist.length > 0 ? (
+                <div className="divide-y divide-gray-100">
+                  {watchlist.map((item) => (
+                    <div key={item.id} className="py-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                          item.currentScore >= 80 ? 'bg-green-50' :
+                          item.currentScore >= 60 ? 'bg-yellow-50' :
+                          'bg-red-50'
+                        }`}>
+                          <Clock className="h-5 w-5 text-gray-600" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-sm font-medium text-gray-900 truncate">{item.label}</div>
+                          <div className="text-xs text-gray-500 truncate">{item.url}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="text-right">
+                          <div className={`text-lg font-bold ${
+                            item.currentScore >= 80 ? 'text-green-600' :
+                            item.currentScore >= 60 ? 'text-yellow-600' :
+                            'text-red-600'
+                          }`}>{item.currentScore}</div>
+                          <div className="text-xs text-gray-500">{item.verdict}</div>
+                        </div>
+                        <button onClick={() => removeFromWatchlist(item.id)} className="p-1 text-gray-400 hover:text-red-600">
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Clock className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No items in watchlist</h3>
+                  <p className="text-sm text-gray-500">Add content to monitor and get alerts when trust scores change</p>
+                </div>
+              )}
+            </div>
+
+            {/* Recent Alerts */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <h2 className="font-semibold text-gray-900 mb-4">Recent Alerts</h2>
+              {alerts.length > 0 ? (
+                <div className="divide-y divide-gray-100">
+                  {alerts.slice(0, 10).map((alert) => (
+                    <div key={alert.id} className={`py-3 ${!alert.read ? 'bg-blue-50 -mx-6 px-6' : ''}`}>
+                      <div className="flex items-start gap-3">
+                        <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
+                          alert.type === 'verdict_change' ? 'bg-red-500' :
+                          alert.type === 'score_change' ? 'bg-yellow-500' :
+                          'bg-blue-500'
+                        }`} />
+                        <div>
+                          <div className="text-sm text-gray-900">{alert.message}</div>
+                          <div className="text-xs text-gray-500 mt-1">{new Date(alert.createdAt).toLocaleString()}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Bell className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No alerts yet</h3>
+                  <p className="text-sm text-gray-500">You'll receive alerts when watched content changes</p>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
