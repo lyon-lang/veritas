@@ -6,6 +6,16 @@ import { CheckCircle, Clock, AlertTriangle, Activity } from 'lucide-react';
 import { Navbar } from '@/components/navbar';
 
 export default function StatusPage() {
+  const services = [
+    { name: 'API v1', uptime: '99.99%', icon: Activity },
+    { name: 'Dashboard', uptime: '99.99%', icon: Activity },
+    { name: 'Verification Engine', uptime: '99.95%', icon: Activity },
+  ];
+
+  const incidents = [
+    { title: 'API Latency Spike', status: 'resolved', date: 'Jul 1, 2026', duration: '15m', description: 'We experienced a brief latency spike in our API due to unexpected high volume. Normal service has been restored.' }
+  ];
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />

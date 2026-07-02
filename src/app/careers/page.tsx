@@ -6,6 +6,19 @@ import { Users, Globe, Zap, Heart, ArrowRight, Briefcase, MapPin, Clock } from '
 import { Navbar } from '@/components/navbar';
 
 export default function CareersPage() {
+  const perks = [
+    { icon: Globe, title: 'Remote First', description: 'Work from anywhere in the world.' },
+    { icon: Heart, title: 'Health & Wellness', description: 'Comprehensive medical, dental, and vision.' },
+    { icon: Zap, title: 'Fast Paced', description: 'Move fast, learn fast, ship fast.' },
+    { icon: Users, title: 'Great Team', description: 'Work with the best in the industry.' },
+  ];
+
+  const positions = [
+    { title: 'Senior Full Stack Engineer', department: 'Engineering', location: 'Remote', type: 'Full-time', description: 'Build and scale the core verification engine.' },
+    { title: 'Machine Learning Researcher', department: 'AI', location: 'Remote', type: 'Full-time', description: 'Develop novel approaches to detect AI generated content.' },
+    { title: 'Product Designer', department: 'Design', location: 'Remote', type: 'Full-time', description: 'Design intuitive interfaces for complex verification workflows.' },
+  ];
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />

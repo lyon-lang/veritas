@@ -9,6 +9,7 @@ import {
   ShieldCheck, 
   ShieldAlert, 
   ShieldX, 
+  Shield,
   Globe, 
   Clock,
   ExternalLink,

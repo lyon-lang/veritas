@@ -3,11 +3,17 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Mail, MessageSquare, ArrowRight, Send } from 'lucide-react';
+import { Mail, MessageSquare, ArrowRight, Send, MapPin, CheckCircle } from 'lucide-react';
 import { Navbar } from '@/components/navbar';
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
 
   return (
     <div className="min-h-screen bg-white">

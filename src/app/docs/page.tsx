@@ -3,18 +3,28 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Code, Book, Zap, Shield, ArrowRight, Copy, Check, ExternalLink } from 'lucide-react';
+import { Code, Book, Zap, Shield, ArrowRight, Copy, CheckCircle, ExternalLink, Globe } from 'lucide-react';
 import { Navbar } from '@/components/navbar';
 
 export default function DocsPage() {
-  const [activeTab, setActiveTab] = useState('quickstart');
-  const [copied, setCopied] = useState(false);
+  const [activeSection, setActiveSection] = useState('overview');
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
-  const copyCode = (code: string) => {
+  const copyToClipboard = (code: string, id: string) => {
     navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setCopiedCode(id);
+    setTimeout(() => setCopiedCode(null), 2000);
   };
+
+  const sections = [
+    { id: 'overview', label: 'Overview', icon: Book },
+    { id: 'authentication', label: 'Authentication', icon: Shield },
+    { id: 'verify', label: 'Verify Content', icon: Zap },
+    { id: 'batch', label: 'Batch Verify', icon: Code },
+    { id: 'sources', label: 'Source Credibility', icon: Globe },
+    { id: 'rate-limits', label: 'Rate Limits', icon: Zap },
+    { id: 'errors', label: 'Error Codes', icon: Code },
+  ];
 
   return (
     <div className="min-h-screen bg-white">
