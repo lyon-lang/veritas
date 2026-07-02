@@ -41,3 +41,22 @@ export async function requireAuth(): Promise<AuthUser> {
   }
   return user;
 }
+
+export async function validateCsrfToken(request: Request): Promise<boolean> {
+  const cookieStore = await cookies();
+  const cookieToken = cookieStore.get('csrf_token')?.value;
+  const headerToken = request.headers.get('x-csrf-token');
+
+  if (!cookieToken || !headerToken) {
+    return false;
+  }
+
+  return cookieToken === headerToken;
+}
+
+export async function requireCsrf(request: Request): Promise<void> {
+  const valid = await validateCsrfToken(request);
+  if (!valid) {
+    throw new Error('CSRF_INVALID');
+  }
+}

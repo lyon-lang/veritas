@@ -100,6 +100,7 @@ export default function DashboardPage() {
   const [batchUrls, setBatchUrls] = useState('');
   const [batchResults, setBatchResults] = useState<any>(null);
   const [batchVerifying, setBatchVerifying] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
@@ -111,6 +112,10 @@ export default function DashboardPage() {
   const loadUser = async () => {
     try {
       const res = await fetch('/api/auth');
+      if (!res.ok) {
+        router.push('/sign-in');
+        return;
+      }
       const data = await res.json();
       if (data.user) {
         setUser(data.user);
@@ -119,20 +124,26 @@ export default function DashboardPage() {
       }
     } catch (error) {
       console.error('Error loading user:', error);
+      setError('Failed to load user data');
     }
   };
 
   const loadData = async () => {
     try {
       const verRes = await fetch('/api/user/verifications');
-      const verData = await verRes.json();
-      setVerifications(verData.verifications || []);
+      if (verRes.ok) {
+        const verData = await verRes.json();
+        setVerifications(verData.verifications || []);
+      }
 
       const statsRes = await fetch('/api/stats');
-      const statsData = await statsRes.json();
-      setStats(statsData);
+      if (statsRes.ok) {
+        const statsData = await statsRes.json();
+        setStats(statsData);
+      }
     } catch (error) {
       console.error('Error loading data:', error);
+      setError('Failed to load data');
     } finally {
       setLoading(false);
     }
@@ -140,9 +151,11 @@ export default function DashboardPage() {
 
   const loadWatchlist = async () => {
     try {
-      const res = await fetch('/api/watchlist?userId=current');
-      const data = await res.json();
-      setWatchlist(data.items || []);
+      const res = await fetch('/api/watchlist');
+      if (res.ok) {
+        const data = await res.json();
+        setWatchlist(data.items || []);
+      }
     } catch (error) {
       console.error('Error loading watchlist:', error);
     }
@@ -150,10 +163,12 @@ export default function DashboardPage() {
 
   const loadAlerts = async () => {
     try {
-      const res = await fetch('/api/alerts?userId=current');
-      const data = await res.json();
-      setAlerts(data.alerts || []);
-      setUnreadAlerts(data.unreadCount || 0);
+      const res = await fetch('/api/alerts');
+      if (res.ok) {
+        const data = await res.json();
+        setAlerts(data.alerts || []);
+        setUnreadAlerts(data.unreadCount || 0);
+      }
     } catch (error) {
       console.error('Error loading alerts:', error);
     }
@@ -163,11 +178,14 @@ export default function DashboardPage() {
     if (!watchlistUrl) return;
     
     try {
+      const csrfToken = document.cookie.match(/csrf_token=([^;]+)/)?.[1];
       const res = await fetch('/api/watchlist', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken || '',
+        },
         body: JSON.stringify({ 
-          userId: 'current', 
           url: watchlistUrl,
           label: watchlistLabel || undefined
         }),
@@ -178,16 +196,28 @@ export default function DashboardPage() {
         setWatchlistUrl('');
         setWatchlistLabel('');
         loadWatchlist();
+      } else {
+        const data = await res.json();
+        setError(data.error || 'Failed to add to watchlist');
       }
     } catch (error) {
       console.error('Error adding to watchlist:', error);
+      setError('Failed to add to watchlist');
     }
   };
 
   const removeFromWatchlist = async (id: string) => {
     try {
-      await fetch(`/api/watchlist?id=${id}`, { method: 'DELETE' });
-      loadWatchlist();
+      const csrfToken = document.cookie.match(/csrf_token=([^;]+)/)?.[1];
+      const res = await fetch(`/api/watchlist?id=${id}`, { 
+        method: 'DELETE',
+        headers: {
+          'x-csrf-token': csrfToken || '',
+        }
+      });
+      if (res.ok) {
+        loadWatchlist();
+      }
     } catch (error) {
       console.error('Error removing from watchlist:', error);
     }
@@ -195,12 +225,18 @@ export default function DashboardPage() {
 
   const markAlertAsRead = async (alertId: string) => {
     try {
-      await fetch('/api/alerts', {
+      const csrfToken = document.cookie.match(/csrf_token=([^;]+)/)?.[1];
+      const res = await fetch('/api/alerts', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken || '',
+        },
         body: JSON.stringify({ alertId }),
       });
-      loadAlerts();
+      if (res.ok) {
+        loadAlerts();
+      }
     } catch (error) {
       console.error('Error marking alert as read:', error);
     }
@@ -208,12 +244,18 @@ export default function DashboardPage() {
 
   const markAllAlertsAsRead = async () => {
     try {
-      await fetch('/api/alerts', {
+      const csrfToken = document.cookie.match(/csrf_token=([^;]+)/)?.[1];
+      const res = await fetch('/api/alerts', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ markAll: true, userId: 'current' }),
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken || '',
+        },
+        body: JSON.stringify({ markAll: true }),
       });
-      loadAlerts();
+      if (res.ok) {
+        loadAlerts();
+      }
     } catch (error) {
       console.error('Error marking all alerts as read:', error);
     }
@@ -224,9 +266,9 @@ export default function DashboardPage() {
 
     setBatchVerifying(true);
     setBatchResults(null);
+    setError(null);
 
     try {
-      // Parse URLs (one per line)
       const urls = batchUrls
         .split('\n')
         .map(u => u.trim())
@@ -245,14 +287,21 @@ export default function DashboardPage() {
       const res = await fetch('/api/verify/batch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items, userId: 'current' }),
+        body: JSON.stringify({ items }),
       });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        setError(errData.error || 'Batch verification failed');
+        return;
+      }
 
       const data = await res.json();
       setBatchResults(data);
-      loadData(); // Refresh main data
+      loadData();
     } catch (error) {
       console.error('Error in batch verification:', error);
+      setError('Failed to batch verify');
     } finally {
       setBatchVerifying(false);
     }
@@ -294,6 +343,7 @@ export default function DashboardPage() {
     
     setVerifying(true);
     setVerifyResult(null);
+    setError(null);
     
     try {
       const type = verifyUrl.startsWith('http') ? 'url' : 'text';
@@ -302,11 +352,19 @@ export default function DashboardPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: verifyUrl, type }),
       });
+      
+      if (!res.ok) {
+        const errData = await res.json();
+        setError(errData.error || 'Verification failed');
+        return;
+      }
+      
       const data = await res.json();
       setVerifyResult(data);
       loadData();
     } catch (error) {
       console.error('Error verifying:', error);
+      setError('Failed to verify content');
     } finally {
       setVerifying(false);
     }
@@ -403,6 +461,17 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 mx-4 mt-4 rounded-lg flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4" />
+            <span>{error}</span>
+          </div>
+          <button onClick={() => setError(null)} className="text-red-500 hover:text-red-700">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="container mx-auto px-4 sm:px-6">

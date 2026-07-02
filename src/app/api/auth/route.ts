@@ -24,6 +24,28 @@ function verifyPassword(password: string, storedHash: string, salt: string): boo
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
+function generateCsrfToken(): string {
+  return crypto.randomBytes(32).toString('hex');
+}
+
+function setAuthCookies(cookieStore: any, userId: string, csrfToken: string) {
+  cookieStore.set('user_id', userId, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 7,
+  });
+
+  cookieStore.set('csrf_token', csrfToken, {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 7,
+  });
+}
+
 // POST - Sign up
 export async function POST(request: Request) {
   try {
@@ -50,14 +72,10 @@ export async function POST(request: Request) {
       const { hash: passwordHash, salt } = hashPassword(password);
       const user = UserModel.create(email, name, `${salt}:${passwordHash}`);
 
-      // Set cookie
+      // Set cookies
       const cookieStore = await cookies();
-      cookieStore.set('user_id', (user as any).id, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      });
+      const csrfToken = generateCsrfToken();
+      setAuthCookies(cookieStore, (user as any).id, csrfToken);
 
       return NextResponse.json({
         user: { id: (user as any).id, email, name },
@@ -91,14 +109,10 @@ export async function POST(request: Request) {
         );
       }
 
-      // Set cookie
+      // Set cookies
       const cookieStore = await cookies();
-      cookieStore.set('user_id', user.id, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      });
+      const csrfToken = generateCsrfToken();
+      setAuthCookies(cookieStore, user.id, csrfToken);
 
       return NextResponse.json({
         user: { id: user.id, email: user.email, name: user.name },
@@ -153,6 +167,7 @@ export async function DELETE() {
   try {
     const cookieStore = await cookies();
     cookieStore.delete('user_id');
+    cookieStore.delete('csrf_token');
 
     return NextResponse.json({ message: 'Logged out successfully' });
   } catch (error) {

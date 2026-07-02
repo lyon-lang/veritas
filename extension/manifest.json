@@ -5,12 +5,10 @@
   "description": "Verify any content you browse. Get instant trust scores for websites, images, and text.",
   "permissions": [
     "activeTab",
-    "storage",
-    "contextMenus"
+    "storage"
   ],
   "host_permissions": [
-    "https://*/*",
-    "http://*/*"
+    "https://veritas.vercel.app/*"
   ],
   "action": {
     "default_popup": "src/popup.html",

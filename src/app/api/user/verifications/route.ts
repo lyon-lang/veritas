@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { VerificationModel, StatsModel } from '@/lib/models';
-import { requireAuth } from '@/lib/auth';
+import { requireAuth, requireCsrf } from '@/lib/auth';
 
 // GET - Get user's verification history
 export async function GET(request: Request) {
@@ -40,6 +40,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const user = await requireAuth();
+    await requireCsrf(request);
     const data = await request.json();
 
     if (data.trustScore === undefined || data.trustScore === null || !data.verdict) {
@@ -63,6 +64,9 @@ export async function POST(request: Request) {
   } catch (error: any) {
     if (error.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+    if (error.message === 'CSRF_INVALID') {
+      return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
     }
     console.error('Error saving verification:', error);
     return NextResponse.json({ error: 'Failed to save verification' }, { status: 500 });

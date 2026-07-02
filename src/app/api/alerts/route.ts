@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { AlertsModel } from '@/lib/watchlist';
-import { requireAuth } from '@/lib/auth';
+import { requireAuth, requireCsrf } from '@/lib/auth';
 
 // GET - Get user's alerts
 export async function GET(request: Request) {
@@ -30,6 +30,7 @@ export async function GET(request: Request) {
 export async function PATCH(request: Request) {
   try {
     const user = await requireAuth();
+    await requireCsrf(request);
     const { alertId, markAll } = await request.json();
 
     if (markAll) {
@@ -51,6 +52,9 @@ export async function PATCH(request: Request) {
   } catch (error: any) {
     if (error.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+    if (error.message === 'CSRF_INVALID') {
+      return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
     }
     console.error('Error updating alert:', error);
     return NextResponse.json({ error: 'Failed to update alert' }, { status: 500 });

@@ -1,10 +1,22 @@
 import { NextResponse } from 'next/server';
 import { analyzeContent, analyzeTextAuthenticity } from '@/lib/gemini';
+import { checkUserRateLimit } from '@/lib/rate-limit';
+
+const MAX_CONTENT_LENGTH = 10000;
+const MAX_BATCH_SIZE = 10;
 
 // POST - Detect AI-generated content
 export async function POST(request: Request) {
   try {
-    const { content, type, deepAnalysis } = await request.json();
+    const rateLimit = await checkUserRateLimit();
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Try again later.', resetAt: rateLimit.resetAt },
+        { status: 429 }
+      );
+    }
+
+    const { content, type } = await request.json();
 
     if (!content || !type) {
       return NextResponse.json(
@@ -17,6 +29,13 @@ export async function POST(request: Request) {
     if (!validTypes.includes(type)) {
       return NextResponse.json(
         { error: `Invalid type. Must be one of: ${validTypes.join(', ')}` },
+        { status: 400 }
+      );
+    }
+
+    if (typeof content === 'string' && content.length > MAX_CONTENT_LENGTH) {
+      return NextResponse.json(
+        { error: `Content exceeds maximum length of ${MAX_CONTENT_LENGTH} characters` },
         { status: 400 }
       );
     }
@@ -65,6 +84,14 @@ export async function POST(request: Request) {
 // PUT - Batch detect AI content
 export async function PUT(request: Request) {
   try {
+    const rateLimit = await checkUserRateLimit();
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Try again later.', resetAt: rateLimit.resetAt },
+        { status: 429 }
+      );
+    }
+
     const { items } = await request.json();
 
     if (!items || !Array.isArray(items)) {
@@ -74,26 +101,43 @@ export async function PUT(request: Request) {
       );
     }
 
-    const results = await Promise.all(
-      items.map(async (item: { content: string; type: string }) => {
-        try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/detect`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(item),
-          });
-          return response.json();
-        } catch {
-          return { error: true, item };
+    if (items.length > MAX_BATCH_SIZE) {
+      return NextResponse.json(
+        { error: `Batch size exceeds maximum of ${MAX_BATCH_SIZE} items` },
+        { status: 400 }
+      );
+    }
+
+    const results = [];
+    for (const item of items) {
+      try {
+        if (!item.content || !item.type) {
+          results.push({ error: true, message: 'Missing content or type', item });
+          continue;
         }
-      })
-    );
+
+        if (typeof item.content === 'string' && item.content.length > MAX_CONTENT_LENGTH) {
+          results.push({ error: true, message: 'Content too long', item });
+          continue;
+        }
+
+        let result;
+        if (item.type === 'text') {
+          result = await analyzeTextAuthenticity(item.content);
+        } else {
+          result = await analyzeContent(item.content, item.type);
+        }
+        results.push({ type: item.type, ...result });
+      } catch {
+        results.push({ error: true, item });
+      }
+    }
 
     const summary = {
       total: items.length,
-      aiGenerated: results.filter(r => r.isAIGenerated).length,
-      human: results.filter(r => !r.isAIGenerated && !r.error).length,
-      errors: results.filter(r => r.error).length,
+      aiGenerated: results.filter((r: any) => r.isAIGenerated).length,
+      human: results.filter((r: any) => !r.isAIGenerated && !r.error).length,
+      errors: results.filter((r: any) => r.error).length,
     };
 
     return NextResponse.json({ results, summary });

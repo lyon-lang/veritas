@@ -1,14 +1,32 @@
 import { NextResponse } from 'next/server';
 import { analyzeContent, analyzeTextAuthenticity, extractClaims } from '@/lib/gemini';
+import { checkUserRateLimit } from '@/lib/rate-limit';
+
+const MAX_CONTENT_LENGTH = 10000;
 
 // POST - Get trust score
 export async function POST(request: Request) {
   try {
+    const rateLimit = await checkUserRateLimit();
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Try again later.', resetAt: rateLimit.resetAt },
+        { status: 429 }
+      );
+    }
+
     const { content, type } = await request.json();
 
     if (!content || !type) {
       return NextResponse.json(
         { error: 'Content and type are required' },
+        { status: 400 }
+      );
+    }
+
+    if (typeof content === 'string' && content.length > MAX_CONTENT_LENGTH) {
+      return NextResponse.json(
+        { error: `Content exceeds maximum length of ${MAX_CONTENT_LENGTH} characters` },
         { status: 400 }
       );
     }

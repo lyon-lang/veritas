@@ -2,11 +2,22 @@ import { NextResponse } from 'next/server';
 import { analyzeTextAuthenticity, extractClaims } from '@/lib/gemini';
 import { VerificationModel, SourceModel } from '@/lib/models';
 import { getAuthUser } from '@/lib/auth';
+import { checkUserRateLimit } from '@/lib/rate-limit';
+
+const MAX_CONTENT_LENGTH = 10000;
 
 // Simplified verification - focuses on what Gemini does well
 export async function POST(request: Request) {
   try {
-    const { content, type, userId } = await request.json();
+    const rateLimit = await checkUserRateLimit();
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Try again later.', resetAt: rateLimit.resetAt },
+        { status: 429 }
+      );
+    }
+
+    const { content, type } = await request.json();
 
     if (!content || !type) {
       return NextResponse.json(
@@ -23,6 +34,14 @@ export async function POST(request: Request) {
       );
     }
 
+    if (typeof content === 'string' && content.length > MAX_CONTENT_LENGTH) {
+      return NextResponse.json(
+        { error: `Content exceeds maximum length of ${MAX_CONTENT_LENGTH} characters` },
+        { status: 400 }
+      );
+    }
+
+    const user = await getAuthUser();
     const checks = [];
     let trustScore = 50;
 
@@ -130,7 +149,7 @@ export async function POST(request: Request) {
 
     // Save to database
     const verification = VerificationModel.create({
-      userId: userId || undefined,
+      userId: user?.id,
       url: type === 'url' ? content : undefined,
       contentType: type,
       trustScore,

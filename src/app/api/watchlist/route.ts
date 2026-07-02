@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { WatchlistModel, AlertsModel } from '@/lib/watchlist';
 import { analyzeVideo } from '@/lib/video';
-import { requireAuth } from '@/lib/auth';
+import { requireAuth, requireCsrf } from '@/lib/auth';
 
 // GET - Get user's watchlist
 export async function GET(request: Request) {
@@ -32,6 +32,9 @@ export async function GET(request: Request) {
     if (error.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
+    if (error.message === 'CSRF_INVALID') {
+      return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
+    }
     console.error('Error fetching watchlist:', error);
     return NextResponse.json({ error: 'Failed to fetch watchlist' }, { status: 500 });
   }
@@ -41,6 +44,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const user = await requireAuth();
+    await requireCsrf(request);
     const { url, label } = await request.json();
 
     if (!url) {
@@ -80,6 +84,9 @@ export async function POST(request: Request) {
     if (error.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
+    if (error.message === 'CSRF_INVALID') {
+      return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
+    }
     console.error('Error adding to watchlist:', error);
     return NextResponse.json({ error: 'Failed to add to watchlist' }, { status: 500 });
   }
@@ -89,6 +96,7 @@ export async function POST(request: Request) {
 export async function PATCH(request: Request) {
   try {
     const user = await requireAuth();
+    await requireCsrf(request);
     const { id, label } = await request.json();
 
     if (!id) {
@@ -107,6 +115,9 @@ export async function PATCH(request: Request) {
     if (error.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
+    if (error.message === 'CSRF_INVALID') {
+      return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
+    }
     console.error('Error updating watchlist:', error);
     return NextResponse.json({ error: 'Failed to update watchlist' }, { status: 500 });
   }
@@ -116,6 +127,7 @@ export async function PATCH(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const user = await requireAuth();
+    await requireCsrf(request);
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
@@ -134,6 +146,9 @@ export async function DELETE(request: Request) {
   } catch (error: any) {
     if (error.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+    if (error.message === 'CSRF_INVALID') {
+      return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
     }
     console.error('Error removing from watchlist:', error);
     return NextResponse.json({ error: 'Failed to remove from watchlist' }, { status: 500 });

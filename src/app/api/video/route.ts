@@ -1,10 +1,19 @@
 import { NextResponse } from 'next/server';
 import { analyzeVideo, calculateVideoScore } from '@/lib/video';
+import { checkUserRateLimit } from '@/lib/rate-limit';
 
 // POST - Analyze video
 export async function POST(request: Request) {
   try {
-    const { url, options } = await request.json();
+    const rateLimit = await checkUserRateLimit();
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Try again later.', resetAt: rateLimit.resetAt },
+        { status: 429 }
+      );
+    }
+
+    const { url } = await request.json();
 
     if (!url) {
       return NextResponse.json(
@@ -13,7 +22,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Validate URL
     try {
       new URL(url);
     } catch {
@@ -23,7 +31,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Analyze video
     const result = await analyzeVideo(url);
     const score = calculateVideoScore(result);
 

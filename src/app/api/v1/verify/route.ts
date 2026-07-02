@@ -4,25 +4,30 @@ import { analyzeContent, analyzeTextAuthenticity } from '@/lib/gemini';
 import { VerificationModel, SourceModel } from '@/lib/models';
 import { readC2PA, calculateC2paScore } from '@/lib/c2pa';
 import { analyzeVideo, calculateVideoScore } from '@/lib/video';
+import { checkUserRateLimit } from '@/lib/rate-limit';
 
-// Middleware to validate API key
 function getApiKey(request: Request): string | null {
   const authHeader = request.headers.get('Authorization');
   if (authHeader && authHeader.startsWith('Bearer ')) {
     return authHeader.substring(7);
   }
-  const url = new URL(request.url);
-  return url.searchParams.get('api_key');
+  return null;
 }
 
-// POST /api/v1/verify - Verify content
 export async function POST(request: Request) {
   try {
-    // Validate API key
+    const rateLimit = await checkUserRateLimit();
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded', resetAt: rateLimit.resetAt },
+        { status: 429 }
+      );
+    }
+
     const apiKey = getApiKey(request);
     if (!apiKey) {
       return NextResponse.json(
-        { error: 'API key required. Include Authorization: Bearer <key> header or api_key query parameter.' },
+        { error: 'API key required. Use Authorization: Bearer <key> header.' },
         { status: 401 }
       );
     }
@@ -35,13 +40,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check rate limit
-    const rateLimit = checkRateLimit(apiKey);
-    if (!rateLimit.allowed) {
+    const apiRateLimit = checkRateLimit(apiKey);
+    if (!apiRateLimit.allowed) {
       return NextResponse.json(
         { 
-          error: 'Rate limit exceeded',
-          resetAt: rateLimit.resetAt,
+          error: 'API rate limit exceeded',
+          resetAt: apiRateLimit.resetAt,
           limits: {
             perMinute: keyInfo.requests_per_minute,
             perDay: keyInfo.requests_per_day,
@@ -51,7 +55,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Parse request
     const body = await request.json();
     const { content, type, options } = body;
 
@@ -70,17 +73,22 @@ export async function POST(request: Request) {
       );
     }
 
-    // Perform verification
+    if (typeof content === 'string' && content.length > 10000) {
+      return NextResponse.json(
+        { error: 'Content exceeds maximum length of 10000 characters' },
+        { status: 400 }
+      );
+    }
+
     const result = await verifyContent(content, type, options);
 
-    // Add rate limit headers
     const response = NextResponse.json({
       success: true,
       data: result,
     });
     
-    response.headers.set('X-RateLimit-Remaining', rateLimit.remaining.toString());
-    response.headers.set('X-RateLimit-Reset', rateLimit.resetAt);
+    response.headers.set('X-RateLimit-Remaining', apiRateLimit.remaining.toString());
+    response.headers.set('X-RateLimit-Reset', apiRateLimit.resetAt);
 
     return response;
   } catch (error) {
@@ -92,7 +100,6 @@ export async function POST(request: Request) {
   }
 }
 
-// GET /api/v1/verify?url=... - Quick verify URL
 export async function GET(request: Request) {
   try {
     const apiKey = getApiKey(request);
@@ -153,14 +160,12 @@ export async function GET(request: Request) {
   }
 }
 
-// Verify content helper
 async function verifyContent(content: string, type: string, options: any) {
   const checks = [];
   let trustScore = 50;
   let verdict: 'authentic' | 'suspicious' | 'fake' | 'unknown' = 'unknown';
   let confidence = 50;
 
-  // Video verification
   if (type === 'video' || isVideoUrl(content)) {
     const videoResult = await analyzeVideo(content);
     const videoScore = calculateVideoScore(videoResult);
@@ -176,7 +181,6 @@ async function verifyContent(content: string, type: string, options: any) {
     };
   }
 
-  // C2PA Check for images
   if (type === 'image' || isImageUrl(content)) {
     try {
       const c2paResult = await readC2PA(content);
@@ -198,7 +202,6 @@ async function verifyContent(content: string, type: string, options: any) {
     }
   }
 
-  // AI Detection for text
   if (type === 'text') {
     try {
       const aiResult = await analyzeTextAuthenticity(content);
@@ -219,7 +222,6 @@ async function verifyContent(content: string, type: string, options: any) {
     }
   }
 
-  // Source credibility for URLs
   if (type === 'url') {
     try {
       const domain = new URL(content).hostname.replace('www.', '');
@@ -251,10 +253,8 @@ async function verifyContent(content: string, type: string, options: any) {
     }
   }
 
-  // Calculate final score
   trustScore = Math.max(0, Math.min(100, trustScore));
 
-  // Determine verdict
   if (trustScore >= 80) {
     verdict = 'authentic';
     confidence = 85;
