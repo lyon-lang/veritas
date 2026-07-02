@@ -6,7 +6,6 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { 
-  Shield, 
   ShieldCheck, 
   ShieldAlert, 
   ShieldX, 
@@ -21,6 +20,7 @@ import {
   FileText,
   Link as LinkIcon
 } from 'lucide-react';
+import { Navbar } from '@/components/navbar';
 
 interface Report {
   id: string;
@@ -185,22 +185,7 @@ export default function ReportPage() {
         <meta name="twitter:description" content={`Verdict: ${report.verdict}. Verified by CoreValidate.`} />
       </Head>
       <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-14">
-            <Link href="/" className="flex items-center gap-2">
-              <img src="/logo.png" alt="CoreValidate Logo" className="h-8 w-auto object-contain" />
-              <span className="font-semibold text-gray-900">CoreValidate</span>
-            </Link>
-            <Link href="/dashboard">
-              <Button variant="outline" size="sm">
-                Verify Content
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Navbar ctaText="Verify Content" ctaHref="/dashboard" />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 sm:px-6 py-8 max-w-2xl">

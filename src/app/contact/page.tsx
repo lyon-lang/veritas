@@ -3,38 +3,15 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Shield, Mail, MessageSquare, MapPin, Send, CheckCircle } from 'lucide-react';
+import { Mail, MessageSquare, ArrowRight, Send } from 'lucide-react';
+import { Navbar } from '@/components/navbar';
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-  });
   const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: Send to API
-    setSubmitted(true);
-  };
 
   return (
     <div className="min-h-screen bg-white">
-      <header className="border-b border-gray-200">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-14">
-            <Link href="/" className="flex items-center gap-2">
-              <img src="/logo.png" alt="CoreValidate Logo" className="h-8 w-auto object-contain" />
-              <span className="font-semibold text-gray-900">CoreValidate</span>
-            </Link>
-            <Link href="/sign-up">
-              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get started</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="container mx-auto px-4 sm:px-6 py-12 max-w-5xl">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Contact us</h1>

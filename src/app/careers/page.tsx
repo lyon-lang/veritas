@@ -2,69 +2,13 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Shield, MapPin, Clock, Briefcase, ArrowRight, Users, Zap, Heart } from 'lucide-react';
+import { Users, Globe, Zap, Heart, ArrowRight, Briefcase, MapPin, Clock } from 'lucide-react';
+import { Navbar } from '@/components/navbar';
 
 export default function CareersPage() {
-  const positions = [
-    {
-      title: 'Senior AI Engineer',
-      department: 'Engineering',
-      location: 'Remote',
-      type: 'Full-time',
-      description: 'Build the AI models that verify content authenticity.',
-    },
-    {
-      title: 'Full-Stack Developer',
-      department: 'Engineering',
-      location: 'Remote',
-      type: 'Full-time',
-      description: 'Build the platform that millions will use to verify content.',
-    },
-    {
-      title: 'Product Designer',
-      department: 'Design',
-      location: 'Remote',
-      type: 'Full-time',
-      description: 'Design beautiful, simple interfaces for complex verification.',
-    },
-    {
-      title: 'Growth Marketing Manager',
-      department: 'Marketing',
-      location: 'Remote',
-      type: 'Full-time',
-      description: 'Help us reach millions of users who need verification.',
-    },
-    {
-      title: 'Developer Advocate',
-      department: 'DevRel',
-      location: 'Remote',
-      type: 'Full-time',
-      description: 'Build the developer community around our API.',
-    },
-  ];
-
-  const perks = [
-    { icon: Users, title: 'Remote-first', description: 'Work from anywhere in the world' },
-    { icon: Zap, title: 'Equity', description: 'Meaningful ownership in the company' },
-    { icon: Heart, title: 'Health benefits', description: 'Comprehensive health coverage' },
-    { icon: Clock, title: 'Flexible hours', description: 'Work when you\'re most productive' },
-  ];
-
   return (
     <div className="min-h-screen bg-white">
-      <header className="border-b border-gray-200">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-14">
-            <Link href="/" className="flex items-center gap-2">
-              <img src="/logo.png" alt="CoreValidate Logo" className="h-8 w-auto object-contain" />
-              <span className="font-semibold text-gray-900">CoreValidate</span>
-            </Link>
-            <Link href="/sign-up">
-              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get started</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       <main>
         {/* Hero */}

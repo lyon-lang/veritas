@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Users, Globe, Zap, Heart, Target, ArrowRight } from 'lucide-react';
+import { Users, Globe, Zap, Heart, Target, ArrowRight, Shield } from 'lucide-react';
 import { Navbar } from '@/components/navbar';
 
 export default function AboutPage() {

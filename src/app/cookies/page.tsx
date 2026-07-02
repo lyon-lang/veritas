@@ -1,21 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { Shield } from 'lucide-react';
+import { Navbar } from '@/components/navbar';
 
-export default function CookiePolicyPage() {
+export default function CookiesPage() {
   return (
     <div className="min-h-screen bg-white">
-      <header className="border-b border-gray-200">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="flex items-center h-14">
-            <Link href="/" className="flex items-center gap-2">
-              <img src="/logo.png" alt="CoreValidate Logo" className="h-8 w-auto object-contain" />
-              <span className="font-semibold text-gray-900">CoreValidate</span>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="container mx-auto px-4 sm:px-6 py-12 max-w-4xl">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Cookie Policy</h1>

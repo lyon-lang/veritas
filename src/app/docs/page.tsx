@@ -3,67 +3,22 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { 
-  Shield, 
-  Code, 
-  Key, 
-  Zap, 
-  Clock,
-  CheckCircle,
-  Copy,
-  ExternalLink,
-  ChevronRight,
-  ChevronDown,
-  ArrowRight,
-  Globe,
-  Lock,
-  BarChart3
-} from 'lucide-react';
+import { Code, Book, Zap, Shield, ArrowRight, Copy, Check, ExternalLink } from 'lucide-react';
+import { Navbar } from '@/components/navbar';
 
-export default function ApiDocsPage() {
-  const [activeSection, setActiveSection] = useState('overview');
-  const [copiedCode, setCopiedCode] = useState('');
+export default function DocsPage() {
+  const [activeTab, setActiveTab] = useState('quickstart');
+  const [copied, setCopied] = useState(false);
 
-  const copyToClipboard = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedCode(id);
-    setTimeout(() => setCopiedCode(''), 2000);
+  const copyCode = (code: string) => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
-
-  const sections = [
-    { id: 'overview', label: 'Overview', icon: Globe },
-    { id: 'authentication', label: 'Authentication', icon: Key },
-    { id: 'verify', label: 'Verify Content', icon: Shield },
-    { id: 'batch', label: 'Batch Verify', icon: Code },
-    { id: 'sources', label: 'Source Credibility', icon: BarChart3 },
-    { id: 'rate-limits', label: 'Rate Limits', icon: Clock },
-    { id: 'errors', label: 'Error Codes', icon: Lock },
-  ];
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="border-b border-gray-200 sticky top-0 z-40 bg-white">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-14">
-            <div className="flex items-center gap-6">
-              <Link href="/" className="flex items-center gap-2">
-                <img src="/logo.png" alt="CoreValidate Logo" className="h-8 w-auto object-contain" />
-                <span className="font-semibold text-gray-900">CoreValidate</span>
-              </Link>
-              <span className="text-sm text-gray-500">API Documentation</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Link href="/dashboard">
-                <Button variant="outline" size="sm">Dashboard</Button>
-              </Link>
-              <Link href="/sign-up">
-                <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get API Key</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Navbar ctaText="Dashboard" ctaHref="/dashboard" />
 
       <div className="container mx-auto px-4 sm:px-6 py-8">
         <div className="flex gap-8">

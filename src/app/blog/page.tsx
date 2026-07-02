@@ -2,59 +2,37 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Shield, ArrowRight, Clock, User } from 'lucide-react';
+import { Calendar, Clock, ArrowRight, Tag, User } from 'lucide-react';
+import { Navbar } from '@/components/navbar';
+
+const posts = [
+  {
+    title: 'Why Trust Scores Matter More Than Ever',
+    excerpt: 'In an era of deepfakes and AI-generated content, trust scores are becoming the new currency of credibility.',
+    category: 'Trust',
+    date: 'Dec 15, 2024',
+    author: 'CoreValidate Team',
+  },
+  {
+    title: 'Understanding C2PA Content Credentials',
+    excerpt: 'A deep dive into the Content Provenance and Authenticity standard and how it helps verify content.',
+    category: 'Technology',
+    date: 'Dec 10, 2024',
+    author: 'CoreValidate Team',
+  },
+  {
+    title: 'How AI Detection Works',
+    excerpt: 'Exploring the methods and techniques used to detect AI-generated text, images, and videos.',
+    category: 'AI',
+    date: 'Dec 5, 2024',
+    author: 'CoreValidate Team',
+  },
+];
 
 export default function BlogPage() {
-  const posts = [
-    {
-      title: 'Introducing CoreValidate: The Trust Layer for the Internet',
-      excerpt: 'Today we launch CoreValidate, a platform that verifies any content in seconds. Here\'s why we built it and what\'s next.',
-      date: 'July 2, 2025',
-      author: 'The CoreValidate Team',
-      category: 'Launch',
-      slug: 'introducing-corevalidate',
-    },
-    {
-      title: 'How C2PA is Changing Content Authentication',
-      excerpt: 'Content Credentials are becoming the industry standard for proving content authenticity. Here\'s what you need to know.',
-      date: 'June 28, 2025',
-      author: 'The CoreValidate Team',
-      category: 'Technology',
-      slug: 'c2pa-content-authentication',
-    },
-    {
-      title: 'The Deepfake Problem: Why Verification Matters Now',
-      excerpt: 'Deepfakes are getting better every day. Here\'s why verification is more important than ever.',
-      date: 'June 20, 2025',
-      author: 'The CoreValidate Team',
-      category: 'Industry',
-      slug: 'deepfake-problem',
-    },
-    {
-      title: 'Building Trust in the Age of AI',
-      excerpt: 'As AI generates more content, trust becomes the most valuable currency. Here\'s how we\'re building it.',
-      date: 'June 15, 2025',
-      author: 'The CoreValidate Team',
-      category: 'Vision',
-      slug: 'building-trust-ai',
-    },
-  ];
-
   return (
     <div className="min-h-screen bg-white">
-      <header className="border-b border-gray-200">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-14">
-            <Link href="/" className="flex items-center gap-2">
-              <img src="/logo.png" alt="CoreValidate Logo" className="h-8 w-auto object-contain" />
-              <span className="font-semibold text-gray-900">CoreValidate</span>
-            </Link>
-            <Link href="/sign-up">
-              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get started</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="container mx-auto px-4 sm:px-6 py-12 max-w-4xl">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Blog</h1>

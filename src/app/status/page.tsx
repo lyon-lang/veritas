@@ -2,48 +2,13 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Shield, CheckCircle, AlertTriangle, Clock, Activity, Server, Globe, Database } from 'lucide-react';
+import { CheckCircle, Clock, AlertTriangle, Activity } from 'lucide-react';
+import { Navbar } from '@/components/navbar';
 
 export default function StatusPage() {
-  const services = [
-    { name: 'API', status: 'operational', uptime: '99.99%', icon: Server },
-    { name: 'Web Application', status: 'operational', uptime: '99.98%', icon: Globe },
-    { name: 'Database', status: 'operational', uptime: '99.99%', icon: Database },
-    { name: 'Browser Extension', status: 'operational', uptime: '99.95%', icon: Activity },
-  ];
-
-  const incidents = [
-    {
-      title: 'Scheduled maintenance',
-      status: 'resolved',
-      date: 'June 28, 2025',
-      duration: '30 minutes',
-      description: 'Routine database maintenance completed successfully.',
-    },
-    {
-      title: 'API latency increase',
-      status: 'resolved',
-      date: 'June 15, 2025',
-      duration: '2 hours',
-      description: 'Experienced higher than normal API response times due to increased traffic. Scaled infrastructure to resolve.',
-    },
-  ];
-
   return (
     <div className="min-h-screen bg-white">
-      <header className="border-b border-gray-200">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-14">
-            <Link href="/" className="flex items-center gap-2">
-              <img src="/logo.png" alt="CoreValidate Logo" className="h-8 w-auto object-contain" />
-              <span className="font-semibold text-gray-900">CoreValidate</span>
-            </Link>
-            <Link href="/sign-up">
-              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get started</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="container mx-auto px-4 sm:px-6 py-12 max-w-4xl">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">System Status</h1>
