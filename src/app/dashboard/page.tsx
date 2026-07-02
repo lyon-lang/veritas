@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { DashboardSkeleton } from '@/components/skeleton';
 import { 
   Shield, 
   Search, 
@@ -472,11 +473,7 @@ export default function DashboardPage() {
   });
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (

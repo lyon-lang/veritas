@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { AlertsModel } from '@/lib/watchlist';
 import { requireAuth, requireCsrf } from '@/lib/auth';
+import { AlertUpdateSchema } from '@/lib/validation';
+import { validateRequest } from '@/lib/validate';
 
 // GET - Get user's alerts
 export async function GET(request: Request) {
@@ -31,7 +33,14 @@ export async function PATCH(request: Request) {
   try {
     const user = await requireAuth();
     await requireCsrf(request);
-    const { alertId, markAll } = await request.json();
+    
+    const body = await request.json();
+    const validation = validateRequest(AlertUpdateSchema, body);
+    if (!validation.success) {
+      return validation.response;
+    }
+
+    const { alertId, markAll } = validation.data;
 
     if (markAll) {
       AlertsModel.markAllAsRead(user.id);

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import Head from 'next/head';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { 
@@ -17,7 +18,6 @@ import {
   CheckCircle,
   ArrowRight,
   Image as ImageIcon,
-  Video,
   FileText,
   Link as LinkIcon
 } from 'lucide-react';
@@ -140,7 +140,6 @@ export default function ReportPage() {
   const getContentTypeIcon = (type: string) => {
     switch (type) {
       case 'image': return <ImageIcon className="h-5 w-5" />;
-      case 'video': return <Video className="h-5 w-5" />;
       case 'text': return <FileText className="h-5 w-5" />;
       case 'url': return <LinkIcon className="h-5 w-5" />;
       default: return <Globe className="h-5 w-5" />;
@@ -173,7 +172,19 @@ export default function ReportPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <Head>
+        <title>{`Verification Report - Trust Score: ${report.trustScore}/100 | CoreValidate`}</title>
+        <meta name="description" content={`Content verification report with trust score ${report.trustScore}/100. Verdict: ${report.verdict}. Verified by CoreValidate.`} />
+        <meta property="og:title" content={`Verification Report - Trust Score: ${report.trustScore}/100`} />
+        <meta property="og:description" content={`Verdict: ${report.verdict}. Confidence: ${report.confidence}%. Verified by CoreValidate.`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={report.shareUrl} />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={`Verification Report - Trust Score: ${report.trustScore}/100`} />
+        <meta name="twitter:description" content={`Verdict: ${report.verdict}. Verified by CoreValidate.`} />
+      </Head>
+      <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 sm:px-6">
@@ -327,5 +338,6 @@ export default function ReportPage() {
         </div>
       </main>
     </div>
+    </>
   );
 }

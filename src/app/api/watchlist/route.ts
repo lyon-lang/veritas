@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { WatchlistModel, AlertsModel } from '@/lib/watchlist';
 import { requireAuth, requireCsrf } from '@/lib/auth';
+import { WatchlistCreateSchema, WatchlistUpdateSchema } from '@/lib/validation';
+import { validateRequest } from '@/lib/validate';
 
 // GET - Get user's watchlist
 export async function GET(request: Request) {
@@ -44,11 +46,14 @@ export async function POST(request: Request) {
   try {
     const user = await requireAuth();
     await requireCsrf(request);
-    const { url, label } = await request.json();
-
-    if (!url) {
-      return NextResponse.json({ error: 'URL is required' }, { status: 400 });
+    
+    const body = await request.json();
+    const validation = validateRequest(WatchlistCreateSchema, body);
+    if (!validation.success) {
+      return validation.response;
     }
+
+    const { url, label } = validation.data;
 
     let hostname = url;
     try {
@@ -81,11 +86,14 @@ export async function PATCH(request: Request) {
   try {
     const user = await requireAuth();
     await requireCsrf(request);
-    const { id, label } = await request.json();
-
-    if (!id) {
-      return NextResponse.json({ error: 'Watchlist ID is required' }, { status: 400 });
+    
+    const body = await request.json();
+    const validation = validateRequest(WatchlistUpdateSchema, body);
+    if (!validation.success) {
+      return validation.response;
     }
+
+    const { id, label } = validation.data;
 
     const existing = WatchlistModel.findById(id);
     if (!existing || existing.user_id !== user.id) {

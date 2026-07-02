@@ -4,8 +4,8 @@ import { VerificationModel, SourceModel } from '@/lib/models';
 import { getAuthUser } from '@/lib/auth';
 import { checkUserRateLimit } from '@/lib/rate-limit';
 import { calculateVerdict } from '@/lib/utils';
-
-const MAX_CONTENT_LENGTH = 10000;
+import { VerifySchema } from '@/lib/validation';
+import { validateRequest } from '@/lib/validate';
 
 // Simplified verification - focuses on what Gemini does well
 export async function POST(request: Request) {
@@ -18,30 +18,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const { content, type } = await request.json();
-
-    if (!content || !type) {
-      return NextResponse.json(
-        { error: 'Content and type are required' },
-        { status: 400 }
-      );
+    const body = await request.json();
+    const validation = validateRequest(VerifySchema, body);
+    if (!validation.success) {
+      return validation.response;
     }
 
-    const validTypes = ['url', 'text'];
-    if (!validTypes.includes(type)) {
-      return NextResponse.json(
-        { error: 'Supported types: url, text' },
-        { status: 400 }
-      );
-    }
-
-    if (typeof content === 'string' && content.length > MAX_CONTENT_LENGTH) {
-      return NextResponse.json(
-        { error: `Content exceeds maximum length of ${MAX_CONTENT_LENGTH} characters` },
-        { status: 400 }
-      );
-    }
-
+    const { content, type } = validation.data;
     const user = await getAuthUser();
     const checks = [];
     let trustScore = 50;
