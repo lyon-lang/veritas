@@ -11,7 +11,7 @@ export default function TermsPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center h-14">
             <Link href="/" className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-emerald-600" />
+              <img src="/logo.png" alt="CoreValidate Logo" className="h-8 w-auto object-contain" />
               <span className="font-semibold text-gray-900">CoreValidate</span>
             </Link>
           </div>

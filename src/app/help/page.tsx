@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Shield, Search, ChevronDown, ChevronRight, HelpCircle, Book, MessageSquare, ArrowRight } from 'lucide-react';
+import { Search, ChevronDown, ChevronRight, HelpCircle, Book, MessageSquare, ArrowRight } from 'lucide-react';
+import { Navbar } from '@/components/navbar';
 
 export default function HelpCenterPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -56,7 +57,7 @@ export default function HelpCenterPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14">
             <Link href="/" className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-emerald-600" />
+              <img src="/logo.png" alt="CoreValidate Logo" className="h-8 w-auto object-contain" />
               <span className="font-semibold text-gray-900">CoreValidate</span>
             </Link>
             <Link href="/sign-up">

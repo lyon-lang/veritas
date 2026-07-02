@@ -90,6 +90,7 @@ export default function DashboardPage() {
   const [filterType, setFilterType] = useState<string>('all');
   const [filterVerdict, setFilterVerdict] = useState<string>('all');
   const [showFilters, setShowFilters] = useState(false);
+  const [showMobileNav, setShowMobileNav] = useState(false);
   const [copied, setCopied] = useState(false);
   const [watchlist, setWatchlist] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
@@ -495,7 +496,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between h-14">
             <div className="flex items-center gap-6">
               <Link href="/" className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-emerald-600" />
+                <img src="/logo.png" alt="CoreValidate Logo" className="h-8 w-auto object-contain" />
                 <span className="font-semibold text-gray-900">CoreValidate</span>
               </Link>
               <nav className="hidden md:flex items-center gap-1" role="tablist" aria-label="Dashboard sections">
@@ -528,7 +529,7 @@ export default function DashboardPage() {
               </nav>
               <div className="md:hidden relative">
                 <button
-                  onClick={() => setShowFilters(!showFilters)}
+                  onClick={() => setShowMobileNav(!showMobileNav)}
                   className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-md border border-gray-200 text-gray-700"
                 >
                   {(() => {
@@ -549,7 +550,7 @@ export default function DashboardPage() {
                   })()}
                   <ChevronDown className="h-4 w-4" />
                 </button>
-                {showFilters && (
+                {showMobileNav && (
                   <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[160px]">
                     {[
                       { id: 'overview', label: 'Overview', icon: Activity },
@@ -560,7 +561,7 @@ export default function DashboardPage() {
                     ].map((tab) => (
                       <button
                         key={tab.id}
-                        onClick={() => { setActiveTab(tab.id); setShowFilters(false); }}
+                        onClick={() => { setActiveTab(tab.id); setShowMobileNav(false); }}
                         className={`w-full flex items-center gap-2 px-3 py-2 text-sm ${
                           activeTab === tab.id
                             ? 'bg-emerald-50 text-emerald-700'
