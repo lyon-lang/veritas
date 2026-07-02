@@ -11,6 +11,7 @@
   "dependencies": {
     "@clerk/nextjs": "^7.5.12",
     "@contentauth/c2pa-web": "^0.12.0",
+    "@google/generative-ai": "^0.24.1",
     "@supabase/supabase-js": "^2.110.0",
     "@types/uuid": "^10.0.0",
     "better-sqlite3": "^12.11.1",

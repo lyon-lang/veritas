@@ -73,40 +73,40 @@ export default function Home() {
 
   const features = [
     {
-      icon: Fingerprint,
-      title: 'C2PA Verification',
-      description: 'Read and verify Content Credentials - the industry standard from Adobe, Microsoft, and more.',
+      icon: Globe,
+      title: 'Source Credibility',
+      description: 'Score publishers based on reputation, fact-checking history, and editorial standards.',
       color: 'blue'
     },
     {
       icon: ScanLine,
-      title: 'AI Detection',
-      description: 'Detect deepfakes and AI-generated images, videos, and text with advanced algorithms.',
+      title: 'AI Content Detection',
+      description: 'Detect AI-generated text and content with advanced analysis.',
       color: 'purple'
     },
     {
-      icon: Globe,
-      title: 'Source Credibility',
-      description: 'Score publishers based on reputation, fact-checking history, and editorial standards.',
+      icon: FileText,
+      title: 'Claims Analysis',
+      description: 'Extract and verify factual claims from any text content.',
       color: 'green'
     },
     {
-      icon: Eye,
-      title: 'Video Analysis',
-      description: 'Verify videos for manipulation, metadata integrity, and platform authenticity.',
+      icon: Shield,
+      title: 'Trust Scoring',
+      description: 'Get instant trust scores from 0-100 with detailed breakdowns.',
       color: 'orange'
-    },
-    {
-      icon: Layers,
-      title: 'Multi-Modal',
-      description: 'Verify images, videos, text, URLs - all in one platform.',
-      color: 'indigo'
     },
     {
       icon: Zap,
       title: 'Instant Results',
       description: 'Get trust scores in under 1 second. No waiting, no guessing.',
       color: 'yellow'
+    },
+    {
+      icon: Globe,
+      title: 'API Access',
+      description: 'Integrate verification into your apps with our developer API.',
+      color: 'indigo'
     }
   ];
 
@@ -118,8 +118,8 @@ export default function Home() {
   ];
 
   const steps = [
-    { step: '01', title: 'Paste content', description: 'Enter a URL, upload an image, or paste text.' },
-    { step: '02', title: 'We analyze', description: 'AI checks C2PA, detects fakes, scores the source.' },
+    { step: '01', title: 'Paste content', description: 'Enter a URL or paste text to verify.' },
+    { step: '02', title: 'We analyze', description: 'AI checks source credibility, detects AI content, analyzes claims.' },
     { step: '03', title: 'Get trust score', description: 'Instant score with detailed breakdown.' }
   ];
 

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { validateApiKey, checkRateLimit } from '@/lib/api-keys';
-import { analyzeContent, analyzeTextAuthenticity } from '@/lib/openai';
+import { analyzeContent, analyzeTextAuthenticity } from '@/lib/gemini';
 import { VerificationModel, SourceModel } from '@/lib/models';
 import { readC2PA, calculateC2paScore } from '@/lib/c2pa';
 import { analyzeVideo, calculateVideoScore } from '@/lib/video';

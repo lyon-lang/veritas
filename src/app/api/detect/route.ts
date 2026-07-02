@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { analyzeContent, analyzeTextAuthenticity } from '@/lib/openai';
+import { analyzeContent, analyzeTextAuthenticity } from '@/lib/gemini';
 
 // POST - Detect AI-generated content
 export async function POST(request: Request) {

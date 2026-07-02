@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { analyzeContent, analyzeTextAuthenticity, extractClaims } from '@/lib/openai';
+import { analyzeContent, analyzeTextAuthenticity, extractClaims } from '@/lib/gemini';
 
 // POST - Get trust score
 export async function POST(request: Request) {
