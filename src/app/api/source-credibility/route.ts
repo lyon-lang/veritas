@@ -19,8 +19,8 @@ export async function GET(request: Request) {
 
     if (source) {
       return NextResponse.json({
-        domain,
         ...source,
+        domain,
         verified: true,
       });
     }
@@ -62,8 +62,8 @@ export async function POST(request: Request) {
       
       if (source) {
         return {
-          domain,
           ...source,
+          domain,
           verified: true,
         };
       }
