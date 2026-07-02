@@ -146,9 +146,10 @@ export default function Home() {
   ];
 
   const pricing = [
-    { name: 'Free', price: 0, features: ['Basic trust scores', '5 verifications/day', 'Browser extension'], popular: false },
-    { name: 'Pro', price: 10, features: ['Detailed scores', 'Unlimited verifications', 'API access', 'Priority support'], popular: true },
-    { name: 'Enterprise', price: null, features: ['Custom integrations', 'Dedicated support', 'SLA', 'White label'], popular: false }
+    { name: 'Free', price: 0, features: ['Basic trust scores', 'Limited verifications', 'Browser extension'], popular: false },
+    { name: 'Consumer', price: 10, features: ['Unlimited verifications', 'Detailed breakdowns', 'Shareable reports', 'Priority support'], popular: true },
+    { name: 'Professional', price: 50, features: ['API access', 'Batch verification', 'Team features', 'Custom reports'], popular: false },
+    { name: 'Enterprise', price: null, features: ['Volume pricing', 'Compliance features', 'Dedicated support', 'Custom integrations'], popular: false }
   ];
 
   return (
@@ -378,26 +379,26 @@ export default function Home() {
 
       {/* Pricing */}
       <section id="pricing" className="py-24 px-4">
-        <div className="container mx-auto max-w-4xl">
+        <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Simple pricing</h2>
             <p className="text-lg text-gray-600">Start free, upgrade when ready</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {pricing.map((plan, i) => (
-              <div key={i} className={`bg-white rounded-2xl p-8 ${plan.popular ? 'border-2 border-emerald-600 shadow-xl relative' : 'border border-gray-200'}`}>
+              <div key={i} className={`bg-white rounded-2xl p-6 ${plan.popular ? 'border-2 border-emerald-600 shadow-xl relative' : 'border border-gray-200'}`}>
                 {plan.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-600 text-white px-4 py-1 rounded-full text-xs font-medium">Most popular</div>}
-                <div className="mb-8">
+                <div className="mb-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">{plan.name}</h3>
                   {plan.price !== null ? (
-                    <div className="flex items-baseline gap-1"><span className="text-4xl font-bold text-gray-900">${plan.price}</span><span className="text-gray-500">/mo</span></div>
+                    <div className="flex items-baseline gap-1"><span className="text-3xl font-bold text-gray-900">${plan.price}</span><span className="text-gray-500 text-sm">/mo</span></div>
                   ) : (
-                    <span className="text-3xl font-bold text-gray-900">Custom</span>
+                    <span className="text-2xl font-bold text-gray-900">Custom</span>
                   )}
                 </div>
-                <ul className="space-y-4 mb-8">
+                <ul className="space-y-3 mb-6">
                   {plan.features.map((f, j) => (
-                    <li key={j} className="flex items-center gap-3 text-sm text-gray-600"><CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />{f}</li>
+                    <li key={j} className="flex items-center gap-2 text-sm text-gray-600"><CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />{f}</li>
                   ))}
                 </ul>
                 <Link href="/sign-up">
