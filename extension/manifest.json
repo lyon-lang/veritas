@@ -10,6 +10,9 @@
   "host_permissions": [
     "https://veritas.vercel.app/*"
   ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline'"
+  },
   "action": {
     "default_popup": "src/popup.html",
     "default_icon": {

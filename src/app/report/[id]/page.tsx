@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useParams } from 'next/navigation';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -40,7 +40,7 @@ interface Report {
   shareUrl: string;
 }
 
-export default function ReportPage() {
+function ReportContent() {
   const params = useParams();
   const [report, setReport] = useState<Report | null>(null);
   const [loading, setLoading] = useState(true);
@@ -325,5 +325,27 @@ export default function ReportPage() {
       </main>
     </div>
     </>
+  );
+}
+
+function ReportLoading() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar ctaText="Verify Content" ctaHref="/dashboard" />
+      <main className="container mx-auto px-4 sm:px-6 py-8 max-w-2xl">
+        <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
+          <p className="mt-4 text-gray-500">Loading report...</p>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export default function ReportPage() {
+  return (
+    <Suspense fallback={<ReportLoading />}>
+      <ReportContent />
+    </Suspense>
   );
 }
