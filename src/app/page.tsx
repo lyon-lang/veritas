@@ -153,10 +153,10 @@ export default function Home() {
   ];
 
   const pricing = [
-    { name: 'Free', price: 0, features: ['Basic trust scores', '15 verifications/month', 'Shareable reports', 'Browser extension'], popular: false },
-    { name: 'Consumer', price: 10, features: ['Unlimited verifications', 'Detailed breakdowns', 'Shareable reports', 'Priority support'], popular: true },
-    { name: 'Professional', price: 50, features: ['API access', 'Batch verification', 'Team features', 'Custom reports'], popular: false },
-    { name: 'Enterprise', price: null, features: ['Volume pricing', 'Compliance features', 'Dedicated support', 'Custom integrations'], popular: false }
+    { name: 'Free', price: 0, features: ['15 Credits / month', 'Text & Image Verification', 'Shareable reports', 'Browser extension'], popular: false },
+    { name: 'Consumer', price: 10, features: ['1,000 Credits / month', 'Video & Audio Verification', 'Detailed breakdowns', 'Priority support'], popular: true },
+    { name: 'Professional', price: 50, features: ['10,000 Credits / month', 'API access', 'Batch verification', 'Team features'], popular: false },
+    { name: 'Enterprise', price: null, features: ['Custom Credit Limits', 'On-Premise Deployment', 'Dedicated support SLAs', 'Custom integrations'], popular: false }
   ];
 
   return (
@@ -413,6 +413,15 @@ export default function Home() {
                 </Link>
               </div>
             ))}
+          </div>
+
+          <div className="mt-12 text-center max-w-2xl mx-auto bg-gray-50 rounded-2xl p-6 border border-gray-100">
+            <h4 className="text-sm font-semibold text-gray-900 mb-2">How Credits Work</h4>
+            <p className="text-sm text-gray-600">
+              Verifying different types of content requires varying amounts of AI compute power. 
+              <br className="hidden sm:block" />
+              <strong>1 Credit</strong> = Text/URL check. <strong>5 Credits</strong> = Image check. <strong>10 Credits/min</strong> = Video/Audio check.
+            </p>
           </div>
         </div>
       </section>

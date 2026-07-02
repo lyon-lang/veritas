@@ -362,7 +362,8 @@ export default function DocsPage() {
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-4">Rate Limits</h1>
                 <p className="text-gray-600 mb-6">
-                  API requests are rate limited based on your plan.
+                  API limits are based on your plan's Credit balance. 
+                  <br /><strong>Costs:</strong> Text/URL = 1 credit, Image = 5 credits, Video/Audio = 10 credits/minute.
                 </p>
 
                 <div className="overflow-x-auto mb-6">
@@ -370,25 +371,25 @@ export default function DocsPage() {
                     <thead>
                       <tr className="border-b border-gray-200">
                         <th className="text-left py-3 px-4 font-semibold text-gray-900">Plan</th>
-                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Requests/Minute</th>
-                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Requests/Day</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Req/Minute</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Credits/Month</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr className="border-b border-gray-100">
                         <td className="py-3 px-4">Free</td>
                         <td className="py-3 px-4">10</td>
-                        <td className="py-3 px-4">100</td>
+                        <td className="py-3 px-4">15</td>
                       </tr>
                       <tr className="border-b border-gray-100">
-                        <td className="py-3 px-4">Pro ($10/mo)</td>
+                        <td className="py-3 px-4">Professional ($50/mo)</td>
                         <td className="py-3 px-4">100</td>
                         <td className="py-3 px-4">10,000</td>
                       </tr>
                       <tr>
                         <td className="py-3 px-4">Enterprise</td>
                         <td className="py-3 px-4">1,000</td>
-                        <td className="py-3 px-4">100,000</td>
+                        <td className="py-3 px-4">Custom</td>
                       </tr>
                     </tbody>
                   </table>

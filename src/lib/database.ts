@@ -29,7 +29,7 @@ function initializeDatabase(db: Database.Database) {
       password_hash TEXT,
       plan TEXT DEFAULT 'free',
       verifications_today INTEGER DEFAULT 0,
-      verifications_limit INTEGER DEFAULT 5,
+      verifications_limit INTEGER DEFAULT 15,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
