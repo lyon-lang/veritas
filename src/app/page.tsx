@@ -29,7 +29,8 @@ import {
   ChevronRight,
   TrendingUp,
   BadgeCheck,
-  Layers
+  Layers,
+  FileText
 } from 'lucide-react';
 
 export default function Home() {
