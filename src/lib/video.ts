@@ -1,6 +1,8 @@
 // Video Verification Service
 // Analyzes videos for deepfakes, metadata, and authenticity
 
+import { analyzeVideoForDeepfake, analyzeVideoMetadata, calculateDeepfakeRiskScore, DeepfakeAnalysisResult } from './deepfake';
+
 export interface VideoResult {
   isAuthentic: boolean;
   confidence: number;
@@ -44,6 +46,7 @@ export interface DeepfakeResult {
   lipSyncDetected: boolean;
   manipulationAreas?: string[];
   details: string;
+  riskLevel?: string;
 }
 
 export interface SourceResult {
@@ -59,35 +62,55 @@ export interface SourceResult {
   };
 }
 
-// Analyze video URL
 export async function analyzeVideo(url: string): Promise<VideoResult> {
   const checks: VideoCheck[] = [];
-  let totalScore = 0;
-  let checkCount = 0;
 
-  // 1. Metadata Analysis
-  const metadata = await analyzeVideoMetadata(url);
-  const metadataCheck = evaluateMetadata(metadata);
-  checks.push(metadataCheck);
-  totalScore += metadataCheck.score;
-  checkCount++;
-
-  // 2. Source Analysis
+  // 1. Source Analysis (fast, no API call)
   const source = await analyzeVideoSource(url);
   const sourceCheck = evaluateSource(source);
   checks.push(sourceCheck);
-  totalScore += sourceCheck.score;
-  checkCount++;
 
-  // 3. Deepfake Detection
-  const deepfake = await detectDeepfake(url);
-  const deepfakeCheck = evaluateDeepfake(deepfake);
+  // 2. Platform Metadata Analysis
+  const platformInfo = await analyzeVideoMetadata(url);
+  const metadata: VideoMetadata = {
+    hasEdits: false,
+  };
+
+  if (platformInfo.potentialIssues.length > 0) {
+    checks.push({
+      name: 'Platform Analysis',
+      status: 'warning',
+      score: 60,
+      details: platformInfo.potentialIssues.join('. '),
+    });
+  } else {
+    checks.push({
+      name: 'Platform Analysis',
+      status: 'passed',
+      score: 80,
+      details: `Platform: ${platformInfo.platform}`,
+    });
+  }
+
+  // 3. Deepfake Detection (Gemini multimodal)
+  const deepfakeAnalysis = await analyzeVideoForDeepfake(url);
+  const deepfake: DeepfakeResult = {
+    isDeepfake: deepfakeAnalysis.isDeepfake,
+    confidence: deepfakeAnalysis.confidence,
+    faceSwapDetected: deepfakeAnalysis.faceSwapDetected,
+    voiceCloneDetected: deepfakeAnalysis.voiceCloneDetected,
+    lipSyncDetected: deepfakeAnalysis.lipSyncDetected,
+    manipulationAreas: deepfakeAnalysis.manipulationAreas,
+    details: deepfakeAnalysis.details,
+    riskLevel: deepfakeAnalysis.riskLevel,
+  };
+
+  const deepfakeCheck = evaluateDeepfake(deepfakeAnalysis);
   checks.push(deepfakeCheck);
-  totalScore += deepfakeCheck.score;
-  checkCount++;
 
   // Calculate overall score
-  const overallScore = Math.round(totalScore / checkCount);
+  const overallScore = calculateVideoScore({ isAuthentic: true, confidence: 50, checks, metadata, deepfake, source });
+
   const isAuthentic = overallScore >= 60 && !deepfake.isDeepfake;
 
   return {
@@ -100,50 +123,6 @@ export async function analyzeVideo(url: string): Promise<VideoResult> {
   };
 }
 
-// Analyze video metadata
-async function analyzeVideoMetadata(url: string): Promise<VideoMetadata> {
-  try {
-    // In production, this would use ffprobe or similar
-    // For now, return basic analysis based on URL
-    
-    const metadata: VideoMetadata = {
-      hasEdits: false,
-    };
-
-    // Try to extract info from URL
-    const urlObj = new URL(url);
-    const hostname = urlObj.hostname;
-
-    // Platform detection
-    if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
-      metadata.format = 'video/mp4';
-    } else if (hostname.includes('vimeo.com')) {
-      metadata.format = 'video/mp4';
-    } else if (hostname.includes('tiktok.com')) {
-      metadata.format = 'video/mp4';
-    } else if (hostname.includes('twitter.com') || hostname.includes('x.com')) {
-      metadata.format = 'video/mp4';
-    }
-
-    // TODO: Implement actual metadata extraction using ffprobe
-    // This would extract:
-    // - Duration
-    // - Resolution
-    // - Codec
-    // - Bitrate
-    // - FPS
-    // - Creation date
-    // - Device/software info
-    // - GPS location (if available)
-
-    return metadata;
-  } catch (error) {
-    console.error('Video metadata analysis error:', error);
-    return { hasEdits: false };
-  }
-}
-
-// Analyze video source
 async function analyzeVideoSource(url: string): Promise<SourceResult> {
   try {
     const urlObj = new URL(url);
@@ -153,10 +132,9 @@ async function analyzeVideoSource(url: string): Promise<SourceResult> {
     let verified = false;
     let credibility = 50;
 
-    // Platform detection and credibility
     if (hostname.includes('youtube.com')) {
       platform = 'YouTube';
-      credibility = 70; // Varies by channel
+      credibility = 70;
     } else if (hostname.includes('vimeo.com')) {
       platform = 'Vimeo';
       credibility = 75;
@@ -195,8 +173,7 @@ async function analyzeVideoSource(url: string): Promise<SourceResult> {
       verified,
       credibility,
     };
-  } catch (error) {
-    console.error('Video source analysis error:', error);
+  } catch {
     return {
       verified: false,
       credibility: 50,
@@ -204,74 +181,6 @@ async function analyzeVideoSource(url: string): Promise<SourceResult> {
   }
 }
 
-// Detect deepfake in video
-async function detectDeepfake(url: string): Promise<DeepfakeResult> {
-  try {
-    // TODO: Integrate with actual deepfake detection API
-    // Options:
-    // 1. Microsoft Video Authenticator (free tier)
-    // 2. Sensity AI (paid)
-    // 3. Reality Defender (enterprise)
-    // 4. Deepware (open source)
-
-    // For now, return placeholder
-    // In production, this would:
-    // 1. Extract frames from video
-    // 2. Analyze each frame for face swaps
-    // 3. Analyze audio for voice cloning
-    // 4. Check lip-sync consistency
-    // 5. Return detection results
-
-    return {
-      isDeepfake: false,
-      confidence: 50,
-      faceSwapDetected: false,
-      voiceCloneDetected: false,
-      lipSyncDetected: false,
-      details: 'Deepfake detection requires API integration',
-    };
-  } catch (error) {
-    console.error('Deepfake detection error:', error);
-    return {
-      isDeepfake: false,
-      confidence: 0,
-      faceSwapDetected: false,
-      voiceCloneDetected: false,
-      lipSyncDetected: false,
-      details: 'Unable to perform deepfake detection',
-    };
-  }
-}
-
-// Evaluate metadata
-function evaluateMetadata(metadata: VideoMetadata): VideoCheck {
-  let score = 50;
-  let status: 'passed' | 'failed' | 'warning' = 'warning';
-  let details = '';
-
-  if (metadata.hasEdits) {
-    score -= 10;
-    details = 'Video appears to have been edited';
-    status = 'warning';
-  } else {
-    score += 10;
-    details = 'No obvious edits detected';
-    status = 'passed';
-  }
-
-  if (metadata.software) {
-    details += `. Software: ${metadata.software}`;
-  }
-
-  return {
-    name: 'Metadata Analysis',
-    status,
-    score: Math.max(0, Math.min(100, score)),
-    details,
-  };
-}
-
-// Evaluate source
 function evaluateSource(source: SourceResult): VideoCheck {
   let score = source.credibility;
   let status: 'passed' | 'failed' | 'warning' = 'warning';
@@ -299,26 +208,36 @@ function evaluateSource(source: SourceResult): VideoCheck {
   };
 }
 
-// Evaluate deepfake
-function evaluateDeepfake(deepfake: DeepfakeResult): VideoCheck {
-  let score = 80; // Default: assume authentic
+function evaluateDeepfake(analysis: DeepfakeAnalysisResult): VideoCheck {
+  let score: number;
   let status: 'passed' | 'failed' | 'warning' = 'passed';
   let details = '';
 
-  if (deepfake.isDeepfake) {
+  if (analysis.isDeepfake) {
     score = 20;
     status = 'failed';
     details = 'Deepfake detected';
-    
-    if (deepfake.faceSwapDetected) details += '. Face swap detected';
-    if (deepfake.voiceCloneDetected) details += '. Voice clone detected';
-    if (deepfake.lipSyncDetected) details += '. Lip-sync manipulation detected';
-  } else if (deepfake.confidence < 50) {
+
+    if (analysis.faceSwapDetected) details += '. Face swap detected';
+    if (analysis.voiceCloneDetected) details += '. Voice clone detected';
+    if (analysis.lipSyncDetected) details += '. Lip-sync manipulation detected';
+    if (analysis.manipulationAreas.length > 0) {
+      details += `. Manipulation areas: ${analysis.manipulationAreas.join(', ')}`;
+    }
+  } else if (analysis.confidence < 50) {
     score = 50;
     status = 'warning';
     details = 'Unable to fully verify authenticity';
+  } else if (analysis.riskLevel === 'medium') {
+    score = 65;
+    status = 'warning';
+    details = 'Some manipulation indicators detected';
+  } else if (analysis.riskLevel === 'high') {
+    score = 40;
+    status = 'warning';
+    details = 'Multiple manipulation indicators detected';
   } else {
-    score = 80;
+    score = 85;
     status = 'passed';
     details = 'No deepfake detected';
   }
@@ -331,35 +250,34 @@ function evaluateDeepfake(deepfake: DeepfakeResult): VideoCheck {
   };
 }
 
-// Calculate video trust score (0-100)
 export function calculateVideoScore(result: VideoResult): number {
   let totalScore = 0;
   let weight = 0;
 
-  // Source credibility (40% weight)
+  // Source credibility (30% weight)
   if (result.source) {
-    totalScore += result.source.credibility * 0.4;
-    weight += 0.4;
+    totalScore += result.source.credibility * 0.3;
+    weight += 0.3;
   }
 
-  // Deepfake detection (40% weight)
+  // Deepfake detection (50% weight - most important)
   if (result.deepfake) {
-    const deepfakeScore = result.deepfake.isDeepfake ? 20 : 80;
-    totalScore += deepfakeScore * 0.4;
-    weight += 0.4;
+    const deepfakeScore = result.deepfake.isDeepfake ? 20 : 85;
+    totalScore += deepfakeScore * 0.5;
+    weight += 0.5;
   }
 
-  // Metadata (20% weight)
-  if (result.metadata) {
-    const metadataScore = result.metadata.hasEdits ? 40 : 70;
-    totalScore += metadataScore * 0.2;
+  // Platform/other checks (20% weight)
+  const otherChecks = result.checks.filter(c => c.name !== 'Source Credibility' && c.name !== 'Deepfake Detection');
+  if (otherChecks.length > 0) {
+    const avgOtherScore = otherChecks.reduce((sum, c) => sum + c.score, 0) / otherChecks.length;
+    totalScore += avgOtherScore * 0.2;
     weight += 0.2;
   }
 
-  // Normalize
   if (weight > 0) {
     return Math.round(totalScore / weight);
   }
 
-  return 50; // Default
+  return 50;
 }
