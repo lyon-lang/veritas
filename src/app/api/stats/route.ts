@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { VerificationModel, StatsModel } from '@/lib/models';
 import { getAuthUser } from '@/lib/auth';
+import type { StatsTotalsRow, StatsRow } from '@/types';
 
 // GET - Get verification stats
 export async function GET(request: Request) {
@@ -21,31 +22,31 @@ export async function GET(request: Request) {
 
     if (Array.isArray(weeklyStats)) {
       for (const day of weeklyStats) {
-        weeklyTotals.total += (day as any).total_verifications || 0;
-        weeklyTotals.authentic += (day as any).authentic_count || 0;
-        weeklyTotals.suspicious += (day as any).suspicious_count || 0;
-        weeklyTotals.fake += (day as any).fake_count || 0;
+        weeklyTotals.total += day.total_verifications || 0;
+        weeklyTotals.authentic += day.authentic_count || 0;
+        weeklyTotals.suspicious += day.suspicious_count || 0;
+        weeklyTotals.fake += day.fake_count || 0;
       }
     }
 
-    const total = (overallStats as any)?.total || 0;
+    const total = overallStats?.total || 0;
     const stats = {
       overall: {
         total,
-        authentic: (overallStats as any)?.authentic || 0,
-        suspicious: (overallStats as any)?.suspicious || 0,
-        fake: (overallStats as any)?.fake || 0,
-        avgScore: Math.round((overallStats as any)?.avg_score || 0),
-        authenticPercent: total > 0 ? Math.round(((overallStats as any)?.authentic || 0) / total * 100) : 0,
-        suspiciousPercent: total > 0 ? Math.round(((overallStats as any)?.suspicious || 0) / total * 100) : 0,
-        fakePercent: total > 0 ? Math.round(((overallStats as any)?.fake || 0) / total * 100) : 0,
+        authentic: overallStats?.authentic || 0,
+        suspicious: overallStats?.suspicious || 0,
+        fake: overallStats?.fake || 0,
+        avgScore: Math.round(overallStats?.avg_score || 0),
+        authenticPercent: total > 0 ? Math.round((overallStats?.authentic || 0) / total * 100) : 0,
+        suspiciousPercent: total > 0 ? Math.round((overallStats?.suspicious || 0) / total * 100) : 0,
+        fakePercent: total > 0 ? Math.round((overallStats?.fake || 0) / total * 100) : 0,
       },
       today: {
-        total: (dailyStats as any)?.total_verifications || 0,
-        authentic: (dailyStats as any)?.authentic_count || 0,
-        suspicious: (dailyStats as any)?.suspicious_count || 0,
-        fake: (dailyStats as any)?.fake_count || 0,
-        avgScore: Math.round((dailyStats as any)?.avg_trust_score || 0),
+        total: dailyStats?.total_verifications || 0,
+        authentic: dailyStats?.authentic_count || 0,
+        suspicious: dailyStats?.suspicious_count || 0,
+        fake: dailyStats?.fake_count || 0,
+        avgScore: Math.round(dailyStats?.avg_trust_score || 0),
       },
       week: weeklyTotals,
     };

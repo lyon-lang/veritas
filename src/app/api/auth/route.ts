@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { UserModel } from '@/lib/models';
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
+import type { UserRow } from '@/types';
 
 const SALT_LENGTH = 32;
 const HASH_LENGTH = 64;
@@ -28,7 +29,7 @@ function generateCsrfToken(): string {
   return crypto.randomBytes(32).toString('hex');
 }
 
-function setAuthCookies(cookieStore: any, userId: string, csrfToken: string) {
+function setAuthCookies(cookieStore: ReturnType<typeof cookies> extends Promise<infer S> ? S : never, userId: string, csrfToken: string) {
   cookieStore.set('user_id', userId, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -60,7 +61,7 @@ export async function POST(request: Request) {
       }
 
       // Check if user exists
-      const existingUser = UserModel.findByEmail(email) as any;
+      const existingUser = UserModel.findByEmail(email);
       if (existingUser) {
         return NextResponse.json(
           { error: 'Email already registered' },
@@ -75,10 +76,10 @@ export async function POST(request: Request) {
       // Set cookies
       const cookieStore = await cookies();
       const csrfToken = generateCsrfToken();
-      setAuthCookies(cookieStore, (user as any).id, csrfToken);
+      setAuthCookies(cookieStore, user.id, csrfToken);
 
       return NextResponse.json({
-        user: { id: (user as any).id, email, name },
+        user: { id: user.id, email, name },
         message: 'Account created successfully',
       });
     }
@@ -92,7 +93,7 @@ export async function POST(request: Request) {
       }
 
       // Find user
-      const user = UserModel.findByEmail(email) as any;
+      const user = UserModel.findByEmail(email);
       if (!user) {
         return NextResponse.json(
           { error: 'Invalid email or password' },
@@ -150,7 +151,7 @@ export async function GET() {
       return NextResponse.json({ user: null });
     }
 
-    const user = UserModel.findById(userId) as any;
+    const user = UserModel.findById(userId);
     if (!user) {
       return NextResponse.json({ user: null });
     }

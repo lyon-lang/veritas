@@ -17,18 +17,18 @@ export async function GET(request: Request) {
     return NextResponse.json({
       verifications,
       stats: {
-        total: (stats as any)?.total || 0,
-        authentic: (stats as any)?.authentic || 0,
-        suspicious: (stats as any)?.suspicious || 0,
-        fake: (stats as any)?.fake || 0,
-        avgScore: Math.round((stats as any)?.avg_score || 0),
+        total: stats?.total || 0,
+        authentic: stats?.authentic || 0,
+        suspicious: stats?.suspicious || 0,
+        fake: stats?.fake || 0,
+        avgScore: Math.round(stats?.avg_score || 0),
       },
       dailyStats,
-      total: (stats as any)?.total || 0,
+      total: stats?.total || 0,
       hasMore: verifications.length === limit,
     });
-  } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
     console.error('Error fetching verifications:', error);
@@ -61,11 +61,11 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ verification, message: 'Verification saved' });
-  } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
-    if (error.message === 'CSRF_INVALID') {
+    if (error instanceof Error && error.message === 'CSRF_INVALID') {
       return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
     }
     console.error('Error saving verification:', error);
