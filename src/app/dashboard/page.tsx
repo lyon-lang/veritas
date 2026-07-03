@@ -44,36 +44,27 @@ import {
   CreditCard,
   Lock
 } from 'lucide-react';
+import type {
+  UserPublic,
+  Verification as VerificationType,
+  VerificationCheck,
+  VerificationStats,
+  BatchVerificationResponse,
+  WatchlistItem,
+  Alert,
+  Plan,
+  VerifyResponse,
+} from '@/types';
 
-interface Verification {
+interface DashboardVerification {
   id: string;
   url?: string;
   content_type: string;
   trust_score: number;
   verdict: string;
   confidence: number;
-  checks: any[];
+  checks: VerificationCheck[];
   created_at: string;
-}
-
-interface Stats {
-  overall: {
-    total: number;
-    authentic: number;
-    suspicious: number;
-    fake: number;
-    avgScore: number;
-    authenticPercent: number;
-    suspiciousPercent: number;
-    fakePercent: number;
-  };
-  today: {
-    total: number;
-    authentic: number;
-    suspicious: number;
-    fake: number;
-    avgScore: number;
-  };
 }
 
 export default function DashboardPage() {
@@ -81,28 +72,28 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [verifyUrl, setVerifyUrl] = useState('');
   const [verifyType, setVerifyType] = useState<'url' | 'text' | 'image'>('url');
-  const [verifications, setVerifications] = useState<Verification[]>([]);
-  const [stats, setStats] = useState<Stats | null>(null);
+  const [verifications, setVerifications] = useState<DashboardVerification[]>([]);
+  const [stats, setStats] = useState<VerificationStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<UserPublic | null>(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [verifying, setVerifying] = useState(false);
-  const [verifyResult, setVerifyResult] = useState<any>(null);
-  const [selectedVerification, setSelectedVerification] = useState<Verification | null>(null);
+  const [verifyResult, setVerifyResult] = useState<VerifyResponse | null>(null);
+  const [selectedVerification, setSelectedVerification] = useState<DashboardVerification | null>(null);
   const [filterType, setFilterType] = useState<string>('all');
   const [filterVerdict, setFilterVerdict] = useState<string>('all');
   const [apiKeys, setApiKeys] = useState([{ id: '1', name: 'Production', prefix: 'cv_live_', key: 'cv_live_8f92j3n84mfl20shj', created_at: '2026-07-01T12:00:00Z', last_used: '2026-07-02T15:30:00Z' }]);
   const [showFilters, setShowFilters] = useState(false);
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [watchlist, setWatchlist] = useState<any[]>([]);
-  const [alerts, setAlerts] = useState<any[]>([]);
+  const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
   const [unreadAlerts, setUnreadAlerts] = useState(0);
 
-  const planHierarchy: Record<string, number> = { free: 0, consumer: 1, professional: 2, enterprise: 3 };
+  const planHierarchy: Record<Plan, number> = { free: 0, consumer: 1, professional: 2, enterprise: 3 };
 
-  const allTabs = [
+  const allTabs: { id: string; label: string; icon: typeof Activity; minPlan: Plan }[] = [
     { id: 'overview', label: 'Overview', icon: Activity, minPlan: 'free' },
     { id: 'history', label: 'History', icon: History, minPlan: 'free' },
     { id: 'watchlist', label: 'Watchlist', icon: Clock, minPlan: 'consumer' },
@@ -112,7 +103,7 @@ export default function DashboardPage() {
     { id: 'billing', label: 'Billing', icon: CreditCard, minPlan: 'free' },
   ];
 
-  const userPlanLevel = planHierarchy[user?.plan?.toLowerCase() || 'free'] ?? 0;
+  const userPlanLevel = planHierarchy[(user?.plan?.toLowerCase() || 'free') as Plan] ?? 0;
 
   const allowedTabs = allTabs.filter(tab => {
     const tabLevel = planHierarchy[tab.minPlan] ?? 0;
@@ -123,7 +114,7 @@ export default function DashboardPage() {
   const [watchlistLabel, setWatchlistLabel] = useState('');
   const [showBatchVerify, setShowBatchVerify] = useState(false);
   const [batchUrls, setBatchUrls] = useState('');
-  const [batchResults, setBatchResults] = useState<any>(null);
+  const [batchResults, setBatchResults] = useState<BatchVerificationResponse | null>(null);
   const [batchVerifying, setBatchVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
@@ -364,7 +355,7 @@ export default function DashboardPage() {
 
     const csv = [
       ['URL', 'Type', 'Score', 'Verdict', 'Confidence'].join(','),
-      ...batchResults.results.map((r: any) => [
+      ...batchResults.results.map((r) => [
         r.content,
         r.type,
         r.trustScore,
@@ -834,7 +825,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="space-y-2 max-h-64 overflow-y-auto">
-                    {batchResults.results.map((r: any, i: number) => (
+                    {batchResults.results.map((r, i) => (
                       <div key={i} className="flex items-center justify-between p-2 bg-white rounded-lg">
                         <div className="flex items-center gap-2 min-w-0">
                           <div className={`w-8 h-8 rounded flex items-center justify-center text-xs font-bold ${
@@ -882,7 +873,7 @@ export default function DashboardPage() {
 
               {userPlanLevel >= 1 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {verifyResult.checks?.map((check: any, i: number) => (
+                  {verifyResult.checks?.map((check: VerificationCheck, i: number) => (
                     <div key={i} className="p-3 bg-white rounded-lg border border-gray-200">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-xs text-gray-500">{check.name}</span>
@@ -1577,7 +1568,7 @@ export default function DashboardPage() {
                 <div>
                   <div className="text-sm font-medium text-gray-900 mb-3">Verification Checks</div>
                   <div className="space-y-3">
-                    {selectedVerification.checks.map((check: any, i: number) => (
+                    {selectedVerification.checks.map((check: VerificationCheck, i: number) => (
                       <div key={i} className="p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-sm font-medium text-gray-700">{check.name}</span>
