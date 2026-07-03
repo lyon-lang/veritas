@@ -41,7 +41,8 @@ import {
   Share2,
   Layers,
   Key,
-  CreditCard
+  CreditCard,
+  Lock
 } from 'lucide-react';
 
 interface Verification {
@@ -98,6 +99,25 @@ export default function DashboardPage() {
   const [watchlist, setWatchlist] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [unreadAlerts, setUnreadAlerts] = useState(0);
+
+  const planHierarchy: Record<string, number> = { free: 0, consumer: 1, professional: 2, enterprise: 3 };
+
+  const allTabs = [
+    { id: 'overview', label: 'Overview', icon: Activity, minPlan: 'free' },
+    { id: 'history', label: 'History', icon: History, minPlan: 'free' },
+    { id: 'watchlist', label: 'Watchlist', icon: Clock, minPlan: 'consumer' },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3, minPlan: 'consumer' },
+    { id: 'sources', label: 'Sources', icon: Database, minPlan: 'professional' },
+    { id: 'api-keys', label: 'API Keys', icon: Key, minPlan: 'professional' },
+    { id: 'billing', label: 'Billing', icon: CreditCard, minPlan: 'enterprise' },
+  ];
+
+  const userPlanLevel = planHierarchy[user?.plan?.toLowerCase() || 'free'] ?? 0;
+
+  const allowedTabs = allTabs.filter(tab => {
+    const tabLevel = planHierarchy[tab.minPlan] ?? 0;
+    return userPlanLevel >= tabLevel;
+  });
   const [showAddToWatchlist, setShowAddToWatchlist] = useState(false);
   const [watchlistUrl, setWatchlistUrl] = useState('');
   const [watchlistLabel, setWatchlistLabel] = useState('');
@@ -117,6 +137,13 @@ export default function DashboardPage() {
     loadWatchlist();
     loadAlerts();
   }, []);
+
+  useEffect(() => {
+    const currentTabAllowed = allowedTabs.some(t => t.id === activeTab);
+    if (!currentTabAllowed && allowedTabs.length > 0) {
+      setActiveTab(allowedTabs[0].id);
+    }
+  }, [userPlanLevel]);
 
   const loadUser = async () => {
     try {
@@ -476,6 +503,31 @@ export default function DashboardPage() {
     return true;
   });
 
+  const getTabAccess = (tabId: string) => {
+    const tab = allTabs.find(t => t.id === tabId);
+    if (!tab) return { allowed: false, requiredPlan: '' };
+    const tabLevel = planHierarchy[tab.minPlan] ?? 0;
+    return { allowed: userPlanLevel >= tabLevel, requiredPlan: tab.minPlan };
+  };
+
+  const UpgradePrompt = ({ requiredPlan, feature }: { requiredPlan: string; feature: string }) => (
+    <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+      <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+        <Lock className="h-8 w-8 text-gray-400" />
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900 mb-2">{feature} requires {requiredPlan} plan</h3>
+      <p className="text-sm text-gray-500 mb-6 max-w-md mx-auto">
+        Upgrade to {requiredPlan} to access {feature} and unlock more powerful verification tools.
+      </p>
+      <Link href="/#pricing">
+        <Button className="bg-emerald-600 hover:bg-emerald-700">
+          <CreditCard className="h-4 w-4 mr-2" />
+          Upgrade to {requiredPlan}
+        </Button>
+      </Link>
+    </div>
+  );
+
   if (loading) {
     return <DashboardSkeleton />;
   }
@@ -503,15 +555,7 @@ export default function DashboardPage() {
                 <span className="font-semibold text-gray-900">CoreValidate</span>
               </Link>
               <nav className="hidden md:flex items-center gap-1" role="tablist" aria-label="Dashboard sections">
-                {[
-                  { id: 'overview', label: 'Overview', icon: Activity },
-                  { id: 'history', label: 'History', icon: History },
-                  { id: 'watchlist', label: 'Watchlist', icon: Clock },
-                  { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-                  { id: 'sources', label: 'Sources', icon: Database },
-                  { id: 'api-keys', label: 'API Keys', icon: Key },
-                  { id: 'billing', label: 'Billing', icon: CreditCard },
-                ].map((tab) => (
+                {allowedTabs.map((tab) => (
                   <button 
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
@@ -538,16 +582,7 @@ export default function DashboardPage() {
                   className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-md border border-gray-200 text-gray-700"
                 >
                   {(() => {
-                    const tabs = [
-                      { id: 'overview', label: 'Overview', icon: Activity },
-                      { id: 'history', label: 'History', icon: History },
-                      { id: 'watchlist', label: 'Watchlist', icon: Clock },
-                      { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-                      { id: 'sources', label: 'Sources', icon: Database },
-                      { id: 'api-keys', label: 'API Keys', icon: Key },
-                      { id: 'billing', label: 'Billing', icon: CreditCard },
-                    ];
-                    const current = tabs.find(t => t.id === activeTab);
+                    const current = allowedTabs.find(t => t.id === activeTab);
                     return current ? (
                       <>
                         <current.icon className="h-4 w-4" />
@@ -559,15 +594,7 @@ export default function DashboardPage() {
                 </button>
                 {showMobileNav && (
                   <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[160px]">
-                    {[
-                      { id: 'overview', label: 'Overview', icon: Activity },
-                      { id: 'history', label: 'History', icon: History },
-                      { id: 'watchlist', label: 'Watchlist', icon: Clock },
-                      { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-                      { id: 'sources', label: 'Sources', icon: Database },
-                      { id: 'api-keys', label: 'API Keys', icon: Key },
-                      { id: 'billing', label: 'Billing', icon: CreditCard },
-                    ].map((tab) => (
+                    {allowedTabs.map((tab) => (
                       <button
                         key={tab.id}
                         onClick={() => { setActiveTab(tab.id); setShowMobileNav(false); }}
@@ -1137,6 +1164,7 @@ export default function DashboardPage() {
         )}
 
         {activeTab === 'watchlist' && (
+          getTabAccess('watchlist').allowed ? (
           <div className="space-y-6">
             {/* Add to Watchlist */}
             <div className="bg-white rounded-xl border border-gray-200 p-6">
@@ -1250,9 +1278,13 @@ export default function DashboardPage() {
               )}
             </div>
           </div>
+          ) : (
+            <UpgradePrompt requiredPlan="consumer" feature="Watchlist" />
+          )
         )}
 
         {activeTab === 'analytics' && (
+          getTabAccess('analytics').allowed ? (
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Verdict Distribution */}
@@ -1327,9 +1359,13 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
+          ) : (
+            <UpgradePrompt requiredPlan="consumer" feature="Analytics" />
+          )
         )}
 
         {activeTab === 'sources' && (
+          getTabAccess('sources').allowed ? (
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <div className="p-5 border-b border-gray-200">
               <h2 className="font-semibold text-gray-900">Trusted Sources Database</h2>
@@ -1370,10 +1406,14 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
+          ) : (
+            <UpgradePrompt requiredPlan="professional" feature="Sources Database" />
+          )
         )}
 
         {/* API Keys */}
         {activeTab === 'api-keys' && (
+          getTabAccess('api-keys').allowed ? (
           <div className="animate-fadeIn">
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -1419,10 +1459,14 @@ export default function DashboardPage() {
               </table>
             </div>
           </div>
+          ) : (
+            <UpgradePrompt requiredPlan="professional" feature="API Keys" />
+          )
         )}
 
         {/* Billing & Credits */}
         {activeTab === 'billing' && (
+          getTabAccess('billing').allowed ? (
           <div className="animate-fadeIn">
             <h2 className="text-xl font-bold text-gray-900 mb-2">Billing & Credits</h2>
             <p className="text-sm text-gray-500 mb-6">Manage your plan and monitor credit usage.</p>
@@ -1458,6 +1502,9 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
+          ) : (
+            <UpgradePrompt requiredPlan="enterprise" feature="Billing & Credits" />
+          )
         )}
       </main>
 
