@@ -39,7 +39,9 @@ import {
   ArrowDownRight,
   RefreshCw,
   Share2,
-  Layers
+  Layers,
+  Key,
+  CreditCard
 } from 'lucide-react';
 
 interface Verification {
@@ -89,6 +91,7 @@ export default function DashboardPage() {
   const [selectedVerification, setSelectedVerification] = useState<Verification | null>(null);
   const [filterType, setFilterType] = useState<string>('all');
   const [filterVerdict, setFilterVerdict] = useState<string>('all');
+  const [apiKeys, setApiKeys] = useState([{ id: '1', name: 'Production', prefix: 'cv_live_', key: 'cv_live_8f92j3n84mfl20shj', created_at: '2026-07-01T12:00:00Z', last_used: '2026-07-02T15:30:00Z' }]);
   const [showFilters, setShowFilters] = useState(false);
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -506,6 +509,8 @@ export default function DashboardPage() {
                   { id: 'watchlist', label: 'Watchlist', icon: Clock },
                   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
                   { id: 'sources', label: 'Sources', icon: Database },
+                  { id: 'api-keys', label: 'API Keys', icon: Key },
+                  { id: 'billing', label: 'Billing', icon: CreditCard },
                 ].map((tab) => (
                   <button 
                     key={tab.id}
@@ -539,6 +544,8 @@ export default function DashboardPage() {
                       { id: 'watchlist', label: 'Watchlist', icon: Clock },
                       { id: 'analytics', label: 'Analytics', icon: BarChart3 },
                       { id: 'sources', label: 'Sources', icon: Database },
+                      { id: 'api-keys', label: 'API Keys', icon: Key },
+                      { id: 'billing', label: 'Billing', icon: CreditCard },
                     ];
                     const current = tabs.find(t => t.id === activeTab);
                     return current ? (
@@ -558,6 +565,8 @@ export default function DashboardPage() {
                       { id: 'watchlist', label: 'Watchlist', icon: Clock },
                       { id: 'analytics', label: 'Analytics', icon: BarChart3 },
                       { id: 'sources', label: 'Sources', icon: Database },
+                      { id: 'api-keys', label: 'API Keys', icon: Key },
+                      { id: 'billing', label: 'Billing', icon: CreditCard },
                     ].map((tab) => (
                       <button
                         key={tab.id}
@@ -1358,6 +1367,94 @@ export default function DashboardPage() {
                     <div className="text-xs text-gray-500">{source.description}</div>
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* API Keys */}
+        {activeTab === 'api-keys' && (
+          <div className="animate-fadeIn">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">API Keys</h2>
+                <p className="text-sm text-gray-500">Manage your API keys for programmatic access.</p>
+              </div>
+              <Button className="bg-emerald-600 hover:bg-emerald-700">
+                <Plus className="h-4 w-4 mr-2" />
+                Generate New Key
+              </Button>
+            </div>
+            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                    <th className="text-left py-3 px-4 font-semibold text-gray-900">Name</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-900">Key</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-900">Created</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-900">Last Used</th>
+                    <th className="text-right py-3 px-4 font-semibold text-gray-900">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {apiKeys.map((k) => (
+                    <tr key={k.id} className="hover:bg-gray-50">
+                      <td className="py-3 px-4 font-medium text-gray-900">{k.name}</td>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-2">
+                          <code className="bg-gray-100 px-2 py-1 rounded text-xs font-mono">{k.prefix}••••••••</code>
+                          <button onClick={() => copyToClipboard(k.key)} className="text-gray-400 hover:text-emerald-600">
+                            {copied ? <CheckCircle className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
+                          </button>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-gray-500">{new Date(k.created_at).toLocaleDateString()}</td>
+                      <td className="py-3 px-4 text-gray-500">{new Date(k.last_used).toLocaleDateString()}</td>
+                      <td className="py-3 px-4 text-right">
+                        <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-50">Revoke</Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Billing & Credits */}
+        {activeTab === 'billing' && (
+          <div className="animate-fadeIn">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Billing & Credits</h2>
+            <p className="text-sm text-gray-500 mb-6">Manage your plan and monitor credit usage.</p>
+            
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
+              <div className="bg-white rounded-xl border border-gray-200 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-gray-900">Current Plan</h3>
+                  <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium uppercase tracking-wider">{user?.plan || 'Free'}</span>
+                </div>
+                <div className="mb-6">
+                  <div className="text-3xl font-bold text-gray-900 mb-1">$0<span className="text-lg text-gray-500 font-normal">/mo</span></div>
+                  <p className="text-sm text-gray-500">You are currently on the Free plan.</p>
+                </div>
+                <Button className="w-full bg-emerald-600 hover:bg-emerald-700">Upgrade to Consumer</Button>
+              </div>
+
+              <div className="bg-white rounded-xl border border-gray-200 p-6">
+                <h3 className="font-semibold text-gray-900 mb-4">Credit Usage</h3>
+                <div className="mb-2 flex justify-between text-sm">
+                  <span className="text-gray-600">Credits used this month</span>
+                  <span className="font-medium text-gray-900">12 / 15</span>
+                </div>
+                <div className="w-full bg-gray-100 rounded-full h-2.5 mb-6">
+                  <div className="bg-emerald-500 h-2.5 rounded-full" style={{ width: '80%' }}></div>
+                </div>
+                <h4 className="text-sm font-semibold text-gray-900 mb-2">Cost Breakdown</h4>
+                <ul className="text-sm text-gray-600 space-y-2">
+                  <li className="flex justify-between"><span>Text / URL Check</span><span>1 Credit</span></li>
+                  <li className="flex justify-between"><span>Image Check</span><span>5 Credits</span></li>
+                  <li className="flex justify-between"><span>Video / Audio Check</span><span>10 Credits/min</span></li>
+                </ul>
               </div>
             </div>
           </div>
