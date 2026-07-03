@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Mail, MessageSquare, ArrowRight, Send, MapPin, CheckCircle } from 'lucide-react';
 import { Navbar } from '@/components/navbar';
 
+import { Footer } from '@/components/footer';
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
@@ -147,6 +148,7 @@ export default function ContactPage() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

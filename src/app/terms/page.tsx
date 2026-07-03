@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Navbar } from '@/components/navbar';
 
+import { Footer } from '@/components/footer';
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-white">
@@ -126,6 +127,7 @@ export default function TermsPage() {
           </Link>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

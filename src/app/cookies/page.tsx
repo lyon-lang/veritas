@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Navbar } from '@/components/navbar';
 
+import { Footer } from '@/components/footer';
 export default function CookiesPage() {
   return (
     <div className="min-h-screen bg-white">
@@ -107,6 +108,7 @@ export default function CookiesPage() {
           </Link>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

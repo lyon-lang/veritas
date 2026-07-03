@@ -29,6 +29,7 @@ const posts = [
   },
 ];
 
+import { Footer } from '@/components/footer';
 export default function BlogPage() {
   return (
     <div className="min-h-screen bg-white">
@@ -65,6 +66,7 @@ export default function BlogPage() {
           ))}
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle, Clock, AlertTriangle, Activity } from 'lucide-react';
 import { Navbar } from '@/components/navbar';
 
+import { Footer } from '@/components/footer';
 export default function StatusPage() {
   const services = [
     { name: 'API v1', uptime: '99.99%', icon: Activity },
@@ -114,6 +115,7 @@ export default function StatusPage() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

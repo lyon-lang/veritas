@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Navbar } from '@/components/navbar';
 
+import { Footer } from '@/components/footer';
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-white">
@@ -144,6 +145,7 @@ export default function PrivacyPage() {
           </Link>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

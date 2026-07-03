@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Search, ChevronDown, ChevronRight, HelpCircle, Book, MessageSquare, ArrowRight } from 'lucide-react';
 import { Navbar } from '@/components/navbar';
 
+import { Footer } from '@/components/footer';
 export default function HelpCenterPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
@@ -131,6 +132,7 @@ export default function HelpCenterPage() {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 }

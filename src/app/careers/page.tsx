@@ -36,6 +36,7 @@ const positions = [
   },
 ];
 
+import { Footer } from '@/components/footer';
 export default function CareersPage() {
   return (
     <div className="min-h-screen bg-white">
@@ -121,6 +122,7 @@ export default function CareersPage() {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 }

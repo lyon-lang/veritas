@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Users, Globe, Zap, Heart, Target, ArrowRight, Shield } from 'lucide-react';
 import { Navbar } from '@/components/navbar';
+import { Footer } from '@/components/footer';
 
 export default function AboutPage() {
   return (
@@ -112,6 +113,8 @@ export default function AboutPage() {
           </div>
         </section>
       </main>
+
+      <Footer />
     </div>
   );
 }

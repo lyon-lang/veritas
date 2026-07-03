@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Code, Book, Zap, Shield, ArrowRight, Copy, CheckCircle, ExternalLink, Globe } from 'lucide-react';
 import { Navbar } from '@/components/navbar';
 
+import { Footer } from '@/components/footer';
 export default function DocsPage() {
   const [activeSection, setActiveSection] = useState('overview');
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
@@ -451,6 +452,7 @@ X-RateLimit-Reset: 2025-07-02T10:01:00Z`}
           </main>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
