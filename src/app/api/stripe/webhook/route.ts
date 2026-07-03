@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server';
-import Stripe, { ApiVersion } from 'stripe';
+import Stripe from 'stripe';
 import { UserModel } from '@/lib/models';
 
 function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: ApiVersion,
-  });
+  return new Stripe(process.env.STRIPE_SECRET_KEY!);
 }
 
 // POST - Handle Stripe webhooks
