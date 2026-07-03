@@ -42,6 +42,22 @@ export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [demoScore, setDemoScore] = useState(0);
   const [demoLoading, setDemoLoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth');
+        if (response.ok) setIsAuthenticated(true);
+      } catch (err) {
+        // Ignored
+      } finally {
+        setAuthLoading(false);
+      }
+    };
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -180,8 +196,16 @@ export default function Home() {
               </nav>
             </div>
             <div className="hidden lg:flex items-center gap-3">
-              <Link href="/sign-in"><Button variant="ghost" size="sm">Log in</Button></Link>
-              <Link href="/sign-up"><Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get started free</Button></Link>
+              {authLoading ? (
+                <div className="h-9 w-24 bg-gray-100 animate-pulse rounded-md"></div>
+              ) : isAuthenticated ? (
+                <Link href="/dashboard"><Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Dashboard</Button></Link>
+              ) : (
+                <>
+                  <Link href="/sign-in"><Button variant="ghost" size="sm">Log in</Button></Link>
+                  <Link href="/sign-up"><Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">Get started free</Button></Link>
+                </>
+              )}
             </div>
             <button className="lg:hidden p-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -194,8 +218,16 @@ export default function Home() {
             <a href="#how-it-works" className="block text-sm text-gray-600">How it works</a>
             <a href="#pricing" className="block text-sm text-gray-600">Pricing</a>
             <div className="pt-3 border-t space-y-2">
-              <Link href="/sign-in"><Button variant="ghost" className="w-full justify-center">Log in</Button></Link>
-              <Link href="/sign-up"><Button className="w-full justify-center bg-emerald-600">Get started free</Button></Link>
+              {authLoading ? (
+                <div className="h-9 w-full bg-gray-100 animate-pulse rounded-md"></div>
+              ) : isAuthenticated ? (
+                <Link href="/dashboard"><Button className="w-full justify-center bg-emerald-600">Dashboard</Button></Link>
+              ) : (
+                <>
+                  <Link href="/sign-in"><Button variant="ghost" className="w-full justify-center">Log in</Button></Link>
+                  <Link href="/sign-up"><Button className="w-full justify-center bg-emerald-600">Get started free</Button></Link>
+                </>
+              )}
             </div>
           </div>
         )}
