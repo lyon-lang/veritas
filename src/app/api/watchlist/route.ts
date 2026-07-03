@@ -29,11 +29,11 @@ export async function GET(request: Request) {
       items,
       total: items.length,
     });
-  } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
-    if (error.message === 'CSRF_INVALID') {
+    if (error instanceof Error && error.message === 'CSRF_INVALID') {
       return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
     }
     console.error('Error fetching watchlist:', error);
@@ -69,11 +69,11 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ item, message: 'Added to watchlist' });
-  } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
-    if (error.message === 'CSRF_INVALID') {
+    if (error instanceof Error && error.message === 'CSRF_INVALID') {
       return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
     }
     console.error('Error adding to watchlist:', error);
@@ -103,11 +103,11 @@ export async function PATCH(request: Request) {
     const item = WatchlistModel.update(id, { label });
 
     return NextResponse.json({ item, message: 'Watchlist updated' });
-  } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
-    if (error.message === 'CSRF_INVALID') {
+    if (error instanceof Error && error.message === 'CSRF_INVALID') {
       return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
     }
     console.error('Error updating watchlist:', error);
@@ -135,11 +135,11 @@ export async function DELETE(request: Request) {
     WatchlistModel.delete(id);
 
     return NextResponse.json({ message: 'Removed from watchlist' });
-  } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
-    if (error.message === 'CSRF_INVALID') {
+    if (error instanceof Error && error.message === 'CSRF_INVALID') {
       return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
     }
     console.error('Error removing from watchlist:', error);

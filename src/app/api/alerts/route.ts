@@ -19,8 +19,8 @@ export async function GET(request: Request) {
       unreadCount,
       total: alerts.length,
     });
-  } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
     console.error('Error fetching alerts:', error);
