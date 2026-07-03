@@ -255,7 +255,7 @@ export default function Home() {
                     {demoScore >= 80 ? '✓ Trusted' : demoScore >= 60 ? '⚠ Caution' : '✗ Risk'}
                   </div>
                 </div>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {['C2PA', 'AI Detection', 'Source', 'Community'].map((check, i) => (
                     <div key={i} className="text-center p-2 bg-gray-50 rounded-lg">
                       <div className="text-xs text-gray-500 mb-1">{check}</div>
@@ -445,8 +445,8 @@ export default function Home() {
       {/* Footer */}
       <footer className="py-16 px-4 border-t border-gray-100">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
-            <div className="col-span-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+            <div className="col-span-1 sm:col-span-2">
               <div className="flex items-center gap-2.5 mb-4">
                 <img src="/logo.png" alt="CoreValidate Logo" className="h-9 w-auto object-contain" />
                 <span className="text-lg font-semibold text-gray-900">CoreValidate</span>
