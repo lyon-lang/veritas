@@ -619,7 +619,7 @@ export default function DashboardPage() {
                   )}
                 </button>
                 {showNotifications && (
-                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                  <div className="absolute right-[-1rem] sm:right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                     <div className="p-4 border-b border-gray-100 flex items-center justify-between">
                       <span className="font-semibold text-sm">Alerts</span>
                       <div className="flex items-center gap-2">
@@ -806,7 +806,7 @@ export default function DashboardPage() {
                       Export CSV
                     </Button>
                   </div>
-                  <div className="grid grid-cols-4 gap-3 mb-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
                     <div className="p-3 bg-white rounded-lg text-center">
                       <div className="text-2xl font-bold text-gray-900">{batchResults.summary.total}</div>
                       <div className="text-xs text-gray-500">Total</div>
@@ -915,7 +915,7 @@ export default function DashboardPage() {
         {activeTab === 'overview' && (
           <>
             {/* Stats Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <div className="bg-white rounded-xl p-5 border border-gray-200 hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-3">
                   <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center">
@@ -1351,7 +1351,7 @@ export default function DashboardPage() {
             {/* Score Distribution */}
             <div className="bg-white rounded-xl border border-gray-200 p-6">
               <h3 className="font-semibold text-gray-900 mb-4">Score Distribution</h3>
-              <div className="grid grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                 {[
                   { range: '0-20', label: 'Very Low', color: 'bg-red-500' },
                   { range: '21-40', label: 'Low', color: 'bg-orange-500' },
@@ -1442,7 +1442,8 @@ export default function DashboardPage() {
               </Button>
             </div>
             <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0">
+                <table className="w-full text-sm min-w-[600px]">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200">
                     <th className="text-left py-3 px-4 font-semibold text-gray-900">Name</th>
@@ -1473,6 +1474,7 @@ export default function DashboardPage() {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           </div>
           ) : (
