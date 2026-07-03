@@ -109,7 +109,7 @@ export default function DashboardPage() {
     { id: 'analytics', label: 'Analytics', icon: BarChart3, minPlan: 'consumer' },
     { id: 'sources', label: 'Sources', icon: Database, minPlan: 'professional' },
     { id: 'api-keys', label: 'API Keys', icon: Key, minPlan: 'professional' },
-    { id: 'billing', label: 'Billing', icon: CreditCard, minPlan: 'enterprise' },
+    { id: 'billing', label: 'Billing', icon: CreditCard, minPlan: 'free' },
   ];
 
   const userPlanLevel = planHierarchy[user?.plan?.toLowerCase() || 'free'] ?? 0;
@@ -766,10 +766,12 @@ export default function DashboardPage() {
               <Button onClick={handleVerify} disabled={verifying || !verifyUrl} className="bg-emerald-600 hover:bg-emerald-700 px-6">
                 {verifying ? 'Verifying...' : 'Verify'}
               </Button>
-              <Button variant="outline" onClick={() => setShowBatchVerify(!showBatchVerify)} className="px-4">
-                <Layers className="h-4 w-4 mr-2" />
-                Batch
-              </Button>
+              {userPlanLevel >= 1 && (
+                <Button variant="outline" onClick={() => setShowBatchVerify(!showBatchVerify)} className="px-4">
+                  <Layers className="h-4 w-4 mr-2" />
+                  Batch
+                </Button>
+              )}
             </div>
           </div>
 
@@ -877,20 +879,43 @@ export default function DashboardPage() {
                   </button>
                 </div>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {verifyResult.checks?.map((check: any, i: number) => (
-                  <div key={i} className="p-3 bg-white rounded-lg border border-gray-200">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs text-gray-500">{check.name}</span>
-                      <span className={`text-xs font-medium ${
-                        check.status === 'passed' ? 'text-green-600' : check.status === 'warning' ? 'text-yellow-600' : 'text-red-600'
-                      }`}>{check.status}</span>
+
+              {userPlanLevel >= 1 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {verifyResult.checks?.map((check: any, i: number) => (
+                    <div key={i} className="p-3 bg-white rounded-lg border border-gray-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs text-gray-500">{check.name}</span>
+                        <span className={`text-xs font-medium ${
+                          check.status === 'passed' ? 'text-green-600' : check.status === 'warning' ? 'text-yellow-600' : 'text-red-600'
+                        }`}>{check.status}</span>
+                      </div>
+                      <div className={`text-xl font-bold ${getTrustScoreColor(check.score)}`}>{check.score}</div>
+                      <div className="text-xs text-gray-500 mt-1">{check.details}</div>
                     </div>
-                    <div className={`text-xl font-bold ${getTrustScoreColor(check.score)}`}>{check.score}</div>
-                    <div className="text-xs text-gray-500 mt-1">{check.details}</div>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="p-3 bg-white rounded-lg border border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Trust Score</span>
+                      <span className={`text-lg font-bold ${getTrustScoreColor(verifyResult.trustScore)}`}>{verifyResult.trustScore}</span>
+                    </div>
                   </div>
-                ))}
-              </div>
+                  <div className="p-3 bg-white rounded-lg border border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Verdict</span>
+                      <span className="text-sm font-medium capitalize">{verifyResult.verdict}</span>
+                    </div>
+                  </div>
+                  <Link href="/#pricing" className="block">
+                    <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-200 text-center cursor-pointer hover:bg-emerald-100 transition-colors">
+                      <span className="text-sm text-emerald-700 font-medium">Upgrade for detailed breakdowns &rarr;</span>
+                    </div>
+                  </Link>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -1466,7 +1491,6 @@ export default function DashboardPage() {
 
         {/* Billing & Credits */}
         {activeTab === 'billing' && (
-          getTabAccess('billing').allowed ? (
           <div className="animate-fadeIn">
             <h2 className="text-xl font-bold text-gray-900 mb-2">Billing & Credits</h2>
             <p className="text-sm text-gray-500 mb-6">Manage your plan and monitor credit usage.</p>
@@ -1502,9 +1526,6 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
-          ) : (
-            <UpgradePrompt requiredPlan="enterprise" feature="Billing & Credits" />
-          )
         )}
       </main>
 
