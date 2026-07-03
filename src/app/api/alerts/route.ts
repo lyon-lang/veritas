@@ -58,11 +58,11 @@ export async function PATCH(request: Request) {
     }
 
     return NextResponse.json({ alert, message: 'Alert marked as read' });
-  } catch (error: any) {
-    if (error.message === 'UNAUTHORIZED') {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
-    if (error.message === 'CSRF_INVALID') {
+    if (error instanceof Error && error.message === 'CSRF_INVALID') {
       return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
     }
     console.error('Error updating alert:', error);

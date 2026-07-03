@@ -51,13 +51,18 @@ export async function POST(request: Request) {
       );
     }
 
-    let imageSource: string | Buffer;
+    let imageSource: string | Blob;
     
     if (url) {
       imageSource = url;
     } else if (imageData) {
-      // Convert base64 to buffer
-      imageSource = Buffer.from(imageData, 'base64');
+      // Convert base64 to blob
+      const binaryString = atob(imageData);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      imageSource = new Blob([bytes], { type: 'image/jpeg' });
     } else {
       return NextResponse.json(
         { error: 'Invalid input' },
@@ -66,8 +71,8 @@ export async function POST(request: Request) {
     }
 
     // Verify C2PA credentials
-    const verification = await verifyC2PA(imageSource as any);
-    const result = await readC2PA(imageSource as any);
+    const verification = await verifyC2PA(imageSource);
+    const result = await readC2PA(imageSource);
     const score = calculateC2paScore(result);
 
     return NextResponse.json({
