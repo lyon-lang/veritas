@@ -675,9 +675,9 @@ export default function DashboardPage() {
                   </div>
                 )}
               </div>
-              <button className="p-2 text-gray-500 hover:text-gray-700 rounded-md hover:bg-gray-100" aria-label="Settings">
+              <Link href="/settings" className="p-2 text-gray-500 hover:text-gray-700 rounded-md hover:bg-gray-100" aria-label="Settings">
                 <Settings className="h-4 w-4" />
-              </button>
+              </Link>
               <div className="relative">
                 <button 
                   onClick={() => setShowUserMenu(!showUserMenu)} 
