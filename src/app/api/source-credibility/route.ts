@@ -136,7 +136,7 @@ export async function PUT(request: Request) {
         );
       }
       // For non-admin users, check if they have admin role
-      const user = UserModel.findById(userId) as any;
+      const user = UserModel.findById(userId);
       if (!user || user.plan !== 'enterprise') {
         return NextResponse.json(
           { error: 'Admin access required' },

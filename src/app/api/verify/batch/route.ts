@@ -4,20 +4,21 @@ import { VerificationModel, SourceModel } from '@/lib/models';
 import { readC2PA, calculateC2paScore } from '@/lib/c2pa';
 import { calculateVerdict } from '@/lib/utils';
 import { requireAuth } from '@/lib/auth';
+import type { VerificationCheck } from '@/types';
 
-interface VerificationRequest {
+interface BatchVerificationRequest {
   content: string;
   type: 'url' | 'text' | 'image';
 }
 
-interface VerificationResult {
+interface BatchVerificationResult {
   id: string;
   content: string;
   type: string;
   trustScore: number;
   verdict: string;
   confidence: number;
-  checks: any[];
+  checks: VerificationCheck[];
   error?: string;
 }
 

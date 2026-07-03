@@ -5,6 +5,7 @@ import { VerificationModel, SourceModel } from '@/lib/models';
 import { readC2PA, calculateC2paScore } from '@/lib/c2pa';
 import { checkUserRateLimit } from '@/lib/rate-limit';
 import { calculateVerdict } from '@/lib/utils';
+import type { VerificationCheck, VerificationOptions } from '@/types';
 
 function getApiKey(request: Request): string | null {
   const authHeader = request.headers.get('Authorization');
@@ -160,7 +161,7 @@ export async function GET(request: Request) {
   }
 }
 
-async function verifyContent(content: string, type: string, options: any) {
+async function verifyContent(content: string, type: string, options: VerificationOptions) {
   const checks = [];
   let trustScore = 50;
 

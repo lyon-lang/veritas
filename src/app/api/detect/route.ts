@@ -1,6 +1,17 @@
 import { NextResponse } from 'next/server';
 import { analyzeContent, analyzeTextAuthenticity } from '@/lib/gemini';
 import { checkUserRateLimit } from '@/lib/rate-limit';
+import type { AIDetectionResult } from '@/types';
+
+interface DetectResult {
+  type: string;
+  isAIGenerated?: boolean;
+  confidence?: number;
+  model?: string;
+  indicators?: string[];
+  error?: boolean;
+  message?: string;
+}
 
 const MAX_CONTENT_LENGTH = 10000;
 const MAX_BATCH_SIZE = 10;
@@ -108,16 +119,16 @@ export async function PUT(request: Request) {
       );
     }
 
-    const results = [];
+    const results: DetectResult[] = [];
     for (const item of items) {
       try {
         if (!item.content || !item.type) {
-          results.push({ error: true, message: 'Missing content or type', item });
+          results.push({ type: item.type || 'unknown', error: true, message: 'Missing content or type' });
           continue;
         }
 
         if (typeof item.content === 'string' && item.content.length > MAX_CONTENT_LENGTH) {
-          results.push({ error: true, message: 'Content too long', item });
+          results.push({ type: item.type, error: true, message: 'Content too long' });
           continue;
         }
 
@@ -129,15 +140,15 @@ export async function PUT(request: Request) {
         }
         results.push({ type: item.type, ...result });
       } catch {
-        results.push({ error: true, item });
+        results.push({ type: item.type || 'unknown', error: true });
       }
     }
 
     const summary = {
       total: items.length,
-      aiGenerated: results.filter((r: any) => r.isAIGenerated).length,
-      human: results.filter((r: any) => !r.isAIGenerated && !r.error).length,
-      errors: results.filter((r: any) => r.error).length,
+      aiGenerated: results.filter((r) => r.isAIGenerated).length,
+      human: results.filter((r) => !r.isAIGenerated && !r.error).length,
+      errors: results.filter((r) => r.error).length,
     };
 
     return NextResponse.json({ results, summary });

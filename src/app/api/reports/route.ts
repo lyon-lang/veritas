@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { VerificationModel } from '@/lib/models';
+import type { VerificationRow } from '@/types';
 
 // GET - Get public verification report
 export async function GET(request: Request) {
@@ -91,7 +92,7 @@ export async function POST(request: Request) {
   }
 }
 
-function generateSocialText(verification: any): string {
+function generateSocialText(verification: VerificationRow): string {
   const score = verification.trust_score;
   const verdict = verification.verdict;
   const url = verification.url || 'content';
