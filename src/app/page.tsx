@@ -30,7 +30,10 @@ import {
   TrendingUp,
   BadgeCheck,
   Layers,
-  FileText
+  FileText,
+  Upload,
+  Link2,
+  BarChart3
 } from 'lucide-react';
 
 export default function Home() {
@@ -126,9 +129,9 @@ export default function Home() {
   ];
 
   const steps = [
-    { step: '01', title: 'Paste content', description: 'Enter a URL or paste text to verify.' },
-    { step: '02', title: 'We analyze', description: 'AI checks source credibility, detects AI content, analyzes claims.' },
-    { step: '03', title: 'Get trust score', description: 'Instant score with detailed breakdown.' }
+    { step: '01', title: 'Capture or provide', description: 'Upload an image, paste a URL, or enter text. C2PA provenance data is automatically extracted when available.', icon: Upload, bgClass: 'bg-emerald-600' },
+    { step: '02', title: 'Verify provenance', description: 'We check C2PA chain of custody, validate digital signatures, and analyze content authenticity.', icon: Link2, bgClass: 'bg-blue-600' },
+    { step: '03', title: 'Get trust score', description: 'Instant score from 0–100 with full breakdown: provenance, AI detection, source credibility, and claims.', icon: BarChart3, bgClass: 'bg-purple-600' }
   ];
 
   const testimonials = [
@@ -345,8 +348,8 @@ export default function Home() {
             {steps.map((step, i) => (
               <div key={i} className="text-center">
                 <div className="text-6xl font-bold text-gray-100 mb-4">{step.step}</div>
-                <div className="w-14 h-14 bg-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                  <Search className="h-7 w-7 text-white" />
+                <div className={`w-14 h-14 ${step.bgClass} rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg`}>
+                  <step.icon className="h-7 w-7 text-white" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">{step.title}</h3>
                 <p className="text-sm text-gray-600">{step.description}</p>
