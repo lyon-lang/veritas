@@ -922,6 +922,8 @@ export default function DashboardPage() {
           <BillingTab user={user} />
         )}
 
+      </main>
+
       {/* Verification Detail Modal */}
       {selectedVerification && (
         <div 

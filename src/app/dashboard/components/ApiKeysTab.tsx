@@ -2,11 +2,20 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Copy, CheckCircle } from 'lucide-react';
 import { UpgradePrompt } from './UpgradePrompt';
-import type { ApiKey } from '@/types';
+// import type { ApiKey } from '@/types';
+
+export interface DashboardApiKey {
+  id: string;
+  name: string;
+  prefix: string;
+  key: string;
+  created_at: string;
+  last_used: string;
+}
 
 interface ApiKeysTabProps {
   hasAccess: boolean;
-  apiKeys: ApiKey[];
+  apiKeys: DashboardApiKey[];
 }
 
 export function ApiKeysTab({ hasAccess, apiKeys }: ApiKeysTabProps) {
