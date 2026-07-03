@@ -43,13 +43,13 @@ export async function POST(request: Request) {
     }
 
     // Process items in parallel with concurrency limit
-    const results: VerificationResult[] = [];
+    const results: BatchVerificationResult[] = [];
     const concurrency = 5; // Process 5 at a time
 
     for (let i = 0; i < items.length; i += concurrency) {
       const batch = items.slice(i, i + concurrency);
       const batchResults = await Promise.all(
-        batch.map(async (item: VerificationRequest) => {
+        batch.map(async (item: BatchVerificationRequest) => {
           try {
             return await verifySingleItem(item, user?.id);
           } catch (error) {
@@ -95,9 +95,9 @@ export async function POST(request: Request) {
   }
 }
 
-async function verifySingleItem(item: VerificationRequest, userId?: string): Promise<VerificationResult> {
+async function verifySingleItem(item: BatchVerificationRequest, userId?: string): Promise<BatchVerificationResult> {
   const { content, type } = item;
-  const checks = [];
+  const checks: VerificationCheck[] = [];
   let trustScore = 50;
 
   // C2PA Check for images
