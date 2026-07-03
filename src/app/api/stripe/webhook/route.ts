@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import Stripe from 'stripe';
+import Stripe, { ApiVersion } from 'stripe';
 import { UserModel } from '@/lib/models';
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2026-06-24.dahlia' as any,
+    apiVersion: ApiVersion,
   });
 }
 
