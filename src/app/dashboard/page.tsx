@@ -42,7 +42,8 @@ import {
   Layers,
   Key,
   CreditCard,
-  Lock
+  Lock,
+  Menu
 } from 'lucide-react';
 import type {
   UserPublic,
@@ -570,18 +571,10 @@ export default function DashboardPage() {
               <div className="md:hidden relative">
                 <button
                   onClick={() => setShowMobileNav(!showMobileNav)}
-                  className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-md border border-gray-200 text-gray-700"
+                  className="p-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                  aria-label="Toggle navigation"
                 >
-                  {(() => {
-                    const current = allowedTabs.find(t => t.id === activeTab);
-                    return current ? (
-                      <>
-                        <current.icon className="h-4 w-4" />
-                        {current.label}
-                      </>
-                    ) : null;
-                  })()}
-                  <ChevronDown className="h-4 w-4" />
+                  {showMobileNav ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                 </button>
                 {showMobileNav && (
                   <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[160px]">
