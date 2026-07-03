@@ -577,7 +577,12 @@ export default function DashboardPage() {
                   {showMobileNav ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                 </button>
                 {showMobileNav && (
-                  <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[160px]">
+                  <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[220px]">
+                    <div className="p-3 border-b border-gray-100 bg-gray-50 rounded-t-lg">
+                      <div className="font-medium text-sm text-gray-900">{user?.name || 'User'}</div>
+                      <div className="text-xs text-gray-500">{user?.email}</div>
+                    </div>
+                    <div className="py-1">
                     {allowedTabs.map((tab) => (
                       <button
                         key={tab.id}
@@ -592,6 +597,28 @@ export default function DashboardPage() {
                         {tab.label}
                       </button>
                     ))}
+                    </div>
+                    <div className="border-t border-gray-100 py-1">
+                      <button onClick={() => { setShowMobileNav(false); setShowNotifications(true); }} className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                        <div className="flex items-center gap-2">
+                          <Bell className="h-4 w-4" />
+                          Notifications
+                        </div>
+                        {unreadAlerts > 0 && (
+                          <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{unreadAlerts}</span>
+                        )}
+                      </button>
+                      <Link href="/settings" onClick={() => setShowMobileNav(false)} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                        <Settings className="h-4 w-4" />
+                        Settings
+                      </Link>
+                    </div>
+                    <div className="border-t border-gray-100 py-1">
+                      <button onClick={handleLogout} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50">
+                        <LogOut className="h-4 w-4" />
+                        Sign out
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -601,7 +628,7 @@ export default function DashboardPage() {
               <div className="relative">
                 <button 
                   onClick={() => setShowNotifications(!showNotifications)} 
-                  className="relative p-2 text-gray-500 hover:text-gray-700 rounded-md hover:bg-gray-100"
+                  className="hidden md:flex relative p-2 text-gray-500 hover:text-gray-700 rounded-md hover:bg-gray-100"
                   aria-label={`Notifications${unreadAlerts > 0 ? ` (${unreadAlerts} unread)` : ''}`}
                   aria-expanded={showNotifications}
                   aria-haspopup="true"
@@ -659,10 +686,10 @@ export default function DashboardPage() {
                   </div>
                 )}
               </div>
-              <Link href="/settings" className="p-2 text-gray-500 hover:text-gray-700 rounded-md hover:bg-gray-100" aria-label="Settings">
+              <Link href="/settings" className="hidden md:flex p-2 text-gray-500 hover:text-gray-700 rounded-md hover:bg-gray-100" aria-label="Settings">
                 <Settings className="h-4 w-4" />
               </Link>
-              <div className="relative">
+              <div className="relative hidden md:block">
                 <button 
                   onClick={() => setShowUserMenu(!showUserMenu)} 
                   className="flex items-center gap-2 p-1.5 rounded-md hover:bg-gray-100"
