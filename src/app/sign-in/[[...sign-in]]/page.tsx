@@ -84,7 +84,7 @@ export default function SignInPage() {
         <div className="w-full max-w-md">
           <Link href="/" className="flex items-center gap-2.5 mb-10">
             <img src="/logo.png" alt="CoreValidate Logo" className="h-9 w-auto object-contain" />
-            <span className="text-xl font-semibold text-gray-900">CoreValidate</span>
+            <span className="hidden sm:block text-xl font-semibold text-gray-900">CoreValidate</span>
           </Link>
 
           <div className="mb-8">

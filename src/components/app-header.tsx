@@ -15,7 +15,7 @@ export function AppHeader({ showNav = true }: AppHeaderProps) {
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2">
               <img src="/logo.png" alt="CoreValidate Logo" className="h-8 w-auto object-contain" />
-              <span className="font-semibold text-gray-900">CoreValidate</span>
+              <span className="hidden sm:block font-semibold text-gray-900">CoreValidate</span>
             </Link>
             {showNav && (
               <nav className="hidden md:flex items-center gap-6">

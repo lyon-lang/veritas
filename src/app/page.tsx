@@ -171,7 +171,7 @@ export default function Home() {
             <div className="flex items-center gap-10">
               <Link href="/" className="flex items-center gap-2.5">
                 <img src="/logo.png" alt="CoreValidate Logo" className="h-9 w-auto object-contain" />
-                <span className="text-lg font-semibold text-gray-900 tracking-tight">CoreValidate</span>
+                <span className="hidden sm:block text-lg font-semibold text-gray-900 tracking-tight">CoreValidate</span>
               </Link>
               <nav className="hidden lg:flex items-center gap-8">
                 <a href="#features" className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">Features</a>
@@ -449,7 +449,7 @@ export default function Home() {
             <div className="col-span-1 sm:col-span-2">
               <div className="flex items-center gap-2.5 mb-4">
                 <img src="/logo.png" alt="CoreValidate Logo" className="h-9 w-auto object-contain" />
-                <span className="text-lg font-semibold text-gray-900">CoreValidate</span>
+                <span className="hidden sm:block text-lg font-semibold text-gray-900">CoreValidate</span>
               </div>
               <p className="text-sm text-gray-500 max-w-xs">The trust layer for the internet.</p>
             </div>

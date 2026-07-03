@@ -15,7 +15,7 @@ export function Navbar({ ctaText = 'Get started', ctaHref = '/sign-up' }: Navbar
         <div className="flex items-center justify-between h-14">
           <Link href="/" className="flex items-center gap-2">
             <img src="/logo.png" alt="CoreValidate Logo" className="h-8 w-auto object-contain" />
-            <span className="font-semibold text-gray-900">CoreValidate</span>
+            <span className="hidden sm:block font-semibold text-gray-900">CoreValidate</span>
           </Link>
           <Link href={ctaHref}>
             <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">{ctaText}</Button>
