@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
-import type { User } from '@/types';
+import type { UserPublic } from '@/types';
 
 interface BillingTabProps {
-  user: User | null;
+  user: UserPublic | null;
 }
 
 export function BillingTab({ user }: BillingTabProps) {
