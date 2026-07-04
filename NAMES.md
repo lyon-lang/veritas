@@ -1,5 +1,8 @@
 # UNIQUE NAME IDEAS
 
+## CHOSEN NAME: CoreValidate
+The project is now named CoreValidate. This file is kept for reference.
+
 ## Truly Original Names (Less Likely Taken)
 
 ### Invented Words (Best Chance)

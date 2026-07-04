@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Veritas - Trust Layer",
+  "name": "CoreValidate - Trust Layer",
   "version": "1.0.0",
   "description": "Verify any content you browse. Get instant trust scores for websites, images, and text.",
   "permissions": [
@@ -8,7 +8,7 @@
     "storage"
   ],
   "host_permissions": [
-    "https://veritas.vercel.app/*"
+    "https://corevalidate.vercel.app/*"
   ],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline'"

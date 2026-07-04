@@ -43,7 +43,7 @@ export async function GET(request: Request) {
       confidence: verification.confidence,
       checks,
       createdAt: verification.created_at,
-      shareUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://veritas.app'}/report/${verification.id}`,
+      shareUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://corevalidate.app'}/report/${verification.id}`,
     });
   } catch (error) {
     console.error('Error fetching report:', error);
@@ -75,7 +75,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://veritas.app'}/report/${verification.id}`;
+    const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://corevalidate.app'}/report/${verification.id}`;
 
     return NextResponse.json({
       id: verification.id,
@@ -98,10 +98,10 @@ function generateSocialText(verification: VerificationRow): string {
   const url = verification.url || 'content';
 
   if (verdict === 'fake') {
-    return `🚨 This content is FAKE (Trust Score: ${score}/100)\n\nVerified with @Veritas\n\n${url}`;
+    return `🚨 This content is FAKE (Trust Score: ${score}/100)\n\nVerified with @CoreValidate\n\n${url}`;
   } else if (verdict === 'suspicious') {
-    return `⚠️ This content is SUSPICIOUS (Trust Score: ${score}/100)\n\nVerified with @Veritas\n\n${url}`;
+    return `⚠️ This content is SUSPICIOUS (Trust Score: ${score}/100)\n\nVerified with @CoreValidate\n\n${url}`;
   } else {
-    return `✅ This content is AUTHENTIC (Trust Score: ${score}/100)\n\nVerified with @Veritas\n\n${url}`;
+    return `✅ This content is AUTHENTIC (Trust Score: ${score}/100)\n\nVerified with @CoreValidate\n\n${url}`;
   }
 }

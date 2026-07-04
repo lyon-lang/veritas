@@ -1,4 +1,4 @@
-# Veritas - The Reality Verification Layer
+# CoreValidate - The Reality Verification Layer
 
 Verify the authenticity of ALL content in real-time. Trust scores for everything.
 
@@ -57,4 +57,4 @@ CLERK_SECRET_KEY=sk_...
 
 ## License
 
-Proprietary - Veritas © 2025
+Proprietary - CoreValidate © 2025

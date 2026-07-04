@@ -1,10 +1,10 @@
-// Veritas Content Script
+// CoreValidate Content Script
 // Shows trust score badge on web pages
 
 (function() {
   'use strict';
 
-  const API_URL = 'https://veritas.vercel.app';
+  const API_URL = 'https://corevalidate.vercel.app';
   let badge = null;
   let currentUrl = window.location.href;
   let lastVerifyTime = 0;
@@ -23,28 +23,28 @@
     }
 
     badge = document.createElement('div');
-    badge.className = 'veritas-badge';
+    badge.className = 'corevalidate-badge';
 
     const logo = document.createElement('div');
-    logo.className = 'veritas-logo';
+    logo.className = 'corevalidate-logo';
     logo.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>';
 
     const info = document.createElement('div');
-    info.className = 'veritas-info';
+    info.className = 'corevalidate-info';
 
     const scoreEl = document.createElement('div');
-    scoreEl.className = `veritas-score veritas-score-${getScoreLevel(score)}`;
+    scoreEl.className = `corevalidate-score corevalidate-score-${getScoreLevel(score)}`;
     scoreEl.textContent = String(score);
 
     const labelEl = document.createElement('div');
-    labelEl.className = 'veritas-label';
+    labelEl.className = 'corevalidate-label';
     labelEl.textContent = getVerdictLabel(verdict);
 
     info.appendChild(scoreEl);
     info.appendChild(labelEl);
 
     const dismiss = document.createElement('div');
-    dismiss.className = 'veritas-dismiss';
+    dismiss.className = 'corevalidate-dismiss';
     dismiss.title = 'Dismiss';
     dismiss.textContent = '×';
 
@@ -71,37 +71,37 @@
 
   function createTooltip(score, verdict, checks) {
     const tooltip = document.createElement('div');
-    tooltip.className = 'veritas-tooltip';
+    tooltip.className = 'corevalidate-tooltip';
 
     const header = document.createElement('div');
-    header.className = 'veritas-tooltip-header';
+    header.className = 'corevalidate-tooltip-header';
 
     const title = document.createElement('span');
-    title.className = 'veritas-tooltip-title';
+    title.className = 'corevalidate-tooltip-title';
     title.textContent = 'Trust Analysis';
 
     const verdictEl = document.createElement('span');
     const safeVerdict = sanitize(verdict);
-    verdictEl.className = `veritas-tooltip-verdict veritas-verdict-${safeVerdict}`;
+    verdictEl.className = `corevalidate-tooltip-verdict corevalidate-verdict-${safeVerdict}`;
     verdictEl.textContent = verdict;
 
     header.appendChild(title);
     header.appendChild(verdictEl);
 
     const checksContainer = document.createElement('div');
-    checksContainer.className = 'veritas-tooltip-checks';
+    checksContainer.className = 'corevalidate-tooltip-checks';
 
     checks.forEach(check => {
       const checkEl = document.createElement('div');
-      checkEl.className = 'veritas-check';
+      checkEl.className = 'corevalidate-check';
 
       const nameEl = document.createElement('span');
-      nameEl.className = 'veritas-check-name';
+      nameEl.className = 'corevalidate-check-name';
       nameEl.textContent = check.name;
 
       const scoreEl = document.createElement('span');
       const safeStatus = sanitize(check.status);
-      scoreEl.className = `veritas-check-score veritas-check-${safeStatus}`;
+      scoreEl.className = `corevalidate-check-score corevalidate-check-${safeStatus}`;
       scoreEl.textContent = String(check.score);
 
       checkEl.appendChild(nameEl);
@@ -110,12 +110,12 @@
     });
 
     const footer = document.createElement('div');
-    footer.className = 'veritas-tooltip-footer';
+    footer.className = 'corevalidate-tooltip-footer';
 
     const link = document.createElement('a');
     link.href = `${API_URL}/dashboard`;
     link.target = '_blank';
-    link.className = 'veritas-tooltip-link';
+    link.className = 'corevalidate-tooltip-link';
     link.textContent = 'View full report →';
 
     footer.appendChild(link);
@@ -191,7 +191,7 @@
       }
     } catch (error) {
       if (error.name !== 'AbortError') {
-        console.error('Veritas: Error verifying page', error);
+        console.error('CoreValidate: Error verifying page', error);
       }
     }
   }

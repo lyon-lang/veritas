@@ -1,4 +1,4 @@
-# VERITAS FEATURE ROADMAP
+# COREVALIDATE FEATURE ROADMAP
 ## Features That Will Make This Product Win
 
 ---
@@ -43,7 +43,7 @@ How it works:
 ```
 
 **Example:**
-> "I used Veritas to verify this viral video. Trust score: 23/100. Here's why: [link]"
+> "I used CoreValidate to verify this viral video. Trust score: 23/100. Here's why: [link]"
 
 **Impact:** Viral, builds brand awareness
 **Time:** 1-2 weeks
@@ -259,7 +259,7 @@ How it works:
 
 ```
 How it works:
-- Sign your content with Veritas
+- Sign your content with CoreValidate
 - Get authenticity certificate
 - Embed in your content
 - Others can verify it's really you
@@ -406,26 +406,26 @@ How it works:
 
 ## THE ONE FEATURE THAT WINS
 
-If I had to pick ONE feature that would make Veritas win:
+If I had to pick ONE feature that would make CoreValidate win:
 
 ### **Shareable Verification Reports**
 
 Why:
 1. **Viral** - People share proof that content is fake
 2. **Free marketing** - Every share is an ad
-3. **Trust building** - Shows Veritas works
+3. **Trust building** - Shows CoreValidate works
 4. **Habit forming** - People verify before sharing
 5. **Network effects** - More verifications = more value
 
 **Example:**
 > Someone posts a fake video on Twitter
 > 
-> You verify it with Veritas
+> You verify it with CoreValidate
 > 
 > You share: "This video is fake. Trust score: 15/100. Here's the proof: [link]"
 > 
 > 100 people see your post
-> 10 of them try Veritas
+> 10 of them try CoreValidate
 > 1 of them shares their own verification
 > 
 > **Viral loop complete.**

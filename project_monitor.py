@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Veritas Project Monitor Agent
+CoreValidate Project Monitor Agent
 Continuous monitoring and automated tracking of project progress.
 """
 

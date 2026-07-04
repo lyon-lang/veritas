@@ -4,7 +4,7 @@ import { UserModel } from '@/lib/models';
 import { cookies } from 'next/headers';
 
 // Admin domains that can update source credibility
-const ADMIN_DOMAINS = ['veritas.app', 'localhost'];
+const ADMIN_DOMAINS = ['corevalidate.app', 'localhost'];
 
 function isAdmin(request: Request): boolean {
   // Check for admin API key in header

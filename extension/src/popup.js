@@ -1,6 +1,6 @@
-// Veritas Browser Extension - Popup Script
+// CoreValidate Browser Extension - Popup Script
 
-const API_URL = 'https://veritas.vercel.app';
+const API_URL = 'https://corevalidate.vercel.app';
 
 // DOM Elements
 const urlInput = document.getElementById('urlInput');

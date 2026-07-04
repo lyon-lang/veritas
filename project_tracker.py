@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Veritas Project Tracker Agent
+CoreValidate Project Tracker Agent
 Monitors project progress, tracks tasks, and provides status updates.
 """
 
@@ -79,7 +79,7 @@ class ProjectTracker:
             json.dump(data, f, indent=2)
     
     def initialize_default_tasks(self):
-        """Initialize default tasks for Veritas project."""
+        """Initialize default tasks for CoreValidate project."""
         
         # Phase 1: Foundation
         self.add_task(Task(

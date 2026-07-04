@@ -1,4 +1,4 @@
-# Veritas Browser Extension
+# CoreValidate Browser Extension
 
 Verify any content you browse. Get instant trust scores for websites, images, and text.
 
@@ -41,7 +41,7 @@ Update the API URL in these files:
 - `src/popup.js` - Line 3
 - `src/content.js` - Line 5
 
-Change `API_URL` to your deployed Veritas URL.
+Change `API_URL` to your deployed CoreValidate URL.
 
 ## Files
 
@@ -63,7 +63,7 @@ extension/
 
 ## API Integration
 
-The extension connects to the Veritas API:
+The extension connects to the CoreValidate API:
 - `POST /api/verify` - Verify content
 - `GET /api/user/verifications` - Get history
 
@@ -71,9 +71,9 @@ The extension connects to the Veritas API:
 
 1. Make changes to source files
 2. Go to `chrome://extensions/`
-3. Click refresh on the Veritas extension
+3. Click refresh on the CoreValidate extension
 4. Test your changes
 
 ## License
 
-Proprietary - Veritas © 2025
+Proprietary - CoreValidate © 2025

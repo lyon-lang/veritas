@@ -1,4 +1,4 @@
-# Veritas Deployment Guide
+# CoreValidate Deployment Guide
 
 ## Option 1: Deploy via Vercel Dashboard (Recommended - Easiest)
 
@@ -12,13 +12,13 @@ git commit -m "Initial commit"
 
 ### Step 2: Create GitHub Repository
 1. Go to github.com/new
-2. Name it "veritas"
+2. Name it "corevalidate"
 3. Don't initialize with README
 4. Create repository
 
 ### Step 3: Push to GitHub
 ```bash
-git remote add origin https://github.com/YOUR_USERNAME/veritas.git
+git remote add origin https://github.com/YOUR_USERNAME/corevalidate.git
 git branch -M main
 git push -u origin main
 ```
@@ -49,7 +49,7 @@ npx vercel
 - Set up and deploy? Y
 - Which scope? (select your account)
 - Link to existing project? N
-- Project name: veritas
+- Project name: corevalidate
 - Directory: ./
 
 ### Step 4: Production deploy
@@ -93,7 +93,7 @@ git add .
 git commit -m "Initial commit"
 
 # Push to GitHub (after creating repo)
-git remote add origin https://github.com/YOUR_USERNAME/veritas.git
+git remote add origin https://github.com/YOUR_USERNAME/corevalidate.git
 git push -u origin main
 
 # Then deploy on vercel.com

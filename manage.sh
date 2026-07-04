@@ -1,5 +1,5 @@
 #!/bin/bash
-# Veritas Project Management Script
+# CoreValidate Project Management Script
 
 PROJECT_DIR="/Users/lyon/Desktop/Lyon/TheResearcher/veritas"
 cd "$PROJECT_DIR" || exit 1
@@ -12,7 +12,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 show_help() {
-    echo -e "${BLUE}Veritas Project Manager${NC}"
+    echo -e "${BLUE}CoreValidate Project Manager${NC}"
     echo ""
     echo "Usage: ./manage.sh [command]"
     echo ""

@@ -1,8 +1,8 @@
-// Veritas Background Script
+// CoreValidate Background Script
 
 // Listen for extension install
 chrome.runtime.onInstalled.addListener((details) => {
-  console.log('Veritas extension installed');
+  console.log('CoreValidate extension installed');
   
   // Only set defaults on first install, not on updates
   if (details.reason === 'install') {
