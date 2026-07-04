@@ -34,15 +34,17 @@ Paste any URL, image, or text → Get a trust score in 5 seconds.
 Free to use: [URL]
 ```
 
-### Tweet 3: Chrome Extension
+### Tweet 3: Browser Extension
 ```
-NEW: CoreValidate Chrome Extension
+NEW: CoreValidate Browser Extension
+
+Works on Chrome, Firefox, Edge, and Safari!
 
 Shows trust scores on EVERY website you visit.
 
 No more guessing if something is real.
 
-Install free: [Chrome Web Store URL]
+Install free: [Browser Store URLs]
 ```
 
 ### Tweet 4: Use Case
@@ -86,7 +88,7 @@ How CoreValidate works:
 2. We check C2PA credentials, AI detection, source credibility
 3. Get an instant trust score (0-100)
 
-Plus a Chrome extension that shows trust scores on every website.
+Plus a browser extension (Chrome, Firefox, Edge, Safari) that shows trust scores on every website.
 
 It's free to use. I'd love your feedback.
 

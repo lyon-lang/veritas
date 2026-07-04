@@ -17,6 +17,7 @@ Make sure your Vercel deployment is live and working.
 - [ ] Screenshots of the app
 - [ ] Demo video (optional)
 - [ ] Launch copy ready
+- [ ] Browser extension ready for Chrome, Firefox, Edge, and Safari
 
 ---
 

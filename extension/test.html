@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CoreValidate Extension Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 {
+      color: #2563eb;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 20px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+    }
+    .test-section h2 {
+      margin-top: 0;
+      color: #374151;
+    }
+    .fake-content {
+      background: #fee2e2;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+    .real-content {
+      background: #dcfce7;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+    .suspicious-content {
+      background: #fef3c7;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+    .instructions {
+      background: #f3f4f6;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>CoreValidate Extension Test Page</h1>
+  
+  <div class="instructions">
+    <h3>How to Test</h3>
+    <ol>
+      <li>Install the CoreValidate extension in your browser</li>
+      <li>Load this page</li>
+      <li>Look for the trust score badge in the bottom-right corner</li>
+      <li>Hover over the badge to see the detailed breakdown</li>
+      <li>Click the badge to open the dashboard</li>
+    </ol>
+  </div>
+
+  <div class="test-section">
+    <h2>Test Content</h2>
+    
+    <div class="fake-content">
+      <h3>🚨 Fake Content Example</h3>
+      <p>This is an example of content that might be flagged as fake or suspicious. The extension should show a low trust score.</p>
+      <p><strong>URL:</strong> https://example-fake-news.com/article</p>
+    </div>
+
+    <div class="real-content">
+      <h3>✅ Real Content Example</h3>
+      <p>This is an example of content from a trusted source. The extension should show a high trust score.</p>
+      <p><strong>URL:</strong> https://www.reuters.com/article</p>
+    </div>
+
+    <div class="suspicious-content">
+      <h3>⚠️ Suspicious Content Example</h3>
+      <p>This is an example of content that might be flagged as suspicious. The extension should show a medium trust score.</p>
+      <p><strong>URL:</strong> https://unknown-source.com/article</p>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Extension Features</h2>
+    <ul>
+      <li><strong>Trust Score Badge:</strong> Automatically appears on every page</li>
+      <li><strong>Hover Tooltip:</strong> Shows detailed breakdown of checks</li>
+      <li><strong>Click to Open:</strong> Opens the full report in the dashboard</li>
+      <li><strong>Dismiss:</strong> Click the × to hide the badge</li>
+    </ul>
+  </div>
+
+  <div class="test-section">
+    <h2>Browser-Specific Notes</h2>
+    <ul>
+      <li><strong>Chrome:</strong> Full support, service worker background</li>
+      <li><strong>Firefox:</strong> Full support, may need temporary install</li>
+      <li><strong>Edge:</strong> Full support, Chromium-based</li>
+      <li><strong>Safari:</strong> Requires Xcode build, Safari 17+</li>
+    </ul>
+  </div>
+</body>
+</html>
