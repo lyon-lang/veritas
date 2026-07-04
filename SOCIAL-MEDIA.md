@@ -114,7 +114,7 @@ How it works:
 2. We analyze it (C2PA credentials, AI detection, source credibility)
 3. Get a trust score in <1 second
 
-Plus a Chrome extension that shows trust scores on every website.
+Plus a browser extension (Chrome, Firefox, Edge, Safari) that shows trust scores on every website.
 
 It's free, no sign-up required for basic checks.
 
@@ -143,7 +143,7 @@ Tech stack:
 - Next.js + TypeScript
 - OpenAI for AI analysis
 - SQLite for storage
-- Chrome extension
+- Cross-browser extension (Chrome, Firefox, Edge, Safari)
 
 Would love feedback on the technical approach and UX.
 ```
@@ -153,7 +153,7 @@ Would love feedback on the technical approach and UX.
 ## Hashtags to Use
 
 Primary: #AI #verification #misinformation #deeptech
-Secondary: #trust #safety #chrome #extension #startup
+Secondary: #trust #safety #chrome #firefox #edge #safari #extension #startup
 Niche: #c2pa #deepfake #fakenews #factcheck
 
 ---
@@ -161,7 +161,7 @@ Niche: #c2pa #deepfake #fakenews #factcheck
 ## Visual Assets Needed
 
 1. Screenshot of trust score result
-2. Screenshot of Chrome extension badge
+2. Screenshot of browser extension badge (Chrome, Firefox, Edge, Safari)
 3. Screenshot of dashboard
 4. Simple demo GIF (optional)
 
